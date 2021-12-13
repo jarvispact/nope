@@ -14,14 +14,10 @@ describe('complex-schema', () => {
         stringConstraint({
             when: (input) =>
                 !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-            error: (input) => ({
+            error: () => ({
                 code: 'E_NOT_A_EMAIL_ADDRESS',
                 message: 'it is not a valid email address',
                 details: {
-                    provided: {
-                        type: typeof input,
-                        value: input,
-                    },
                     expected: {
                         type: 'string',
                     },
@@ -32,14 +28,10 @@ describe('complex-schema', () => {
     const minStringLengthConstraint = (minLength: number) =>
         stringConstraint({
             when: (input) => input.length < minLength,
-            error: (input) => ({
+            error: () => ({
                 code: 'E_MIN_STRING_LENGTH',
                 message: 'input does not have the required minimum length',
                 details: {
-                    provided: {
-                        type: typeof input,
-                        value: input,
-                    },
                     expected: {
                         type: 'string',
                         minLength,
@@ -51,14 +43,10 @@ describe('complex-schema', () => {
     const maxStringLengthConstraint = (maxLength: number) =>
         stringConstraint({
             when: (input) => input.length > maxLength,
-            error: (input) => ({
+            error: () => ({
                 code: 'E_MAX_STRING_LENGTH',
                 message: 'input exceeds the maximum length',
                 details: {
-                    provided: {
-                        type: typeof input,
-                        value: input,
-                    },
                     expected: {
                         type: 'string',
                         maxLength,
@@ -70,14 +58,10 @@ describe('complex-schema', () => {
     const minYearConstraint = (minYear: number) =>
         dateConstraint({
             when: (input) => input.getFullYear() <= minYear,
-            error: (input) => ({
+            error: () => ({
                 code: 'E_MIN_DATE_YEAR',
                 message: `provided date has a year that is before the specified minYear: "${minYear}"`,
                 details: {
-                    provided: {
-                        type: typeof input,
-                        value: input,
-                    },
                     expected: {
                         type: 'date',
                         minYear,

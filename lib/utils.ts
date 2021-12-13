@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SchemaType } from './internal-utils';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Success<T> = { status: 'SUCCESS'; value: T };
 export type Failure<T> = { status: 'FAILURE'; value: T };
 export type Either<S, F> = Success<S> | Failure<F>;
