@@ -66,7 +66,8 @@ export type SupportedSchema =
 
 export const isLiteralSchema = (
     schema: SupportedSchema,
-): schema is LiteralSchema<any, any, any, any> => schema.schema === 'literal';
+): schema is LiteralSchema<any, any, any, any> =>
+    schema.schema === 'string-literal' || schema.schema === 'number-literal';
 
 export const isRecordSchema = (
     schema: SupportedSchema,

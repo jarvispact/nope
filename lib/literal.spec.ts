@@ -17,9 +17,9 @@ describe('literal.ts', () => {
             expect(schema.validate('B' as any)).to.eql({
                 status: 'FAILURE',
                 value: {
-                    schema: 'literal',
-                    code: 'E_INVALID_LITERAL',
-                    message: `provided value is not of type: "literal(A)"`,
+                    schema: 'string-literal',
+                    code: 'E_INVALID_STRING_LITERAL',
+                    message: `provided value is not of type: "string-literal("A")"`,
                     details: {
                         provided: {
                             type: 'string',
@@ -49,9 +49,9 @@ describe('literal.ts', () => {
             expect(schema.validate(1 as any)).to.eql({
                 status: 'FAILURE',
                 value: {
-                    schema: 'literal',
-                    code: 'E_INVALID_LITERAL',
-                    message: `provided value is not of type: "literal(42)"`,
+                    schema: 'number-literal',
+                    code: 'E_INVALID_NUMBER_LITERAL',
+                    message: `provided value is not of type: "number-literal(42)"`,
                     details: {
                         provided: {
                             type: 'number',

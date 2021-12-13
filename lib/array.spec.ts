@@ -158,10 +158,10 @@ describe('array.ts', () => {
                             {
                                 status: 'FAILURE',
                                 value: {
-                                    schema: 'literal',
-                                    code: 'E_INVALID_LITERAL',
+                                    schema: 'string-literal',
+                                    code: 'E_INVALID_STRING_LITERAL',
                                     message:
-                                        'provided value is not of type: "literal(42)"',
+                                        'provided value is not of type: "string-literal("42")"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -193,10 +193,10 @@ describe('array.ts', () => {
                             {
                                 status: 'FAILURE',
                                 value: {
-                                    schema: 'literal',
-                                    code: 'E_INVALID_LITERAL',
+                                    schema: 'string-literal',
+                                    code: 'E_INVALID_STRING_LITERAL',
                                     message:
-                                        'provided value is not of type: "literal(42)"',
+                                        'provided value is not of type: "string-literal("42")"',
                                     details: {
                                         provided: {
                                             type: 'number',

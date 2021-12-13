@@ -2,18 +2,34 @@
 import { err, getDisplayType } from './internal-utils';
 import { Either, failure, Schema, success } from './utils';
 
-const literalError = <L, T extends string | number>(literal: L, input: T) =>
+const getLiteralType = (literal: string | number) =>
+    typeof literal === 'string' ? 'string-literal' : 'number-literal';
+
+const getLiteralErrorCode = (literal: string | number) =>
+    typeof literal === 'string'
+        ? 'E_INVALID_STRING_LITERAL'
+        : 'E_INVALID_NUMBER_LITERAL';
+
+const getLiteralErrorMessage = (literal: string | number) =>
+    typeof literal === 'string'
+        ? `provided value is not of type: "string-literal("${literal}")"`
+        : `provided value is not of type: "number-literal(${literal})"`;
+
+const literalError = <L extends string | number, T extends string | number>(
+    literal: L,
+    input: T,
+) =>
     err(
-        'literal',
-        'E_INVALID_LITERAL',
-        `provided value is not of type: "literal(${literal})"`,
+        getLiteralType(literal),
+        getLiteralErrorCode(literal),
+        getLiteralErrorMessage(literal),
         {
             provided: {
                 type: getDisplayType(input),
                 value: input,
             },
             expected: {
-                type: `${typeof literal}-literal`,
+                type: getLiteralType(literal),
                 literal,
             },
         },
@@ -35,7 +51,7 @@ export const literal = <Literal extends string | number>(
         input === l ? success(input) : failure(literalError(l, input));
 
     return {
-        schema: 'literal',
+        schema: getLiteralType(literal),
         literal,
         I,
         O,
