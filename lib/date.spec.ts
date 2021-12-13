@@ -41,7 +41,7 @@ describe('date.ts', () => {
     describe('constraints argument validation', () => {
         it('should throw an error if a empty constraints array was passed', () => {
             expect(() => date([])).to.throw(
-                /empty constraints array is not allowed. provide at least 1 constraint or omit the empty array from the call to date()/,
+                /date\(\) was called with an empty constraints array. provide at least 1 constraint or call date\(\) without array argument\./,
             );
         });
     });

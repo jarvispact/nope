@@ -40,7 +40,7 @@ describe('number.ts', () => {
     describe('constraints argument validation', () => {
         it('should throw an error if a empty constraints array was passed', () => {
             expect(() => number([])).to.throw(
-                /empty constraints array is not allowed. provide at least 1 constraint or omit the empty array from the call to number()/,
+                /number\(\) was called with an empty constraints array. provide at least 1 constraint or call number\(\) without array argument\./,
             );
         });
     });

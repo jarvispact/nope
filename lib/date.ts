@@ -49,7 +49,7 @@ type DateOverload = {
 export const date: DateOverload = <C extends Constraint>(constraints?: any) => {
     if (Array.isArray(constraints) && constraints.length < 1) {
         throw new Error(
-            'empty constraints array is not allowed. provide at least 1 constraint or omit the empty array from the call to date()',
+            'date() was called with an empty constraints array. provide at least 1 constraint or call date() without array argument.',
         );
     }
 

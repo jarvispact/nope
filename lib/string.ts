@@ -36,7 +36,7 @@ export const string: StringOverload = <C extends Constraint>(
 ) => {
     if (Array.isArray(constraints) && constraints.length < 1) {
         throw new Error(
-            'empty constraints array is not allowed. provide at least 1 constraint or omit the empty array from the call to string()',
+            'string() was called with an empty constraints array. provide at least 1 constraint or call string() without array argument.',
         );
     }
 
