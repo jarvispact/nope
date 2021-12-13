@@ -68,7 +68,16 @@ export const stringConstraint = <I extends string, C extends string, T>({
     error: (input: I) => { code: C; message: string; details?: T };
 }) => ({
     when,
-    error,
+    error: (input: I) => {
+        const { code, message, details } = error(input);
+        return err('string', code, message, {
+            provided: {
+                type: getDisplayType(input),
+                value: input,
+            },
+            constraint: details,
+        });
+    },
 });
 
 type Constraint = ReturnType<typeof stringConstraint>;

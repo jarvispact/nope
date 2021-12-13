@@ -62,8 +62,7 @@ export const date: DateOverload = <C extends Constraint>(constraints?: any) => {
         const errors = ((constraints || []) as Array<C>)
             .map((c) => {
                 if (!c.when(input)) return undefined;
-                const { code, message, details } = c.error(input);
-                return err('date', code, message, details);
+                return c.error(input);
             })
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
@@ -87,7 +86,16 @@ export const dateConstraint = <I extends Date, C extends string, T>({
     error: (input: I) => { code: C; message: string; details?: T };
 }) => ({
     when,
-    error,
+    error: (input: I) => {
+        const { code, message, details } = error(input);
+        return err('date', code, message, {
+            provided: {
+                type: getDisplayType(input),
+                value: input,
+            },
+            constraint: details,
+        });
+    },
 });
 
 type Constraint = ReturnType<typeof dateConstraint>;

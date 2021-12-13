@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
-import { getDisplayType } from './internal-utils';
 import { number, numberConstraint } from './number';
 
 describe('number.ts', () => {
@@ -49,14 +48,10 @@ describe('number.ts', () => {
         const minConstraint = (min: number) =>
             numberConstraint({
                 when: (input) => input < min,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_NUMBER',
                     message: `provided number is smaller than the specified minimum: "${min}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'number',
                             min,
@@ -87,9 +82,11 @@ describe('number.ts', () => {
                                 type: 'number',
                                 value: 2,
                             },
-                            expected: {
-                                min: 3,
-                                type: 'number',
+                            constraint: {
+                                expected: {
+                                    min: 3,
+                                    type: 'number',
+                                },
                             },
                         },
                     },
@@ -102,14 +99,10 @@ describe('number.ts', () => {
         const minConstraint = (min: number) =>
             numberConstraint({
                 when: (input) => input <= min,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_NUMBER',
                     message: `provided number is smaller than the specified minimum: "${min}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'number',
                             min,
@@ -121,14 +114,10 @@ describe('number.ts', () => {
         const isDivisibleByConstraint = (num: number) =>
             numberConstraint({
                 when: (input) => input % num !== 0,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_IS_DIVISIBLE_BY',
                     message: `provided number is not divisible by: "${num}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'number',
                             isDivisibleBy: num,
@@ -166,9 +155,11 @@ describe('number.ts', () => {
                                 type: 'number',
                                 value: 1,
                             },
-                            expected: {
-                                type: 'number',
-                                min: 3,
+                            constraint: {
+                                expected: {
+                                    type: 'number',
+                                    min: 3,
+                                },
                             },
                         },
                     },
@@ -181,9 +172,11 @@ describe('number.ts', () => {
                                 type: 'number',
                                 value: 1,
                             },
-                            expected: {
-                                type: 'number',
-                                isDivisibleBy: 2,
+                            constraint: {
+                                expected: {
+                                    type: 'number',
+                                    isDivisibleBy: 2,
+                                },
                             },
                         },
                     },

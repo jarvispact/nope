@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
-import { getDisplayType } from './internal-utils';
 import { string, stringConstraint } from './string';
 
 describe('string.ts', () => {
@@ -49,14 +48,10 @@ describe('string.ts', () => {
         const minLengthConstraint = (minLength: number) =>
             stringConstraint({
                 when: (input) => input.length <= minLength,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_STRING_LENGTH',
                     message: `provided string is shorter than the specified minLength: "${minLength}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'string',
                             minLength,
@@ -87,9 +82,11 @@ describe('string.ts', () => {
                                 type: 'string',
                                 value: 'ab',
                             },
-                            expected: {
-                                minLength: 3,
-                                type: 'string',
+                            constraint: {
+                                expected: {
+                                    minLength: 3,
+                                    type: 'string',
+                                },
                             },
                         },
                     },
@@ -102,14 +99,10 @@ describe('string.ts', () => {
         const minLengthConstraint = (minLength: number) =>
             stringConstraint({
                 when: (input) => input.length <= minLength,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_STRING_LENGTH',
                     message: `provided string is shorter than the specified minLength: "${minLength}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'string',
                             minLength,
@@ -121,14 +114,10 @@ describe('string.ts', () => {
         const startsWithConstraint = (startsWith: string) =>
             stringConstraint({
                 when: (input) => !input.startsWith(startsWith),
-                error: (input) => ({
+                error: () => ({
                     code: 'E_STRING_STARTS_WITH',
                     message: `provided string does not startsWith: "${startsWith}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'string',
                             startsWith,
@@ -167,9 +156,11 @@ describe('string.ts', () => {
                                 type: 'string',
                                 value: 'ab',
                             },
-                            expected: {
-                                minLength: 3,
-                                type: 'string',
+                            constraint: {
+                                expected: {
+                                    minLength: 3,
+                                    type: 'string',
+                                },
                             },
                         },
                     },
@@ -182,9 +173,11 @@ describe('string.ts', () => {
                                 type: 'string',
                                 value: 'ab',
                             },
-                            expected: {
-                                type: 'string',
-                                startsWith: 't',
+                            constraint: {
+                                expected: {
+                                    type: 'string',
+                                    startsWith: 't',
+                                },
                             },
                         },
                     },

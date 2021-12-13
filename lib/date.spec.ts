@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import { date, dateConstraint } from './date';
-import { getDisplayType } from './internal-utils';
 
 describe('date.ts', () => {
     describe('without constraints', () => {
@@ -50,14 +49,10 @@ describe('date.ts', () => {
         const minYearConstraint = (minYear: number) =>
             dateConstraint({
                 when: (input) => input.getFullYear() <= minYear,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_DATE_YEAR',
                     message: `provided date has a year that is before the specified minYear: "${minYear}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'date',
                             minYear,
@@ -90,9 +85,11 @@ describe('date.ts', () => {
                                 type: 'date',
                                 value: input,
                             },
-                            expected: {
-                                minYear: 1900,
-                                type: 'date',
+                            constraint: {
+                                expected: {
+                                    minYear: 1900,
+                                    type: 'date',
+                                },
                             },
                         },
                     },
@@ -105,14 +102,10 @@ describe('date.ts', () => {
         const minYearConstraint = (minYear: number) =>
             dateConstraint({
                 when: (input) => input.getFullYear() <= minYear,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_DATE_YEAR',
                     message: `provided date has a year that is before the specified minYear: "${minYear}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'date',
                             minYear,
@@ -124,14 +117,10 @@ describe('date.ts', () => {
         const minMonthConstraint = (minMonth: number) =>
             dateConstraint({
                 when: (input) => input.getMonth() <= minMonth,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_DATE_MONTH',
                     message: `provided date has a month that is before the specified minMonth: "${minMonth}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'date',
                             minMonth,
@@ -174,9 +163,11 @@ describe('date.ts', () => {
                                 type: 'date',
                                 value: input,
                             },
-                            expected: {
-                                minYear: 1900,
-                                type: 'date',
+                            constraint: {
+                                expected: {
+                                    minYear: 1900,
+                                    type: 'date',
+                                },
                             },
                         },
                     },
@@ -189,9 +180,11 @@ describe('date.ts', () => {
                                 type: 'date',
                                 value: input,
                             },
-                            expected: {
-                                type: 'date',
-                                minMonth: 2,
+                            constraint: {
+                                expected: {
+                                    type: 'date',
+                                    minMonth: 2,
+                                },
                             },
                         },
                     },
