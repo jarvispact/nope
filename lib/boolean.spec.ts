@@ -26,7 +26,7 @@ describe('boolean.ts', () => {
             value: {
                 schema: 'boolean',
                 code: 'E_NOT_A_BOOLEAN',
-                message: `provided value is not of type boolean`,
+                message: `provided value is not of type: "boolean"`,
                 details: {
                     provided: {
                         type: 'string',

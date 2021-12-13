@@ -6,7 +6,7 @@ const literalError = <L, T extends string | number>(literal: L, input: T) =>
     err(
         'literal',
         'E_INVALID_LITERAL',
-        `the provided value does not match the specified literal: "${literal}"`,
+        `provided value is not of type: "literal(${literal})"`,
         {
             provided: {
                 type: getDisplayType(input),

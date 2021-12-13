@@ -6,7 +6,7 @@ export const notARecordError = (
     definition: Record<string, unknown>,
     input: Record<string, unknown>,
 ) =>
-    err('record', 'E_NOT_A_RECORD', 'provided value is not of type record', {
+    err('record', 'E_NOT_A_RECORD', 'provided value is not of type: "record"', {
         provided: {
             type: getDisplayType(input),
             value: input,
@@ -23,7 +23,7 @@ const missingKeysError = (
     definition: Record<string, unknown>,
     input: Record<string, unknown>,
 ) =>
-    err('record', 'E_MISSING_KEYS', 'provided value has missing keys', {
+    err('record', 'E_MISSING_RECORD_KEYS', 'record has missing keys', {
         provided: {
             type: getDisplayType(input),
             value: input,
@@ -40,7 +40,7 @@ const tooManyKeysError = (
     definition: Record<string, unknown>,
     input: Record<string, unknown>,
 ) =>
-    err('record', 'E_TOO_MANY_KEYS', 'provided value has too many keys', {
+    err('record', 'E_UNKNOWN_RECORD_KEYS', 'record has unknown keys', {
         provided: {
             type: getDisplayType(input),
             value: input,

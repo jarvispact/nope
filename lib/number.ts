@@ -3,7 +3,7 @@ import { err, getDisplayType, SchemaType } from './internal-utils';
 import { Either, failure, Schema, success } from './utils';
 
 const numberError = (input: unknown) =>
-    err('number', 'E_NOT_A_NUMBER', 'provided value is not of type number', {
+    err('number', 'E_NOT_A_NUMBER', 'provided value is not of type: "number"', {
         provided: {
             type: getDisplayType(input),
             value: input,

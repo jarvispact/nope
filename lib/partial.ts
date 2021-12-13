@@ -47,7 +47,7 @@ export const partial = <Def extends RecordSchema<any, any, any>>(
             ),
         ) as Def['definition'];
 
-        // TODO: E_MISSING_KEYS is not a valid error in case of a partial record
+        // TODO: E_MISSING_RECORD_KEYS is not a valid error in case of a partial record
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         return record(partialDefinition).validate(input);

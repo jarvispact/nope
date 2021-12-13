@@ -23,7 +23,7 @@ describe('union.ts', () => {
                 value: {
                     schema: 'union',
                     code: 'E_NOT_IN_UNION',
-                    message: 'provided value is not in union',
+                    message: 'provided value is not in type: "union"',
                     details: {
                         provided: {
                             type: 'boolean',
@@ -55,7 +55,7 @@ describe('union.ts', () => {
                 value: {
                     schema: 'union',
                     code: 'E_NOT_IN_UNION',
-                    message: 'provided value is not in union',
+                    message: 'provided value is not in type: "union"',
                     details: {
                         provided: {
                             type: 'string',
@@ -95,7 +95,7 @@ describe('union.ts', () => {
                 value: {
                     schema: 'union',
                     code: 'E_NOT_IN_UNION',
-                    message: 'provided value is not in union',
+                    message: 'provided value is not in type: "union"',
                     details: {
                         provided: {
                             type: 'record',

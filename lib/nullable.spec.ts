@@ -22,7 +22,7 @@ describe('nullable.ts', () => {
                     {
                         schema: 'string',
                         code: 'E_NOT_A_STRING',
-                        message: 'provided value is not of type string',
+                        message: 'provided value is not of type: "string"',
                         details: {
                             provided: {
                                 type: 'undefined',
@@ -56,7 +56,7 @@ describe('nullable.ts', () => {
                         {
                             schema: 'record',
                             code: 'E_NOT_A_RECORD',
-                            message: 'provided value is not of type record',
+                            message: 'provided value is not of type: "record"',
                             details: {
                                 provided: {
                                     type: 'undefined',

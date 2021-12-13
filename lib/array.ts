@@ -3,7 +3,7 @@ import { err, getDisplayType, SchemaType } from './internal-utils';
 import { Either, failure, Schema, success, SupportedSchema } from './utils';
 
 export const notAArray = (input: Array<unknown>) =>
-    err('array', 'E_NOT_A_ARRAY', 'provided value is not of type array', {
+    err('array', 'E_NOT_A_ARRAY', 'provided value is not of type: "array"', {
         provided: {
             type: getDisplayType(input),
             value: input,

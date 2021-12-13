@@ -21,7 +21,7 @@ describe('date.ts', () => {
                     {
                         schema: 'date',
                         code: 'E_NOT_A_DATE',
-                        message: 'provided value is not of type date',
+                        message: 'provided value is not of type: "date"',
                         details: {
                             provided: {
                                 type: 'number',

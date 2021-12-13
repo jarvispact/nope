@@ -3,7 +3,7 @@ import { err, getDisplayType, SchemaType } from './internal-utils';
 import { Either, failure, Schema, success } from './utils';
 
 const notADateError = (input: unknown) =>
-    err('date', 'E_NOT_A_DATE', 'provided value is not of type date', {
+    err('date', 'E_NOT_A_DATE', 'provided value is not of type: "date"', {
         provided: {
             type: getDisplayType(input),
             value: input,

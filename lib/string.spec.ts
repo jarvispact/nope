@@ -20,7 +20,7 @@ describe('string.ts', () => {
                     {
                         schema: 'string',
                         code: 'E_NOT_A_STRING',
-                        message: 'provided value is not of type string',
+                        message: 'provided value is not of type: "string"',
                         details: {
                             provided: {
                                 type: 'number',

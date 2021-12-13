@@ -26,7 +26,7 @@ describe('record.ts', () => {
                         {
                             schema: 'record',
                             code: 'E_NOT_A_RECORD',
-                            message: 'provided value is not of type record',
+                            message: 'provided value is not of type: "record"',
                             details: {
                                 provided: {
                                     type: 'array',
@@ -55,7 +55,7 @@ describe('record.ts', () => {
                         {
                             schema: 'record',
                             code: 'E_NOT_A_RECORD',
-                            message: 'provided value is not of type record',
+                            message: 'provided value is not of type: "record"',
                             details: {
                                 provided: {
                                     type: 'string',
@@ -87,8 +87,8 @@ describe('record.ts', () => {
                     errors: [
                         {
                             schema: 'record',
-                            code: 'E_MISSING_KEYS',
-                            message: 'provided value has missing keys',
+                            code: 'E_MISSING_RECORD_KEYS',
+                            message: 'record has missing keys',
                             details: {
                                 provided: {
                                     type: 'record',
@@ -113,7 +113,7 @@ describe('record.ts', () => {
                                     schema: 'string',
                                     code: 'E_NOT_A_STRING',
                                     message:
-                                        'provided value is not of type string',
+                                        'provided value is not of type: "string"',
                                     details: {
                                         provided: {
                                             type: 'undefined',
@@ -149,8 +149,8 @@ describe('record.ts', () => {
                     errors: [
                         {
                             schema: 'record',
-                            code: 'E_TOO_MANY_KEYS',
-                            message: 'provided value has too many keys',
+                            code: 'E_UNKNOWN_RECORD_KEYS',
+                            message: 'record has unknown keys',
                             details: {
                                 provided: {
                                     type: 'record',
@@ -207,7 +207,7 @@ describe('record.ts', () => {
                                     schema: 'string',
                                     code: 'E_NOT_A_STRING',
                                     message:
-                                        'provided value is not of type string',
+                                        'provided value is not of type: "string"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -245,8 +245,8 @@ describe('record.ts', () => {
                     errors: [
                         {
                             schema: 'record',
-                            code: 'E_MISSING_KEYS',
-                            message: 'provided value has missing keys',
+                            code: 'E_MISSING_RECORD_KEYS',
+                            message: 'record has missing keys',
                             details: {
                                 provided: {
                                     type: 'record',
@@ -276,7 +276,7 @@ describe('record.ts', () => {
                                         schema: 'record',
                                         code: 'E_NOT_A_RECORD',
                                         message:
-                                            'provided value is not of type record',
+                                            'provided value is not of type: "record"',
                                         details: {
                                             provided: {
                                                 type: 'undefined',
@@ -333,7 +333,7 @@ describe('record.ts', () => {
                                         schema: 'record',
                                         code: 'E_NOT_A_RECORD',
                                         message:
-                                            'provided value is not of type record',
+                                            'provided value is not of type: "record"',
                                         details: {
                                             provided: {
                                                 type: 'array',
@@ -388,9 +388,9 @@ describe('record.ts', () => {
                                 errors: [
                                     {
                                         schema: 'record',
-                                        code: 'E_MISSING_KEYS',
+                                        code: 'E_MISSING_RECORD_KEYS',
                                         message:
-                                            'provided value has missing keys',
+                                            'record has missing keys',
                                         details: {
                                             provided: {
                                                 type: 'record',
@@ -411,7 +411,7 @@ describe('record.ts', () => {
                                                 schema: 'string',
                                                 code: 'E_NOT_A_STRING',
                                                 message:
-                                                    'provided value is not of type string',
+                                                    'provided value is not of type: "string"',
                                                 details: {
                                                     provided: {
                                                         type: 'undefined',
@@ -474,7 +474,7 @@ describe('record.ts', () => {
                                                 schema: 'string',
                                                 code: 'E_NOT_A_STRING',
                                                 message:
-                                                    'provided value is not of type string',
+                                                    'provided value is not of type: "string"',
                                                 details: {
                                                     provided: {
                                                         type: 'number',

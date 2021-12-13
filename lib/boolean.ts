@@ -3,15 +3,20 @@ import { err, getDisplayType } from './internal-utils';
 import { Either, failure, Schema, success } from './utils';
 
 const booleanError = (input: unknown) =>
-    err('boolean', 'E_NOT_A_BOOLEAN', 'provided value is not of type boolean', {
-        provided: {
-            type: getDisplayType(input),
-            value: input,
+    err(
+        'boolean',
+        'E_NOT_A_BOOLEAN',
+        'provided value is not of type: "boolean"',
+        {
+            provided: {
+                type: getDisplayType(input),
+                value: input,
+            },
+            expected: {
+                type: 'boolean',
+            },
         },
-        expected: {
-            type: 'boolean',
-        },
-    });
+    );
 
 type BooleanError = ReturnType<typeof booleanError>;
 

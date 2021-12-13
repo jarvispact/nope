@@ -562,7 +562,7 @@ describe('complex-schema', () => {
             const errorCodes = either.value.errors.map((e) => e.code);
 
             expect(errorCodes.length).to.eql(1);
-            expect(errorCodes[0] === 'E_MISSING_KEYS').to.eql(true);
+            expect(errorCodes[0] === 'E_MISSING_RECORD_KEYS').to.eql(true);
         });
 
         it("should return status: 'FAILURE' if address has too many keys", () => {
@@ -601,7 +601,7 @@ describe('complex-schema', () => {
             const errorCodes = either.value.errors.map((e) => e.code);
 
             expect(errorCodes.length).to.eql(1);
-            expect(errorCodes[0] === 'E_TOO_MANY_KEYS').to.eql(true);
+            expect(errorCodes[0] === 'E_UNKNOWN_RECORD_KEYS').to.eql(true);
         });
 
         describe('address.main', () => {
@@ -682,7 +682,7 @@ describe('complex-schema', () => {
                 const errorCodes = either.value.errors.map((e) => e.code);
 
                 expect(errorCodes.length).to.eql(1);
-                expect(errorCodes[0] === 'E_MISSING_KEYS').to.eql(true);
+                expect(errorCodes[0] === 'E_MISSING_RECORD_KEYS').to.eql(true);
             });
 
             it("should return status: 'FAILURE' if address.main has too many keys", () => {
@@ -726,7 +726,7 @@ describe('complex-schema', () => {
                 const errorCodes = either.value.errors.map((e) => e.code);
 
                 expect(errorCodes.length).to.eql(1);
-                expect(errorCodes[0] === 'E_TOO_MANY_KEYS').to.eql(true);
+                expect(errorCodes[0] === 'E_UNKNOWN_RECORD_KEYS').to.eql(true);
             });
 
             it("should return status: 'FAILURE' if address.main.country is not within the country union", () => {
@@ -918,7 +918,7 @@ describe('complex-schema', () => {
                 const errorCodes = either.value.errors.map((e) => e.code);
 
                 expect(errorCodes.length).to.eql(1);
-                expect(errorCodes[0] === 'E_MISSING_KEYS').to.eql(true);
+                expect(errorCodes[0] === 'E_MISSING_RECORD_KEYS').to.eql(true);
             });
 
             it("should return status: 'FAILURE' if address.others[0] has too many keys", () => {
@@ -974,7 +974,7 @@ describe('complex-schema', () => {
                 const errorCodes = either.value.errors.map((e) => e.code);
 
                 expect(errorCodes.length).to.eql(1);
-                expect(errorCodes[0] === 'E_TOO_MANY_KEYS').to.eql(true);
+                expect(errorCodes[0] === 'E_UNKNOWN_RECORD_KEYS').to.eql(true);
             });
 
             it("should return status: 'FAILURE' if address.others[0].country is not within the country union", () => {

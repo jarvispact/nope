@@ -19,7 +19,7 @@ describe('literal.ts', () => {
                 value: {
                     schema: 'literal',
                     code: 'E_INVALID_LITERAL',
-                    message: `the provided value does not match the specified literal: "A"`,
+                    message: `provided value is not of type: "literal(A)"`,
                     details: {
                         provided: {
                             type: 'string',
@@ -51,7 +51,7 @@ describe('literal.ts', () => {
                 value: {
                     schema: 'literal',
                     code: 'E_INVALID_LITERAL',
-                    message: `the provided value does not match the specified literal: "42"`,
+                    message: `provided value is not of type: "literal(42)"`,
                     details: {
                         provided: {
                             type: 'number',

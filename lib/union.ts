@@ -11,7 +11,7 @@ import {
 } from './utils';
 
 const unionError = (union: Array<string>, input: unknown) =>
-    err('union', 'E_NOT_IN_UNION', 'provided value is not in union', {
+    err('union', 'E_NOT_IN_UNION', 'provided value is not in type: "union"', {
         provided: {
             type: getDisplayType(input),
             value: input,

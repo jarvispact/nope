@@ -25,7 +25,8 @@ describe('array.ts', () => {
                             {
                                 schema: 'array',
                                 code: 'E_NOT_A_ARRAY',
-                                message: 'provided value is not of type array',
+                                message:
+                                    'provided value is not of type: "array"',
                                 details: {
                                     provided: {
                                         type: 'record',
@@ -56,7 +57,7 @@ describe('array.ts', () => {
                                         schema: 'string',
                                         code: 'E_NOT_A_STRING',
                                         message:
-                                            'provided value is not of type string',
+                                            'provided value is not of type: "string"',
                                         details: {
                                             provided: {
                                                 type: 'number',
@@ -92,7 +93,7 @@ describe('array.ts', () => {
                                         schema: 'string',
                                         code: 'E_NOT_A_STRING',
                                         message:
-                                            'provided value is not of type string',
+                                            'provided value is not of type: "string"',
                                         details: {
                                             provided: {
                                                 type: 'number',
@@ -129,7 +130,8 @@ describe('array.ts', () => {
                             {
                                 schema: 'array',
                                 code: 'E_NOT_A_ARRAY',
-                                message: 'provided value is not of type array',
+                                message:
+                                    'provided value is not of type: "array"',
                                 details: {
                                     provided: {
                                         type: 'record',
@@ -159,7 +161,7 @@ describe('array.ts', () => {
                                     schema: 'literal',
                                     code: 'E_INVALID_LITERAL',
                                     message:
-                                        'the provided value does not match the specified literal: "42"',
+                                        'provided value is not of type: "literal(42)"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -194,7 +196,7 @@ describe('array.ts', () => {
                                     schema: 'literal',
                                     code: 'E_INVALID_LITERAL',
                                     message:
-                                        'the provided value does not match the specified literal: "42"',
+                                        'provided value is not of type: "literal(42)"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -231,7 +233,8 @@ describe('array.ts', () => {
                             {
                                 schema: 'array',
                                 code: 'E_NOT_A_ARRAY',
-                                message: 'provided value is not of type array',
+                                message:
+                                    'provided value is not of type: "array"',
                                 details: {
                                     provided: {
                                         type: 'record',
@@ -263,7 +266,7 @@ describe('array.ts', () => {
                                             schema: 'record',
                                             code: 'E_NOT_A_RECORD',
                                             message:
-                                                'provided value is not of type record',
+                                                'provided value is not of type: "record"',
                                             details: {
                                                 provided: {
                                                     type: 'number',
@@ -305,7 +308,7 @@ describe('array.ts', () => {
                                             schema: 'record',
                                             code: 'E_NOT_A_RECORD',
                                             message:
-                                                'provided value is not of type record',
+                                                'provided value is not of type: "record"',
                                             details: {
                                                 provided: {
                                                     type: 'number',
@@ -345,7 +348,7 @@ describe('array.ts', () => {
                                                     schema: 'string',
                                                     code: 'E_NOT_A_STRING',
                                                     message:
-                                                        'provided value is not of type string',
+                                                        'provided value is not of type: "string"',
                                                     details: {
                                                         provided: {
                                                             type: 'number',
@@ -432,7 +435,7 @@ describe('array.ts', () => {
                                     schema: 'string',
                                     code: 'E_NOT_A_STRING',
                                     message:
-                                        'provided value is not of type string',
+                                        'provided value is not of type: "string"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -486,7 +489,7 @@ describe('array.ts', () => {
                                     schema: 'string',
                                     code: 'E_NOT_A_STRING',
                                     message:
-                                        'provided value is not of type string',
+                                        'provided value is not of type: "string"',
                                     details: {
                                         provided: {
                                             type: 'number',

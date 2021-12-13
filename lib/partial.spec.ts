@@ -37,7 +37,7 @@ describe('partial.ts', () => {
                         {
                             schema: 'record',
                             code: 'E_NOT_A_RECORD',
-                            message: 'provided value is not of type record',
+                            message: 'provided value is not of type: "record"',
                             details: {
                                 provided: {
                                     type: 'array',
@@ -66,7 +66,7 @@ describe('partial.ts', () => {
                         {
                             schema: 'record',
                             code: 'E_NOT_A_RECORD',
-                            message: 'provided value is not of type record',
+                            message: 'provided value is not of type: "record"',
                             details: {
                                 provided: {
                                     type: 'string',
@@ -104,8 +104,8 @@ describe('partial.ts', () => {
                     errors: [
                         {
                             schema: 'record',
-                            code: 'E_TOO_MANY_KEYS',
-                            message: 'provided value has too many keys',
+                            code: 'E_UNKNOWN_RECORD_KEYS',
+                            message: 'record has unknown keys',
                             details: {
                                 provided: {
                                     type: 'record',
@@ -164,7 +164,7 @@ describe('partial.ts', () => {
                                     schema: 'string',
                                     code: 'E_NOT_A_STRING',
                                     message:
-                                        'provided value is not of type string',
+                                        'provided value is not of type: "string"',
                                     details: {
                                         provided: {
                                             type: 'number',
@@ -220,7 +220,7 @@ describe('partial.ts', () => {
                                         schema: 'record',
                                         code: 'E_NOT_A_RECORD',
                                         message:
-                                            'provided value is not of type record',
+                                            'provided value is not of type: "record"',
                                         details: {
                                             provided: {
                                                 type: 'array',
@@ -277,9 +277,9 @@ describe('partial.ts', () => {
                                 errors: [
                                     {
                                         schema: 'record',
-                                        code: 'E_MISSING_KEYS',
+                                        code: 'E_MISSING_RECORD_KEYS',
                                         message:
-                                            'provided value has missing keys',
+                                            'record has missing keys',
                                         details: {
                                             provided: {
                                                 type: 'record',
@@ -300,7 +300,7 @@ describe('partial.ts', () => {
                                                 schema: 'string',
                                                 code: 'E_NOT_A_STRING',
                                                 message:
-                                                    'provided value is not of type string',
+                                                    'provided value is not of type: "string"',
                                                 details: {
                                                     provided: {
                                                         type: 'undefined',
@@ -365,7 +365,7 @@ describe('partial.ts', () => {
                                                 schema: 'string',
                                                 code: 'E_NOT_A_STRING',
                                                 message:
-                                                    'provided value is not of type string',
+                                                    'provided value is not of type: "string"',
                                                 details: {
                                                     provided: {
                                                         type: 'number',
@@ -465,7 +465,7 @@ describe('partial.ts', () => {
                                                     schema: 'string',
                                                     code: 'E_NOT_A_STRING',
                                                     message:
-                                                        'provided value is not of type string',
+                                                        'provided value is not of type: "string"',
                                                     details: {
                                                         provided: {
                                                             type: 'number',
