@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import { array, arrayConstraint } from './array';
+import { getDisplayType } from './internal-utils';
 import { literal } from './literal';
 import { record } from './record';
 import { string } from './string';
-import { getDisplayType } from './utils';
 
 describe('array.ts', () => {
     describe('without constraints', () => {

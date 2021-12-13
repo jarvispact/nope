@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    Either,
-    err,
-    failure,
-    getDisplayType,
-    Schema,
-    SchemaType,
-    success,
-    SupportedSchema,
-} from './utils';
-
-const schema: SchemaType = 'array';
+import { err, getDisplayType, SchemaType } from './internal-utils';
+import { Either, failure, Schema, success, SupportedSchema } from './utils';
 
 export const notAArray = (input: Array<unknown>) =>
-    err(schema, 'E_NOT_A_ARRAY', 'provided value is not of type array', {
+    err('array', 'E_NOT_A_ARRAY', 'provided value is not of type array', {
         provided: {
             type: getDisplayType(input),
             value: input,
@@ -80,7 +70,7 @@ export const array: ArrayOverload = <
             .map((c) => {
                 if (!c.when(input)) return undefined;
                 const { code, message, details } = c.error(input);
-                return err(schema, code, message, details);
+                return err('array', code, message, details);
             })
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
@@ -99,7 +89,7 @@ export const array: ArrayOverload = <
     };
 
     return {
-        schema,
+        schema: 'array' as SchemaType,
         I,
         O,
         E,

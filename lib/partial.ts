@@ -1,18 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { isObject, objectKeys } from './internal-utils';
 import {
     notARecordError,
     NotARecordError,
     record,
     TooManyKeysError,
 } from './record';
-import {
-    Either,
-    failure,
-    isObject,
-    objectKeys,
-    RecordSchema,
-    Schema,
-} from './utils';
+import { Either, failure, RecordSchema, Schema } from './utils';
 
 type DefEither<Def extends { [x: string]: Schema<any, any, any> }> = Partial<{
     [Key in keyof Def]: Either<Def[Key]['O'], Def[Key]['E']>;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import { date, dateConstraint } from './date';
-import { getDisplayType } from './utils';
+import { getDisplayType } from './internal-utils';
 
 describe('date.ts', () => {
     describe('without constraints', () => {

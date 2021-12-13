@@ -1,15 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    Either,
-    err,
-    failure,
-    getDisplayType,
-    isObject,
-    objectKeys,
-    RecordSchema,
-    Schema,
-    success,
-} from './utils';
+import { err, getDisplayType, isObject, objectKeys } from './internal-utils';
+import { Either, failure, RecordSchema, Schema, success } from './utils';
 
 export const notARecordError = (
     definition: Record<string, unknown>,

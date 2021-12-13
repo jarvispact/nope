@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { err, getDisplayType } from './internal-utils';
 import {
     Either,
-    err,
     failure,
-    getDisplayType,
     isLiteralSchema,
     isRecordSchema,
     Schema,

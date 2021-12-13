@@ -123,8 +123,6 @@ describe('complex-schema', () => {
     });
 
     type I = typeof schema['I'];
-    // type O = typeof schema['O'];
-    // type E = typeof schema['E'];
 
     it("should return status: 'SUCCESS' if the input is valid", () => {
         const input: I = {

@@ -1,3 +1,5 @@
+import { SchemaType } from './internal-utils';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Success<T> = { status: 'SUCCESS'; value: T };
 export type Failure<T> = { status: 'FAILURE'; value: T };
@@ -25,55 +27,16 @@ export const isFailure = <S, F>(either: Either<S, F>): either is Failure<F> =>
 
 export const valueOf = <S, F>(either: Either<S, F>) => either.value;
 
-export const fold = <S, F>(
+export const fold = <S, F, OnSuccess, OnFailure>(
     either: Either<S, F>,
     {
         onSuccess,
         onFailure,
     }: {
-        onSuccess: (value: S) => unknown;
-        onFailure: (value: F) => unknown;
+        onSuccess: (value: S) => OnSuccess;
+        onFailure: (value: F) => OnFailure;
     },
 ) => (isSuccess(either) ? onSuccess(either.value) : onFailure(either.value));
-
-export const err = <S extends string, C extends string, T>(
-    schema: S,
-    code: C,
-    message: string,
-    details: T,
-) => ({
-    schema,
-    code,
-    message,
-    details,
-});
-
-export const objectKeys = <T extends { [x: string]: unknown }>(rec: T) =>
-    Object.keys(rec) as Array<keyof T>;
-
-export const isObject = (v: unknown): v is Record<string, unknown> =>
-    typeof v === 'object' && !Array.isArray(v) && v !== null;
-
-export const getDisplayType = (value: unknown) => {
-    if (value === null) return 'null';
-    if (value instanceof Date) return 'date';
-    if (isObject(value)) return 'record';
-    if (Array.isArray(value)) return 'array';
-    return typeof value;
-};
-
-export type SchemaType =
-    | 'optional'
-    | 'nullable'
-    | 'string'
-    | 'number'
-    | 'date'
-    | 'boolean'
-    | 'literal'
-    | 'union'
-    | 'record'
-    | 'partial'
-    | 'array';
 
 export type Schema<I, O extends I, E> = {
     schema: SchemaType;

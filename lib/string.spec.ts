@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
+import { getDisplayType } from './internal-utils';
 import { string, stringConstraint } from './string';
-import { getDisplayType } from './utils';
 
 describe('string.ts', () => {
     describe('without constraints', () => {

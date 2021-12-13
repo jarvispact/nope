@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Either, err, failure, getDisplayType, Schema, success } from './utils';
+import { err, getDisplayType } from './internal-utils';
+import { Either, failure, Schema, success } from './utils';
 
 const literalError = <L, T extends string | number>(literal: L, input: T) =>
     err(
