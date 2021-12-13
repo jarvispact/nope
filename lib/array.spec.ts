@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import { array, arrayConstraint } from './array';
-import { getDisplayType } from './internal-utils';
 import { literal } from './literal';
 import { record } from './record';
 import { string } from './string';
@@ -381,14 +380,10 @@ describe('array.ts', () => {
         const minLengthConstraint = (minLength: number) =>
             arrayConstraint({
                 when: (input) => input.length < minLength,
-                error: (input) => ({
+                error: () => ({
                     code: 'E_MIN_ARRAY_LENGTH',
                     message: `provided array is shorter than the specified minLength: "${minLength}"`,
                     details: {
-                        provided: {
-                            type: getDisplayType(input),
-                            value: input,
-                        },
                         expected: {
                             type: 'array',
                             minLength,
@@ -420,9 +415,11 @@ describe('array.ts', () => {
                                     type: 'array',
                                     value: [1],
                                 },
-                                expected: {
-                                    type: 'array',
-                                    minLength: 2,
+                                constraint: {
+                                    expected: {
+                                        type: 'array',
+                                        minLength: 2,
+                                    },
                                 },
                             },
                         },
@@ -468,9 +465,11 @@ describe('array.ts', () => {
                                     type: 'array',
                                     value: ['1', 2],
                                 },
-                                expected: {
-                                    type: 'array',
-                                    minLength: 3,
+                                constraint: {
+                                    expected: {
+                                        type: 'array',
+                                        minLength: 3,
+                                    },
                                 },
                             },
                         },

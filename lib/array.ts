@@ -69,8 +69,7 @@ export const array: ArrayOverload = <
         const constraintErrors = ((constraints || []) as Array<C>)
             .map((c) => {
                 if (!c.when(input)) return undefined;
-                const { code, message, details } = c.error(input);
-                return err('array', code, message, details);
+                return c.error(input);
             })
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
@@ -102,10 +101,19 @@ export const arrayConstraint = <I, C extends string, T>({
     error,
 }: {
     when: (input: Array<I>) => boolean;
-    error: (input: Array<I>) => { code: C; message: string; details?: T };
+    error: (input: Array<I>) => { code: C; message: string; details: T };
 }) => ({
     when,
-    error,
+    error: (input: Array<I>) => {
+        const { code, message, details } = error(input);
+        return err('array', code, message, {
+            provided: {
+                type: getDisplayType(input),
+                value: input,
+            },
+            constraint: details,
+        });
+    },
 });
 
 type Constraint = ReturnType<typeof arrayConstraint>;
