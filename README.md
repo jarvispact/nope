@@ -31,9 +31,11 @@ const schema = string(); // returns a schema of type: Schema<string, string, Arr
 type O = typeof schema['O']; // string
 type E = typeof schema['E']; // Array<StringError>
 
-const either = schema.validate('42'); // ok
+// ok
+const either = schema.validate('42');
 
-const either = schema.validate(42); // Error: Argument of type 'number' is not assignable to parameter of type 'string'
+// Error: Argument of type 'number' is not assignable to parameter of type 'string'
+const either = schema.validate(42);
 ```
 
 in both cases the validate function returns a `Either<Success, Failure>`. You can use a if statement to react on success and failure:
@@ -86,8 +88,6 @@ the following schema constructors are provided and you can compose them in many 
 - partial
 - union
 
-you can write your own schemas to extend this functionality.
-
 ## hello world
 
 ```ts
@@ -96,6 +96,16 @@ const LoginSchema = record({
     password: string(),
 });
 
+// invalid call to validate. password missing
+LoginSchema.validate({ email: 'bruce.wayne@wayne-enterprises.com' })
+
+// invalid call to validate. email missing
+LoginSchema.validate({ password: 'ironmansucks' })
+
+// invalid call to validate. email must be a string
+LoginSchema.validate({ email: 42, password: 'ironmansucks' })
+
+// ok
 const either = LoginSchema.validate({
     email: 'bruce.wayne@wayne-enterprises.com',
     password: 'ironmansucks',
@@ -173,4 +183,71 @@ type E1 = typeof schema['E']['errors'][number]['code']; // E_NOT_A_RECORD | E_MI
 
 type E2 = typeof schema['E']['properties']['email']['code']; // E_NOT_A_STRING | E_NOT_A_EMAIL_ADDRESS
 type E3 = typeof schema['E']['properties']['password']['code']; // E_NOT_A_STRING | E_MIN_STRING_LENGTH
+```
+
+## more examples
+
+Lets have a look on some other examples:
+
+```ts
+const schema = partial(record({
+    foo: string(),
+    bar: string(),
+}));
+
+type O = typeof schema['O']; // { foo?: string;, bar?: string; }
+
+const either = schema.validate({}) // ok
+const either = schema.validate({ foo: 42 }) // nope
+```
+
+```ts
+const schema = array(record({
+    foo: string(),
+    bar: string(),
+}));
+
+type O = typeof schema['O']; // Array<{ foo: string;, bar: string; }>
+
+const either = schema.validate([]) // ok
+const either = schema.validate({}) // nope
+const either = schema.validate([{ foo: '42' }]) // nope
+```
+
+```ts
+const schema = union([
+    literal('AT'),
+    literal('DE'),
+    literal('CH'),
+]);
+
+type O = typeof schema['O']; // 'AT' | 'DE' | 'CH'
+
+const either = schema.validate('AT') // ok
+const either = schema.validate('DE') // ok
+const either = schema.validate('CH') // ok
+const either = schema.validate(42) // nope
+const either = schema.validate('US') // nope
+```
+
+```ts
+const schema = optional(string());
+
+type O = typeof schema['O']; // string | undefined
+
+const either = schema.validate('') // ok
+const either = schema.validate(undefined) // ok
+const either = schema.validate(null) // nope
+const either = schema.validate(42) // nope
+```
+
+```ts
+const schema = nullable(string());
+
+type O = typeof schema['O']; // string | null
+
+const either = schema.validate('') // ok
+const either = schema.validate(null) // ok
+const either = schema.validate(undefined) // nope
+const either = schema.validate(42) // nope
 ```
