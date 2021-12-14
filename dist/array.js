@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { err, failure, getDisplayType, success, } from './utils';
-const schema = 'array';
-export const notAArray = (input) => err(schema, 'E_NOT_A_ARRAY', 'provided value is not of type array', {
+import { err, getDisplayType } from './internal-utils';
+import { failure, success } from './utils';
+export const notAArray = (input) => err('array', 'E_NOT_A_ARRAY', 'provided value is not of type: "array"', {
     provided: {
         type: getDisplayType(input),
         value: input,
@@ -12,7 +12,7 @@ export const notAArray = (input) => err(schema, 'E_NOT_A_ARRAY', 'provided value
 });
 export const array = (wrappedSchema, constraints) => {
     if (Array.isArray(constraints) && constraints.length < 1) {
-        throw new Error('empty constraints array is not allowed. provide at least 1 constraint or omit the empty array from the call to number()');
+        throw new Error('array() was called with an empty constraints array. provide at least 1 constraint or call array() without array argument.');
     }
     const I = null;
     const O = null;
@@ -28,8 +28,7 @@ export const array = (wrappedSchema, constraints) => {
             .map((c) => {
             if (!c.when(input))
                 return undefined;
-            const { code, message, details } = c.error(input);
-            return err(schema, code, message, details);
+            return c.error(input);
         })
             .filter(Boolean);
         const items = input.map((item) => wrappedSchema.validate(item));
@@ -43,7 +42,7 @@ export const array = (wrappedSchema, constraints) => {
         return success(input);
     };
     return {
-        schema,
+        schema: 'array',
         I,
         O,
         E,
@@ -52,6 +51,15 @@ export const array = (wrappedSchema, constraints) => {
 };
 export const arrayConstraint = ({ when, error, }) => ({
     when,
-    error,
+    error: (input) => {
+        const { code, message, details } = error(input);
+        return err('array', code, message, {
+            provided: {
+                type: getDisplayType(input),
+                value: input,
+            },
+            constraint: details,
+        });
+    },
 });
 //# sourceMappingURL=array.js.map

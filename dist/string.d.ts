@@ -29,9 +29,16 @@ export declare const stringConstraint: <I extends string, C extends string, T>({
 }) => {
     when: (input: I) => boolean;
     error: (input: I) => {
+        schema: "string";
         code: C;
         message: string;
-        details?: T | undefined;
+        details: {
+            provided: {
+                type: string;
+                value: I;
+            };
+            constraint: T | undefined;
+        };
     };
 };
 declare type Constraint = ReturnType<typeof stringConstraint>;

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { err, failure, getDisplayType, isLiteralSchema, isRecordSchema, success, } from './utils';
-const unionError = (union, input) => err('union', 'E_NOT_IN_UNION', 'provided value is not in union', {
+import { err, getDisplayType } from './internal-utils';
+import { failure, isLiteralSchema, isRecordSchema, success, } from './utils';
+const unionError = (union, input) => err('union', 'E_NOT_IN_UNION', 'provided value is not in type: "union"', {
     provided: {
         type: getDisplayType(input),
         value: input,

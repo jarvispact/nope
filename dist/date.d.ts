@@ -45,9 +45,16 @@ export declare const dateConstraint: <I extends Date, C extends string, T>({ whe
 }) => {
     when: (input: I) => boolean;
     error: (input: I) => {
+        schema: "date";
         code: C;
         message: string;
-        details?: T | undefined;
+        details: {
+            provided: {
+                type: string;
+                value: I;
+            };
+            constraint: T | undefined;
+        };
     };
 };
 declare type Constraint = ReturnType<typeof dateConstraint>;

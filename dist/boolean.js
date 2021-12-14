@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { err, failure, getDisplayType, success } from './utils';
-const booleanError = (input) => err('boolean', 'E_NOT_A_BOOLEAN', 'provided value is not of type boolean', {
+import { err, getDisplayType } from './internal-utils';
+import { failure, success } from './utils';
+const booleanError = (input) => err('boolean', 'E_NOT_A_BOOLEAN', 'provided value is not of type: "boolean"', {
     provided: {
         type: getDisplayType(input),
         value: input,

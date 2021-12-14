@@ -28,14 +28,21 @@ export declare const arrayConstraint: <I, C extends string, T>({ when, error, }:
     error: (input: I[]) => {
         code: C;
         message: string;
-        details?: T | undefined;
+        details: T;
     };
 }) => {
     when: (input: I[]) => boolean;
     error: (input: I[]) => {
+        schema: "array";
         code: C;
         message: string;
-        details?: T | undefined;
+        details: {
+            provided: {
+                type: string;
+                value: I[];
+            };
+            constraint: T;
+        };
     };
 };
 declare type Constraint = ReturnType<typeof arrayConstraint>;

@@ -17,7 +17,7 @@ export declare const notARecordError: (definition: Record<string, unknown>, inpu
 export declare type NotARecordError = ReturnType<typeof notARecordError>;
 declare const missingKeysError: (definition: Record<string, unknown>, input: Record<string, unknown>) => {
     schema: "record";
-    code: "E_MISSING_KEYS";
+    code: "E_MISSING_RECORD_KEYS";
     message: string;
     details: {
         provided: {
@@ -33,7 +33,7 @@ declare const missingKeysError: (definition: Record<string, unknown>, input: Rec
 declare type MissingKeysError = ReturnType<typeof missingKeysError>;
 declare const tooManyKeysError: (definition: Record<string, unknown>, input: Record<string, unknown>) => {
     schema: "record";
-    code: "E_TOO_MANY_KEYS";
+    code: "E_UNKNOWN_RECORD_KEYS";
     message: string;
     details: {
         provided: {

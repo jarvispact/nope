@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { err, failure, getDisplayType, isObject, objectKeys, success, } from './utils';
-export const notARecordError = (definition, input) => err('record', 'E_NOT_A_RECORD', 'provided value is not of type record', {
+import { err, getDisplayType, isObject, objectKeys } from './internal-utils';
+import { failure, success } from './utils';
+export const notARecordError = (definition, input) => err('record', 'E_NOT_A_RECORD', 'provided value is not of type: "record"', {
     provided: {
         type: getDisplayType(input),
         value: input,
@@ -10,7 +11,7 @@ export const notARecordError = (definition, input) => err('record', 'E_NOT_A_REC
         keys: Object.keys(definition),
     },
 });
-const missingKeysError = (definition, input) => err('record', 'E_MISSING_KEYS', 'provided value has missing keys', {
+const missingKeysError = (definition, input) => err('record', 'E_MISSING_RECORD_KEYS', 'record has missing keys', {
     provided: {
         type: getDisplayType(input),
         value: input,
@@ -20,7 +21,7 @@ const missingKeysError = (definition, input) => err('record', 'E_MISSING_KEYS', 
         keys: Object.keys(definition),
     },
 });
-const tooManyKeysError = (definition, input) => err('record', 'E_TOO_MANY_KEYS', 'provided value has too many keys', {
+const tooManyKeysError = (definition, input) => err('record', 'E_UNKNOWN_RECORD_KEYS', 'record has unknown keys', {
     provided: {
         type: getDisplayType(input),
         value: input,

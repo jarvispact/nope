@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { isObject, objectKeys } from './internal-utils';
 import { notARecordError, record, } from './record';
-import { failure, isObject, objectKeys, } from './utils';
+import { failure } from './utils';
 export const partial = (recordSchemaDefinition) => {
     const I = null;
     const O = null;
@@ -15,7 +16,7 @@ export const partial = (recordSchemaDefinition) => {
             });
         }
         const partialDefinition = Object.fromEntries(Object.entries(recordSchemaDefinition.definition).filter(([k]) => objectKeys(input).includes(k)));
-        // TODO: E_MISSING_KEYS is not a valid error in case of a partial record
+        // TODO: E_MISSING_RECORD_KEYS is not a valid error in case of a partial record
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         return record(partialDefinition).validate(input);
