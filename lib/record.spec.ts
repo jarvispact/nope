@@ -389,8 +389,7 @@ describe('record.ts', () => {
                                     {
                                         schema: 'record',
                                         code: 'E_MISSING_RECORD_KEYS',
-                                        message:
-                                            'record has missing keys',
+                                        message: 'record has missing keys',
                                         details: {
                                             provided: {
                                                 type: 'record',
