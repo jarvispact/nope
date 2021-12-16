@@ -2,29 +2,33 @@ Hi 👋. If you dont know what "schwifty" means:
 
 *Schwifty is a made-up term from the animated show Rick and Morty in 2015. It means completely letting loose while partying.*
 
-I stumbled upon this library called [io.ts](https://github.com/gcanti/io-ts) and really liked the concept, but i was pretty new to typescript when i found it. I played around a bit and decided to write a schema validation library that allows me to extract the static type out of the schema. This was out of pure curiosity and more like a use case to get to learn some more advanced typescript features. This is the way how i learn new concepts that i dont fully understand. I re-implement some library from scratch to see how it works.
+I stumbled upon this library called [io.ts](https://github.com/gcanti/io-ts) and really liked the concept, but i was pretty new to typescript when i found it and didnt get it completely. If i am interested in some library and i dont get it, i try to re-implement it or at least i take the main concept out of it and try to write a own interpretation of it. I actually never used io.ts and i am not sure if my interpretation of it has anything to do with io.ts anymore 😂.
 
-After a while i came up with a library that has this 2 main benefits:
+After a deep dive into generics and type inference, and looking on some generics types that i wrote, i felt that i have gone too schwifty on it, but i really like the outcome of this and after a refactoring it is not so bad anymore 😉. I came up with a solution that has this 2 main selling points:
 
 - **You dont have to write a single type!** You can extract the type from the schema itself.
 - **Strongly typed errors!** Every schema defines all possible errors that can happen.
 
-In this blog post i would like to explain the concept and implementation of my library. Its not about the library itself which is still a experiment. But if you are curious, here it is: [@beerstack/nope](https://github.com/jarvispact/nope)
+In this blog post i would like to explain the concept and implementation of my library. Its not about the library itself which is still a experiment. But if you are curious or want to give me some feedback, here it is: [nope](https://github.com/jarvispact/nope). 
 
 ---
 
 ## What is the use case for this anyway?
 
-- edge validation (api responses)
-- user input validation (forms)
+You can use this on the backend and on the frontend for the following concerns:
+
+- edge validation (api responses, upstream service responses)
+- user input validation (forms, request data)
 - domain validation (domain models)
+
+---
 
 ## How to use it?
 
 The basic idea is that you define a schema once and use it to extract the static types for Output and Error:
 
 ```ts
-import { record, string, union, literal } from '@beerstack/nope';
+import { record, string, union, literal } from '../../lib/nope';
 
 const TodoSchema = record({
     id: string(),
@@ -54,7 +58,6 @@ type TodoError = typeof TodoSchema['E'];
     }
 }
 */
-
 ```
 
 So now you have defined a schema and you have extracted the static types for Success and Error to be used across your codebase. How do we validate data with this schema? Glad you asked:
@@ -68,6 +71,8 @@ const either = TodoSchema.validate({
 ```
 
 This would be successful, since the data matches our schema definition. If the data would look different it may fail. Thats why i named the result `either`. The `validate` function does not throw, it returns a `Either<Success, Failure>` type, as you may have noticed already in the `TodoError` type. Ok. Now we have seen how we would declare and use such a schema. In the next section we will have a look on the basic idea and how the `string()` schema constructor is implemented.
+
+---
 
 ## The basic idea
 
@@ -142,9 +147,9 @@ const stringError = (input: unknown) => ({
 type StringError = ReturnType<typeof stringError>;
 
 export const string = () => {
-    const I = null as unknown as string; // phantom type for Input
-    const O = null as unknown as string; // phantom type for Output
-    const E = null as unknown as StringError; // phantom type for Error
+    const I = null as unknown as string; // type for Input
+    const O = null as unknown as string; // type for Output
+    const E = null as unknown as StringError; // type for Error
 
     const validate = (input: typeof I): Either<typeof O, typeof E> =>
         typeof input === 'string' ? success(input) : failure(input);
@@ -171,13 +176,15 @@ type Output = typeof schema['O']; // string
 type Error = typeof schema['E']; // StringError
 ```
 
-The phantom types `I` and `O` are the same for all of the primitive schemas like: string, number, boolean, date, record, array, ... but they can be different for domain types in your application. Imagine a `Email` or a `Uuid` type. Both are of the primitive type: `string`. But they have some additional validation in order to be a valid email address or uuid. Unfortunately we cannot simply alias it like this: `type Email = string` and ensure the validation in the validate function, because typescript has no support for opaque types and will always fall back to string in compiler error messages. I am currently looking into a solution for this and i will maybe write another blog post about this topic 😊.
+The types `I` and `O` are the same for all of the primitive schemas like: string, number, boolean, date, record, array, ... but they can be different for domain types in your application. Imagine a `Email` or a `Uuid` type. Both are of the primitive type: `string`. But they have some additional validation in order to be a valid email address or uuid. Unfortunately we cannot simply alias it like this: `type Email = string` and ensure the validation in the validate function, because typescript has no support for opaque types and will always fall back to string in compiler error messages. I am currently looking into a solution for this and i will maybe write another blog post about this topic 😊.
 
-The awesome thing about this is that you can combine all of those little schema constructors together to form really complex objects.
+The awesome thing about this is that, once you have written some schema constructors for the basic types in javascript, you can combine them in many ways and form really complex schemas.
+
+---
 
 ## Example
 
-Here is a example of a schema that you could build with some primitive schema constructors. Also this is possible today with [@beerstack/nope](https://github.com/jarvispact/nope)
+Here is a example of a schema that you could build with some primitive schema constructors. Also this is possible today with [nope](https://github.com/jarvispact/nope)
 
 ```ts
 const AddressSchema = record({
@@ -285,4 +292,124 @@ type UserError = typeof UserSchema['E'];
 */
 ```
 
-See how awesome this is? You dont need to define a single type upfront. Just define your schema that you can use to validate your data and extract the types from it. Every possible error on any level, has a unique `code` and is strongly typed. That means you can react to every possible error in a different way at runtime and have a lot information about every error available.
+See how awesome this is? You dont need to define a single type upfront. Just define your schema that you can use to validate your data and extract the types from it. Every possible error on any level, has a unique `code` and is strongly typed. That means you can react to every possible error in a different way at runtime and have a lot of information about every error available.
+
+We are still missing a important part. Up until now we can only validate if some data is of some javascript type, like `string`, `number`, `object` or `array` for example. Thats enough to extract the static type and ensure the correct type at runtime, but a validation library should be able to validate if:
+
+- some input string has a required minimum length
+- some input number is between a valid range
+- some input array has a required minimum length
+- ...
+
+Let me introduce you to constraints.
+
+---
+
+## Constraints
+
+for some primitive schema constructors, it doesnt make sense to have constraints, for others it makes sense. So lets take the `string` schema constructor as an example once again. This is how the `stringConstraint` function looks:
+
+```ts
+const stringConstraint = <I extends string, C extends string, T>({
+    when,
+    error,
+}: {
+    when: (input: I) => boolean;
+    error: (input: I) => { code: C; message: string; details?: T };
+}) => ({
+    when,
+    error: (input: I) => {
+        const { code, message, details } = error(input);
+        return err('string', code, message, {
+            provided: {
+                type: typeof input,
+                value: input,
+            },
+            constraint: details,
+        });
+    },
+});
+
+type Constraint = ReturnType<typeof stringConstraint>;
+```
+
+the `err` function is just a simple helper function, to ensure a certain shape of error object. You can specify a condition or check via the `when` function and a error constructor that will be called if your `when` function returns true. Now we can use this function to create all sorts of string constraints, like:
+
+- check if the input string has some minimum length
+- check if the input string does not exceed some maximum length
+- check if the input string starts with some string
+- check if the input string is a valid email address
+- ...
+
+Lets see 2 examples of such constraints:
+
+```ts
+const minLengthConstraint = (minLength: number) =>
+    stringConstraint({
+        when: (input) => input.length < minLength,
+        error: () => ({
+            code: 'E_MIN_STRING_LENGTH',
+            message: 'input does not have the required minimum length',
+            details: {
+                expected: {
+                    type: 'string',
+                    minLength,
+                },
+            },
+        }),
+    });
+
+const emailConstraint = () =>
+    stringConstraint({
+        when: (input) =>
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+        error: () => ({
+            code: 'E_NOT_A_EMAIL_ADDRESS',
+            message: 'it is not a valid email address',
+            details: {
+                expected: {
+                    type: 'string',
+                },
+            },
+        }),
+    });
+```
+
+Again you have to provide at least a `code` and a `message`, a `details` object is optional and you are free to put there whatever you want. Great. Now we have some constraints, but what will we do with them? Well, we need to adapt our `string` schema constructor function a bit to be able to pass this constraints, so we can call it within the validate function of our schema.
+
+```ts
+export const string = <C extends Constraint>(constraints: Array<C>) => {
+    const I = null as unknown as string;
+    const O = null as unknown as string;
+    const E = null as unknown as Array<StringError | ReturnType<C['error']>>;
+
+    const validate = (input: typeof I): Either<typeof O, typeof E> => {
+        if (typeof input !== 'string') return failure([stringError(input)]);
+
+        const errors = ((constraints || []) as Array<C>)
+            .map((c) => (c.when(input) ? c.error(input) : undefined))
+            .filter(Boolean) as Array<ReturnType<C['error']>>;
+
+        return errors.length ? failure(errors) : success(input);
+    };
+
+    return {
+        schema: 'string' as const,
+        I,
+        O,
+        E,
+        validate,
+    };
+};
+
+const schema = string([emailConstraint(), minLengthConstraint(8)]);
+type ErrorCode = typeof schema['E'][number]['code']; // "E_MIN_STRING_LENGTH" | "E_NOT_A_EMAIL_ADDRESS" | "E_NOT_A_STRING"
+```
+
+If you validate some input string with this schema and it fails, typescript knows exactly what errors can happen during the validation and it can support you during error handling. If you change your schema or your constraint functions, and some code depneds on it, your application wont compile anymore.
+
+---
+
+## Closing
+
+❤ Typescript is awesome ❤. The user of the library doesnt have to write a single type. You simply extract the type from the schema. If you change the schema, your type will automatically change as well. All the code that depends on the schema or extracted types cannot be out of sync anymore. I hope that you learned something new or that this makes you curious to play with this concepts a bit yourself.

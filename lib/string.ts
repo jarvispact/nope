@@ -41,11 +41,7 @@ export const string: StringOverload = <C extends Constraint>(
         if (typeof input !== 'string') return failure([stringError(input)]);
 
         const errors = ((constraints || []) as Array<C>)
-            .map((c) => {
-                if (!c.when(input)) return undefined;
-                const { code, message, details } = c.error(input);
-                return err('string', code, message, details);
-            })
+            .map((c) => (c.when(input) ? c.error(input) : undefined))
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
         return errors.length ? failure(errors) : success(input);

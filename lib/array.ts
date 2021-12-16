@@ -67,10 +67,7 @@ export const array: ArrayOverload = <
         }
 
         const constraintErrors = ((constraints || []) as Array<C>)
-            .map((c) => {
-                if (!c.when(input)) return undefined;
-                return c.error(input);
-            })
+            .map((c) => (c.when(input) ? c.error(input) : undefined))
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
         const items = input.map((item) => wrappedSchema.validate(item));

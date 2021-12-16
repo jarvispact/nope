@@ -1,5 +1,7 @@
 import { string } from '../../lib/nope';
 
+// ---
+
 const schema = string();
 
 type Input = typeof schema['I']; // string

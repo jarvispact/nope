@@ -41,10 +41,7 @@ export const number: NumberOverload = <C extends Constraint>(
         if (typeof input !== 'number') return failure([numberError(input)]);
 
         const errors = ((constraints || []) as Array<C>)
-            .map((c) => {
-                if (!c.when(input)) return undefined;
-                return c.error(input);
-            })
+            .map((c) => (c.when(input) ? c.error(input) : undefined))
             .filter(Boolean) as Array<ReturnType<C['error']>>;
 
         return errors.length ? failure(errors) : success(input);
