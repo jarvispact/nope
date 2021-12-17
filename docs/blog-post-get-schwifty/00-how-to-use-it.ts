@@ -6,6 +6,16 @@ const TodoSchema = record({
     status: union([literal('COMPLETE'), literal('INCOMPLETE')]),
 });
 
+type TodoInput = typeof TodoSchema['I'];
+// this is the static type for the Input of your validate function
+/**
+{
+    id: string;
+    content: string;
+    status: 'COMPLETE' | 'INCOMPLETE';
+}
+*/
+
 type Todo = typeof TodoSchema['O'];
 // this is the static type for your domain model: Todo
 /**
@@ -22,8 +32,8 @@ type TodoError = typeof TodoSchema['E'];
 {
     errors: Array<RecordError>;
     properties: {
-        id: Either<string, Array<StringError>>;
-        content: Either<string, Array<StringError>>;
+        id: Either<string, StringError>;
+        content: Either<string, StringError>;
         status: Either<'COMPLETE' | 'INCOMPLETE', UnionError>;
     }
 }

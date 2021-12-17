@@ -14,6 +14,8 @@ const either = TodoSchema.validate({
     status: 'INCOMPLETE',
 });
 
+// typeof either = Either<Todo, TodoError>
+
 if (isSuccess(either)) {
     const { value } = either; // value is of type: Todo
 } else {

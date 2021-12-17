@@ -25,7 +25,9 @@ export const string = () => {
     const E = null as unknown as StringError; // type for Error
 
     const validate = (input: typeof I): Either<typeof O, typeof E> =>
-        typeof input === 'string' ? success(input) : failure(input);
+        typeof input === 'string'
+            ? success(input)
+            : failure(stringError(input));
 
     return {
         schema: 'string' as const,

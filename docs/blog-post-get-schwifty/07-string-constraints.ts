@@ -1,7 +1,3 @@
-import { err, getDisplayType } from '../../lib/internal-utils';
-
-// ---
-
 const stringConstraint = <I extends string, C extends string, T>({
     when,
     error,
@@ -12,13 +8,18 @@ const stringConstraint = <I extends string, C extends string, T>({
     when,
     error: (input: I) => {
         const { code, message, details } = error(input);
-        return err('string', code, message, {
-            provided: {
-                type: typeof input,
-                value: input,
+        return {
+            schema: 'string' as const,
+            code,
+            message,
+            details: {
+                provided: {
+                    type: typeof input,
+                    value: input,
+                },
+                constraint: details,
             },
-            constraint: details,
-        });
+        };
     },
 });
 

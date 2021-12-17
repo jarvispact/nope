@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Either, failure, success } from '../../lib/nope';
 import { err, getDisplayType } from '../../lib/internal-utils';
 
 const stringConstraint = <I extends string, C extends string, T>({
@@ -76,6 +77,7 @@ export const string = <C extends Constraint>(constraints: Array<C>) => {
     const validate = (input: typeof I): Either<typeof O, typeof E> => {
         if (typeof input !== 'string') return failure([stringError(input)]);
 
+        // this is the new part
         const errors = ((constraints || []) as Array<C>)
             .map((c) => (c.when(input) ? c.error(input) : undefined))
             .filter(Boolean) as Array<ReturnType<C['error']>>;
