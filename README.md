@@ -9,6 +9,8 @@ It is a schema based validation library that has this 3 main goals:
 - **Strongly typed errors!** Every schema defines all possible errors that can happen.
 - **Composable and extendable!** Use, create and compose little building blocks to form more complex ones.
 
+Also there is a [blog post](https://dev.to/jarvispact/lets-get-schwifty-with-typescript-2m93) available, where i explain the idea and implementation a bit.
+
 ---
 
 ## How to use it?
