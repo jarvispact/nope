@@ -4,16 +4,17 @@ Hi 👋. I got a little schwifty on a side project recently: a schema based vali
 
 ## Another validation library, are you serious?
 
-This was a experiment to take a deep dive on some more advanced topics of typescript and this experiment is still ongoing. There are still some topics i want to explore and it is nothing you can use today. I want to share the basic ide behind it and explain the implementation to you. But if you are curious or want to give me some feedback, here it is: [nope](https://github.com/jarvispact/nope).
+This was a experiment to take a deep dive on some more advanced topics of typescript and this experiment is still ongoing. There are still some topics i want to explore and it is nothing you can use today. I want to share the basic idea behind it and explain the implementation to you. But if you are curious or want to give me some feedback, here it is: [nope](https://github.com/jarvispact/nope).
 
 ---
 
 ## Tell me more ...
 
-After several iterations, i came up with a schema based validation library that offers this 2 main goals to its users:
+After several iterations, i came up with a schema based validation library that offers this 3 main goals to its users:
 
 - **You dont have to write a single type!** You can extract the static type from the schema itself.
 - **Strongly typed errors!** Every schema defines all possible errors that can happen.
+- **Composable and extendable!** Use, create and compose little building blocks to form more complex ones.
 
 ---
 
@@ -81,12 +82,13 @@ type TodoError = typeof TodoSchema['E'];
 So now you have defined a schema and you have extracted the static types for Input, Output and Error to be used across your codebase. How do we validate data with this schema?
 
 ```ts
-// The signatue of the TodoSchema.validate function
-type I = typeof TodoSchema['I'];
-type O = typeof TodoSchema['O'];
-type E = typeof TodoSchema['E'];
+// The signatue of the validate function
+type I = typeof TodoSchema['I']; // Input
+type O = typeof TodoSchema['O']; // Output
+type E = typeof TodoSchema['E']; // Error
 type validate = (input: I) => Either<O, E>;
 
+// lets validate some input data:
 const either = TodoSchema.validate({
     id: '42',
     content: 'some content',
@@ -421,7 +423,7 @@ export const string = <C extends Constraint>(constraints: Array<C>) => {
     const validate = (input: typeof I): Either<typeof O, typeof E> => {
         if (typeof input !== 'string') return failure([stringError(input)]);
 
-        // this is the new part
+        // this is the new part. mostly
         const errors = ((constraints || []) as Array<C>)
             .map((c) => (c.when(input) ? c.error(input) : undefined))
             .filter(Boolean) as Array<ReturnType<C['error']>>;
@@ -439,7 +441,8 @@ export const string = <C extends Constraint>(constraints: Array<C>) => {
 };
 
 const schema = string([emailConstraint(), minLengthConstraint(8)]);
-type ErrorCode = typeof schema['E'][number]['code']; // "E_MIN_STRING_LENGTH" | "E_NOT_A_EMAIL_ADDRESS" | "E_NOT_A_STRING"
+type ErrorCode = typeof schema['E'][number]['code'];
+// "E_MIN_STRING_LENGTH" | "E_NOT_A_EMAIL_ADDRESS" | "E_NOT_A_STRING"
 ```
 
 If you validate some input string with this schema and it fails, typescript knows exactly what errors can happen during the validation and it can support you during error handling. If you change your schema or your constraint functions, and some code depends on it, your application wont compile anymore.
@@ -448,6 +451,6 @@ If you validate some input string with this schema and it fails, typescript know
 
 ## Closing
 
-❤ Typescript is awesome ❤. The user of the library doesnt have to write a single type. You simply extract the type from the schema. If you change the schema, your type will automatically change as well. All the code that depends on the schema or extracted types cannot be out of sync anymore.
+❤ Typescript is awesome ❤. I really love how you can infer the types from your functions and objects. Also i love that all of those little schema constructors are composable with each other to form really complex schemas. Im curious to further play around with it, add more features and try it in different scenarios. I hope that you learned something new or at least got inspired to get schwifty with generics and type inference yourself.
 
-I hope that you learned something new today. Let me know what you think and leave some feedback. Okay 👋
+Let me know what you think and leave some feedback. Okay 👋

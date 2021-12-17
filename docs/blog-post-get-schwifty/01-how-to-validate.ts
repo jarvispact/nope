@@ -9,12 +9,12 @@ const TodoSchema = record({
 // ---
 
 // The signatue of the validate function
-type I = typeof TodoSchema['I'];
-type O = typeof TodoSchema['O'];
-type E = typeof TodoSchema['E'];
-
+type I = typeof TodoSchema['I']; // Input
+type O = typeof TodoSchema['O']; // Output
+type E = typeof TodoSchema['E']; // Error
 type validate = (input: I) => Either<O, E>;
 
+// lets validate some input data:
 const either = TodoSchema.validate({
     id: '42',
     content: 'some content',

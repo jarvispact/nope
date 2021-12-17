@@ -3,73 +3,186 @@ a validation library for typescript with strongly typed errors and awesome type 
 
 ## what is it?
 
-it is a schema based validation library. You can use it for edge validation, user input validation and domain validation. What makes this library special are 2 things:
+It is a schema based validation library that has this 3 main goals:
 
-- **You dont have to write a single type!** You can extract the type from the schema itself.
+- **You dont have to write a single type!** You can extract the static type from the schema itself.
 - **Strongly typed errors!** Every schema defines all possible errors that can happen.
+- **Composable and extendable!** Use, create and compose little building blocks to form more complex ones.
 
-That means that you dont have to keep your types in sync with your code. If you change your code (your schema definition) all of the types are up to date and your app wont compile anymore if the code that relies on your schema definition is not compatible anymore. So, you can extract the static type from the schema and use the schema to perform runtime validation on your data. Also if your validation returns an error, those error objects are strongly typed.
+---
 
+## How to use it?
 
-## the basic idea
-
-a schema constructor is a function that returns a object with some properties. the most relevant property for you to know is that it returns a validate function. this validate function will return a type looking like this: `Either<Success, Failure>`. here is the full definition of the `Either` type:
-
-```ts
-export type Success<T> = { status: 'SUCCESS'; value: T };
-export type Failure<T> = { status: 'FAILURE'; value: T };
-export type Either<S, F> = Success<S> | Failure<F>;
-```
-
-lets have a look on a basic example: the string schema constructor:
+The basic idea is that you define a schema and use it to extract the static types for Input (`I`), Output (`O`) and Error (`E`):
 
 ```ts
-// declare the schema
-const schema = string(); // returns a schema of type: Schema<string, string, Array<StringError>>
+import { record, string, union, literal } from '../../lib/nope';
 
-// extract the static types for Success and Failure:
-type O = typeof schema['O']; // string
-type E = typeof schema['E']; // Array<StringError>
+const TodoSchema = record({
+    id: string(),
+    content: string(),
+    status: union([literal('COMPLETE'), literal('INCOMPLETE')]),
+});
 
-// ok
-const either = schema.validate('42');
-
-// Error: Argument of type 'number' is not assignable to parameter of type 'string'
-const either = schema.validate(42);
-```
-
-in both cases the validate function returns a `Either<Success, Failure>`. You can use a if statement to react on success and failure:
-
-```ts
-const either = schema.validate('42');
-if (isSuccess(either)) {
-    // in this branch, either is of type `Success` and looks like this:
-    // { status: 'SUCCESS', value: '42' }
-    const value = either.value; // string
-} else {
-    // in this branch, either is of type `Failure` and looks like this:
-    /**
-    {
-        status: 'FAILURE',
-        value: [
-            {
-                schema: 'string',
-                code: 'E_NOT_A_STRING',
-                message: 'provided value is not of type: "string"',
-                details: {
-                    provided: {
-                        type: 'number',
-                        value: 42,
-                    },
-                    expected: {
-                        type: 'string',
-                    },
-                },
-            },
-        ],
-    }
-    */
+type TodoInput = typeof TodoSchema['I'];
+// this is the static type for the Input of your validate function
+/**
+{
+    id: string;
+    content: string;
+    status: 'COMPLETE' | 'INCOMPLETE';
 }
+*/
+
+type Todo = typeof TodoSchema['O'];
+// this is the static type for your domain model: Todo
+/**
+{
+    id: string;
+    content: string;
+    status: 'COMPLETE' | 'INCOMPLETE';
+}
+*/
+
+type TodoError = typeof TodoSchema['E'];
+// this is the static type of an Error for this schema:
+/**
+{
+    errors: Array<RecordError>;
+    properties: {
+        id: Either<string, StringError>;
+        content: Either<string, StringError>;
+        status: Either<'COMPLETE' | 'INCOMPLETE', UnionError>;
+    }
+}
+*/
+```
+
+So now you have defined a schema and you have extracted the static types for Input, Output and Error to be used across your codebase. How do we validate data with this schema?
+
+```ts
+// The signatue of the validate function
+type I = typeof TodoSchema['I']; // Input
+type O = typeof TodoSchema['O']; // Output
+type E = typeof TodoSchema['E']; // Error
+type validate = (input: I) => Either<O, E>;
+
+// lets validate some input data:
+const either = TodoSchema.validate({
+    id: '42',
+    content: 'some content',
+    status: 'INCOMPLETE',
+});
+```
+
+---
+
+## a complex example
+
+```ts
+const AddressSchema = record({
+    street: string(),
+    zip: string(),
+    city: string(),
+    country: union([literal('AT'), literal('DE'), literal('CH')]),
+});
+
+const UserSchema = record({
+    name: string(),
+    email: string(),
+    password: string(),
+    birthday: date(),
+    newsletter: optional(boolean()),
+    importedAt: nullable(date()),
+    address: record({
+        main: AddressSchema,
+        others: array(AddressSchema),
+    }),
+    profileData: partial(
+        record({
+            language: union([literal('DE'), literal('IT'), literal('FR')]),
+            theme: union([literal('light'), literal('dark')]),
+        }),
+    ),
+});
+
+type User = typeof UserSchema['O'];
+/**
+{
+    name: string;
+    email: string;
+    password: string;
+    birthday: Date;
+    newsletter: boolean | undefined;
+    importedAt: Date | null;
+    address: {
+        main: {
+            street: string;
+            zip: string;
+            city: string;
+            country: "AT" | "DE" | "CH";
+        };
+        others: {
+            street: string;
+            zip: string;
+            city: string;
+            country: "AT" | "DE" | "CH";
+        }[];
+    };
+    profileData: {
+        language?: "DE" | "IT" | "FR";
+        theme?: "light" | "dark";
+    };
+}
+*/
+
+type UserError = typeof UserSchema['E'];
+/**
+{
+    errors: Array<RecordError>;
+    properties: {
+        name: Either<string, StringError>;
+        email: Either<string, StringError>;
+        password: Either<string, StringError>;
+        birthday: Either<Date, DateError>;
+        newsletter: Either<boolean | undefined, BooleanError>;
+        importedAt: Either<Date | null, DateError>;
+        address: {
+            errors: Array<RecordError>;
+            properties: {
+                main: {
+                    errors: Array<RecordError>;
+                    properties: {
+                        street: Either<string, StringError>;
+                        zip: Either<string, StringError>;
+                        city: Either<string, StringError>;
+                        country: Either<"AT" | "DE" | "CH", UnionError>;
+                    }
+                }
+                others: {
+                    errors: Array<ArrayErrors>;
+                    items: Array<{
+                        errors: Array<RecordError>;
+                        properties: {
+                            street: Either<string, StringError>;
+                            zip: Either<string, StringError>;
+                            city: Either<string, StringError>;
+                            country: Either<"AT" | "DE" | "CH", UnionError>;
+                        }
+                    }>
+                }
+            }
+        }
+        profileData: {
+            errors: Array<RecordError>;
+            properties: {
+                language?: Either<"DE" | "IT" | "FR", UnionError>;
+                theme?: Either<"light" | "dark", UnionError>;
+            }
+        }
+    }
+}
+*/
 ```
 
 ## whats in this libray?
@@ -88,59 +201,12 @@ the following schema constructors are provided and you can compose them in many 
 - partial
 - union
 
-## hello world
-
-```ts
-const LoginSchema = record({
-    email: string(),
-    password: string(),
-});
-
-// invalid call to validate. password missing
-LoginSchema.validate({ email: 'bruce.wayne@wayne-enterprises.com' })
-
-// invalid call to validate. email missing
-LoginSchema.validate({ password: 'ironmansucks' })
-
-// invalid call to validate. email must be a string
-LoginSchema.validate({ email: 42, password: 'ironmansucks' })
-
-// ok
-const either = LoginSchema.validate({
-    email: 'bruce.wayne@wayne-enterprises.com',
-    password: 'ironmansucks',
-})
-
-if (isSuccess(either)) {
-    // Yay. Your data is valid!
-    const { email, password } = either.value;
-} else {
-    // Nope. You data is not valid!
-    const { errors, properties } = either.value;
-    const { email, password } = properties;
-}
-```
-
 ## constraints
 
 Up until now we were able to validate basic types like string, number, array etc. but we are not able to validate a email address for example. Constraints can do that. Every constraint needs to provide a `when` and `error` function. If `when` returns true, your `error` will be used. Also these constraint errors are strongly typed and will be returned from the validate function. Lets see a example:
 
 ```ts
-const emailConstraint = () =>
-    stringConstraint({
-        when: (input) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-        error: () => ({
-            code: 'E_NOT_A_EMAIL_ADDRESS',
-            message: 'it is not a valid email address',
-            details: {
-                expected: {
-                    type: 'string',
-                },
-            },
-        }),
-    });
-
-const minStringLengthConstraint = (minLength: number) =>
+const minLengthConstraint = (minLength: number) =>
     stringConstraint({
         when: (input) => input.length < minLength,
         error: () => ({
@@ -155,9 +221,24 @@ const minStringLengthConstraint = (minLength: number) =>
         }),
     });
 
+const emailConstraint = () =>
+    stringConstraint({
+        when: (input) =>
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+        error: () => ({
+            code: 'E_NOT_A_EMAIL_ADDRESS',
+            message: 'it is not a valid email address',
+            details: {
+                expected: {
+                    type: 'string',
+                },
+            },
+        }),
+    });
+
 const LoginSchema = record({
     email: string([emailConstraint()]),
-    password: string([minStringLengthConstraint(8)]),
+    password: string([minLengthConstraint(8)]),
 });
 
 // extract the static types for Success and Failure:

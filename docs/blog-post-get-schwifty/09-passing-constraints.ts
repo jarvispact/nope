@@ -95,4 +95,5 @@ export const string = <C extends Constraint>(constraints: Array<C>) => {
 };
 
 const schema = string([emailConstraint(), minLengthConstraint(8)]);
-type ErrorCode = typeof schema['E'][number]['code']; // "E_MIN_STRING_LENGTH" | "E_NOT_A_EMAIL_ADDRESS" | "E_NOT_A_STRING"
+type ErrorCode = typeof schema['E'][number]['code'];
+// "E_MIN_STRING_LENGTH" | "E_NOT_A_EMAIL_ADDRESS" | "E_NOT_A_STRING"
