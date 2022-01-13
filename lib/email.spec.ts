@@ -44,6 +44,15 @@ describe.only('email.ts', () => {
                         providedValue: input,
                     },
                 },
+                {
+                    uri: 'email',
+                    code: 'E_NO_EMAIL',
+                    message: 'input is not of type: "email"',
+                    details: {
+                        expectedType: 'email',
+                        providedValue: input,
+                    },
+                },
             ],
         });
     });

@@ -55,12 +55,7 @@ type SchemaConstructor<
     Uri extends string,
 > = () => Schema<Input, Output, Err, Uri>;
 
-const createSchema = <Input, Output extends Input, Err, Uri extends string>({
-    uri,
-    is,
-    create,
-    validate,
-}: {
+type CreateSchemaProps<Input, Output extends Input, Err, Uri extends string> = {
     uri: Uri;
     is: (input: Input) => input is Output;
     create: (input: Input) => Output;
@@ -72,7 +67,19 @@ const createSchema = <Input, Output extends Input, Err, Uri extends string>({
             create: (input: Input) => Output;
         },
     ) => Either<Output, Err[]>;
-}): SchemaConstructor<Input, Output, Err, Uri> => {
+};
+
+const createSchema = <Input, Output extends Input, Err, Uri extends string>({
+    uri,
+    is,
+    create,
+    validate,
+}: CreateSchemaProps<Input, Output, Err, Uri>): SchemaConstructor<
+    Input,
+    Output,
+    Err,
+    Uri
+> => {
     const I = null as unknown as Input;
     const O = null as unknown as Output;
     const E = null as unknown as Err;
@@ -95,24 +102,7 @@ const extendSchema = <
     Uri extends string,
 >(
     schema: S,
-    {
-        uri,
-        is,
-        create,
-        validate,
-    }: {
-        uri: Uri;
-        is: (input: S['I']) => input is Output;
-        create: (input: S['I']) => Output;
-        validate: (
-            input: S['I'],
-            ctx: {
-                uri: Uri;
-                is: (input: S['I']) => input is Output;
-                create: (input: S['I']) => Output;
-            },
-        ) => Either<Output, (Err | S['E'])[]>;
-    },
+    { uri, is, create, validate }: CreateSchemaProps<S['I'], Output, Err, Uri>,
 ) => {
     return createSchema({
         uri,
@@ -120,8 +110,15 @@ const extendSchema = <
         create,
         validate: (input, ctx) => {
             const either = schema.validate(input);
-            if (either.status === 'FAILURE') return either;
-            return validate(input, ctx);
+            const result = validate(input, ctx);
+
+            const errors = [either, result]
+                .filter((e) => e.status === 'FAILURE')
+                .flatMap((e) => e.value) as (Err | S['E'])[];
+
+            if (errors.length) return failure(errors);
+
+            return success(input);
         },
     });
 };
