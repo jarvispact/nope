@@ -6,7 +6,7 @@ export default defineConfig({
     build: {
         lib: {
             entry: path.resolve(__dirname, 'lib/nope.ts'),
-            name: 'io',
+            name: 'Nope',
         },
     },
     server: {
