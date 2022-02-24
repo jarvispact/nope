@@ -1,31 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createEmail, email } from './email';
-import { tsExpect } from './test-utils';
+import { expect } from 'chai';
+import { email } from './email';
 
-describe('email.ts', () => {
+describe.only('email.ts', () => {
     it("should return status: 'SUCCESS' with a valid email address", () => {
         const schema = email();
-        const either = schema.validate('test@test.com');
-
-        if (either.status === 'FAILURE') {
-            throw new Error('[TS-CHECK] should not be a failure');
-        }
-
-        tsExpect(either, {
+        expect(schema.validate('test@test.com')).to.eql({
             status: 'SUCCESS',
-            value: createEmail('test@test.com'),
+            value: 'test@test.com',
         });
     });
 
     it("should return status: 'FAILURE' and code: 'E_NO_EMAIL' with a invalid email address input", () => {
         const schema = email();
-        const either = schema.validate('test');
-
-        if (either.status === 'SUCCESS') {
-            throw new Error('[TS-CHECK] should not be a success');
-        }
-
-        tsExpect(either, {
+        expect(schema.validate('test')).to.eql({
             status: 'FAILURE',
             value: [
                 {
@@ -34,8 +22,6 @@ describe('email.ts', () => {
                     message: 'input is not of type: "email"',
                     details: {
                         expectedType: 'email',
-                        providedType: 'string',
-                        providedNativeType: 'string',
                         providedValue: 'test',
                     },
                 },
@@ -46,14 +32,7 @@ describe('email.ts', () => {
     it("should return status: 'FAILURE' and code: 'E_NO_EMAIL' with a number input", () => {
         const schema = email();
         const input = '42' as any;
-
-        const either = schema.validate(input);
-
-        if (either.status === 'SUCCESS') {
-            throw new Error('[TS-CHECK] should not be a success');
-        }
-
-        tsExpect(either, {
+        expect(schema.validate(input)).to.eql({
             status: 'FAILURE',
             value: [
                 {
@@ -62,8 +41,6 @@ describe('email.ts', () => {
                     message: 'input is not of type: "email"',
                     details: {
                         expectedType: 'email',
-                        providedType: 'string',
-                        providedNativeType: 'string',
                         providedValue: input,
                     },
                 },
@@ -74,14 +51,7 @@ describe('email.ts', () => {
     it("should return status: 'FAILURE' and codes: ['E_NO_STRING', 'E_NO_EMAIL'] with a number input", () => {
         const schema = email();
         const input = 42 as any;
-
-        const either = schema.validate(input);
-
-        if (either.status === 'SUCCESS') {
-            throw new Error('[TS-CHECK] should not be a success');
-        }
-
-        tsExpect(either, {
+        expect(schema.validate(input)).to.eql({
             status: 'FAILURE',
             value: [
                 {
@@ -90,8 +60,6 @@ describe('email.ts', () => {
                     message: 'input is not of type: "string"',
                     details: {
                         expectedType: 'string',
-                        providedType: 'number',
-                        providedNativeType: 'number',
                         providedValue: input,
                     },
                 },
@@ -101,8 +69,6 @@ describe('email.ts', () => {
                     message: 'input is not of type: "email"',
                     details: {
                         expectedType: 'email',
-                        providedType: 'number',
-                        providedNativeType: 'number',
                         providedValue: input,
                     },
                 },

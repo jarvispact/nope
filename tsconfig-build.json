@@ -16,6 +16,6 @@
       "noImplicitReturns": true
     },
     "include": ["./lib**/*.ts"],
-    "exclude": ["./lib/**/*.spec.ts"]
+    "exclude": ["./lib/**/*.spec.ts", "./lib.backup/**/*.ts"]
 }
   

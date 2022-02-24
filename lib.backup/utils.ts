@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-export type Success<T> = { status: 'SUCCESS'; value: T };
-export type Failure<T> = { status: 'FAILURE'; value: T };
-export type Either<S, F> = Success<S> | Failure<F>;
+type Success<T> = { status: 'SUCCESS'; value: T };
+type Failure<T> = { status: 'FAILURE'; value: T };
+type Either<S, F> = Success<S> | Failure<F>;
 
 export const success = <T>(v: T): Success<T> => {
     return {
@@ -42,7 +42,7 @@ export type Schema<Input, Output extends Input, Err, Uri extends string> = {
     uri: Uri;
     is: (input: Input) => input is Output;
     create: (input: Input) => Output;
-    validate: (input: Input) => Either<Output, Err>;
+    validate: (input: Input) => Either<Output, Err[]>;
 };
 
 export type SchemaConstructor<
@@ -68,7 +68,7 @@ export type CreateSchemaProps<
             is: (input: Input) => input is Output;
             create: (input: Input) => Output;
         },
-    ) => Either<Output, Err>;
+    ) => Either<Output, Err[]>;
 };
 
 export const createSchema = <
@@ -104,18 +104,12 @@ export const createSchema = <
 
 export const extendSchema = <
     S extends Schema<any, any, any, any>,
-    Input extends S['I'],
-    Output extends Input,
+    Output extends S['I'],
     Err,
     Uri extends string,
 >(
     schema: S,
-    {
-        uri,
-        is,
-        create,
-        validate,
-    }: CreateSchemaProps<Input, Output, (Err | S['E'])[], Uri>,
+    { uri, is, create, validate }: CreateSchemaProps<S['I'], Output, Err, Uri>,
 ) => {
     return createSchema({
         uri,
@@ -145,27 +139,3 @@ declare type Tagged<Token> = {
 };
 
 export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
-
-export const objectKeys = <T extends { [x: string]: unknown }>(rec: T) =>
-    Object.keys(rec) as Array<keyof T>;
-
-export const isObject = (v: unknown): v is Record<string, unknown> =>
-    typeof v === 'object' && !Array.isArray(v) && v !== null;
-
-const getDisplayType = (value: unknown) => {
-    if (value === null) return 'null';
-    if (value instanceof Date) return 'date';
-    if (isObject(value)) return 'record';
-    if (Array.isArray(value)) return 'array';
-    return typeof value;
-};
-
-export const getErrorDetails = <T extends string>(
-    expectedType: T,
-    input: unknown,
-) => ({
-    expectedType,
-    providedType: getDisplayType(input),
-    providedNativeType: typeof input,
-    providedValue: input,
-});

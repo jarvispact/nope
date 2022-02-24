@@ -1,38 +1,37 @@
 {
-  "name": "@beerstack/nope",
-  "version": "0.0.2",
-  "main": "dist/nope.umd.js",
-  "module": "dist/nope.es.js",
-  "types": "dist/nope.d.ts",
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'lib/**/*.spec.ts'",
-    "clean": "rm -rf ./dist",
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "types": "tsc -p ./tsconfig-build.json --outDir ./dist",
-    "serve": "vite preview"
-  },
-  "devDependencies": {
-    "typescript": "^4.3.2",
-    "vite": "^2.6.4",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
-    "eslint": "^8.3.0",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-prettier": "4.0.0",
-    "prettier": "^2.5.0",
-    "ts-node": "^10.0.0",
-    "mocha": "^9.0.2",
-    "chai": "^4.3.4",
-    "@types/chai": "^4.2.19",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^16.3.1"
-  }
+    "name": "@beerstack/nope",
+    "version": "0.0.2",
+    "main": "dist/nope.umd.js",
+    "module": "dist/nope.es.js",
+    "types": "dist/nope.d.ts",
+    "sideEffects": false,
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'lib/**/*.spec.ts'",
+        "clean": "rm -rf ./dist",
+        "dev": "vite",
+        "build": "tsc && rm -rf ./dist && vite build && tsc -p ./tsconfig-build.json --outDir ./dist",
+        "serve": "vite preview"
+    },
+    "devDependencies": {
+        "typescript": "^4.3.2",
+        "vite": "^2.6.4",
+        "@typescript-eslint/eslint-plugin": "^5.4.0",
+        "@typescript-eslint/parser": "^5.4.0",
+        "eslint": "^8.3.0",
+        "eslint-config-prettier": "8.3.0",
+        "eslint-plugin-prettier": "4.0.0",
+        "prettier": "^2.5.0",
+        "ts-node": "^10.0.0",
+        "mocha": "^9.0.2",
+        "chai": "^4.3.4",
+        "@types/chai": "^4.2.19",
+        "@types/mocha": "^8.2.2",
+        "@types/node": "^16.3.1"
+    }
 }

@@ -7,6 +7,8 @@ export default defineConfig({
         lib: {
             entry: path.resolve(__dirname, 'lib/nope.ts'),
             name: 'Nope',
+            formats: ['umd'],
+            fileName: (format) => `nope.${format}.js`,
         },
     },
     server: {

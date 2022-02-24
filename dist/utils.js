@@ -10,10 +10,63 @@ export const failure = (v) => {
         value: v,
     };
 };
-export const isSuccess = (either) => either.status === 'SUCCESS';
-export const isFailure = (either) => either.status === 'FAILURE';
-export const valueOf = (either) => either.value;
-export const fold = (either, { onSuccess, onFailure, }) => (isSuccess(either) ? onSuccess(either.value) : onFailure(either.value));
-export const isLiteralSchema = (schema) => schema.schema === 'string-literal' || schema.schema === 'number-literal';
-export const isRecordSchema = (schema) => schema.schema === 'record';
+export const err = (uri, code, message, 
+// @ts-ignore
+details = {}) => ({
+    uri,
+    code,
+    message,
+    details,
+});
+export const createSchema = ({ uri, is, create, validate, }) => {
+    const I = null;
+    const O = null;
+    const E = null;
+    return () => ({
+        I,
+        O,
+        E,
+        uri,
+        is,
+        create,
+        validate: (input) => validate(input, { uri, is, create }),
+    });
+};
+export const extendSchema = (schema, { uri, is, create, validate, }) => {
+    return createSchema({
+        uri,
+        is: (input) => schema.is(input) && is(input),
+        create,
+        validate: (input, ctx) => {
+            const either = schema.validate(input);
+            const result = validate(input, ctx);
+            const errors = [either, result]
+                .filter((e) => e.status === 'FAILURE')
+                .flatMap((e) => e.value);
+            if (errors.length)
+                return failure(errors);
+            return success(input);
+        },
+    });
+};
+export const identity = (val) => val;
+export const objectKeys = (rec) => Object.keys(rec);
+export const isObject = (v) => typeof v === 'object' && !Array.isArray(v) && v !== null;
+const getDisplayType = (value) => {
+    if (value === null)
+        return 'null';
+    if (value instanceof Date)
+        return 'date';
+    if (isObject(value))
+        return 'record';
+    if (Array.isArray(value))
+        return 'array';
+    return typeof value;
+};
+export const getErrorDetails = (expectedType, input) => ({
+    expectedType,
+    providedType: getDisplayType(input),
+    providedNativeType: typeof input,
+    providedValue: input,
+});
 //# sourceMappingURL=utils.js.map

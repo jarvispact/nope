@@ -1,4 +1,3 @@
-import { SchemaType } from './internal-utils';
 export declare type Success<T> = {
     status: 'SUCCESS';
     value: T;
@@ -10,32 +9,50 @@ export declare type Failure<T> = {
 export declare type Either<S, F> = Success<S> | Failure<F>;
 export declare const success: <T>(v: T) => Success<T>;
 export declare const failure: <T>(v: T) => Failure<T>;
-export declare const isSuccess: <S, F>(either: Either<S, F>) => either is Success<S>;
-export declare const isFailure: <S, F>(either: Either<S, F>) => either is Failure<F>;
-export declare const valueOf: <S, F>(either: Either<S, F>) => S | F;
-export declare const fold: <S, F, OnSuccess, OnFailure>(either: Either<S, F>, { onSuccess, onFailure, }: {
-    onSuccess: (value: S) => OnSuccess;
-    onFailure: (value: F) => OnFailure;
-}) => OnSuccess | OnFailure;
-export declare type Schema<I, O extends I, E> = {
-    schema: SchemaType;
-    I: I;
-    O: O;
-    E: E;
-    validate: (v: I) => Either<O, E>;
+export declare const err: <Uri extends string, Code extends string, Details extends {
+    [Key: string]: unknown;
+}>(uri: Uri, code: Code, message: string, details?: Details | undefined) => {
+    uri: Uri;
+    code: Code;
+    message: string;
+    details: Details;
 };
-export declare type RecordSchema<I, O extends I, E, Def extends {
-    [Key: string]: Schema<any, any, any>;
-} = {
-    [Key: string]: Schema<any, any, any>;
-}> = Schema<I, O, E> & {
-    definition: Def;
+export declare type Schema<Input, Output extends Input, Err, Uri extends string> = {
+    I: Input;
+    O: Output;
+    E: Err;
+    uri: Uri;
+    is: (input: Input) => input is Output;
+    create: (input: Input) => Output;
+    validate: (input: Input) => Either<Output, Err>;
 };
-export declare type LiteralSchema<I, O extends I, E, Literal> = Schema<I, O, E> & {
-    literal: Literal;
+export declare type SchemaConstructor<Input, Output extends Input, Err, Uri extends string> = () => Schema<Input, Output, Err, Uri>;
+export declare type CreateSchemaProps<Input, Output extends Input, Err, Uri extends string> = {
+    uri: Uri;
+    is: (input: Input) => input is Output;
+    create: (input: Input) => Output;
+    validate: (input: Input, ctx: {
+        uri: Uri;
+        is: (input: Input) => input is Output;
+        create: (input: Input) => Output;
+    }) => Either<Output, Err>;
 };
-export declare type SupportedSchema = Schema<any, any, any> | LiteralSchema<any, any, any, any> | RecordSchema<any, any, any>;
-export declare const isLiteralSchema: (schema: SupportedSchema) => schema is LiteralSchema<any, any, any, any>;
-export declare const isRecordSchema: (schema: SupportedSchema) => schema is RecordSchema<any, any, any, {
-    [Key: string]: Schema<any, any, any>;
-}>;
+export declare const createSchema: <Input, Output extends Input, Err, Uri extends string>({ uri, is, create, validate, }: CreateSchemaProps<Input, Output, Err, Uri>) => SchemaConstructor<Input, Output, Err, Uri>;
+export declare const extendSchema: <S extends Schema<any, any, any, any>, Input extends S["I"], Output extends Input, Err, Uri extends string>(schema: S, { uri, is, create, validate, }: CreateSchemaProps<Input, Output, (Err | S["E"])[], Uri>) => SchemaConstructor<Input, Output, (Err | S["E"])[], Uri>;
+export declare const identity: <T>(val: T) => T;
+declare const tag: unique symbol;
+declare type Tagged<Token> = {
+    readonly [tag]: Token;
+};
+export declare type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
+export declare const objectKeys: <T extends {
+    [x: string]: unknown;
+}>(rec: T) => (keyof T)[];
+export declare const isObject: (v: unknown) => v is Record<string, unknown>;
+export declare const getErrorDetails: <T extends string>(expectedType: T, input: unknown) => {
+    expectedType: T;
+    providedType: string;
+    providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
+    providedValue: unknown;
+};
+export {};
