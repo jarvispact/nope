@@ -35,6 +35,8 @@ export const email = extendSchema<
     create: createEmail,
     validate: (input, { is, create }) => {
         if (is(input)) return success(create(input));
-        return failure([errNoEmail(input)]);
+        return failure(errNoEmail(input));
     },
 });
+
+export type EmailSchema = ReturnType<typeof email>;

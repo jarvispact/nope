@@ -102,6 +102,10 @@ export const createSchema = <
     });
 };
 
+type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
+    ? ElementType
+    : ArrayType;
+
 export const extendSchema = <
     S extends Schema<any, any, any, any>,
     Input extends S['I'],
@@ -110,12 +114,7 @@ export const extendSchema = <
     Uri extends string,
 >(
     schema: S,
-    {
-        uri,
-        is,
-        create,
-        validate,
-    }: CreateSchemaProps<Input, Output, (Err | S['E'])[], Uri>,
+    { uri, is, create, validate }: CreateSchemaProps<Input, Output, Err, Uri>,
 ) => {
     return createSchema({
         uri,
@@ -127,7 +126,7 @@ export const extendSchema = <
 
             const errors = [either, result]
                 .filter((e) => e.status === 'FAILURE')
-                .flatMap((e) => e.value) as (Err | S['E'])[];
+                .flatMap((e) => e.value) as Array<Err | ArrayElement<S['E']>>;
 
             if (errors.length) return failure(errors);
 
