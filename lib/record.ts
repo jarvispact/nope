@@ -22,23 +22,41 @@ const errNoRecord = (input: unknown) =>
 
 type ErrNoRecord = ReturnType<typeof errNoRecord>;
 
-const errMissingProperties = (input: unknown) =>
+const errMissingProperties = (input: unknown, requiredProperties: string[]) =>
     err(
         'record',
         'E_MISSING_RECORD_PROPERTIES',
         'input is missing record properties',
-        getErrorDetails('record', input),
+        { ...getErrorDetails('record', input), requiredProperties },
     );
 
 type ErrMissingProperties = ReturnType<typeof errMissingProperties>;
 
+const errUnexpectedProperties = (
+    input: unknown,
+    requiredProperties: string[],
+) =>
+    err(
+        'record',
+        'E_UNEXPECTED_RECORD_PROPERTIES',
+        'input has unexpected record properties',
+        { ...getErrorDetails('record', input), requiredProperties },
+    );
+
+type ErrUnexpectedProperties = ReturnType<typeof errUnexpectedProperties>;
+
 type RecordErrors<
     Definition extends { [Key: string]: Schema<any, any, any, any> },
 > = {
-    error: ErrNoRecord | ErrMissingProperties | null;
-    properties: {
-        [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
-    };
+    error: ErrNoRecord | ErrMissingProperties | ErrUnexpectedProperties | null;
+    properties:
+        | {
+              [K in keyof Definition]: Either<
+                  Definition[K]['O'],
+                  Definition[K]['E']
+              >;
+          }
+        | null;
 };
 
 type FromDefinition<
@@ -62,6 +80,7 @@ export const record = <
         uri: 'record',
         is: (input): input is FromDefinition<Definition, 'O'> =>
             isObject(input) &&
+            objectKeys(input).length === objectKeys(definition).length &&
             objectKeys(definition).every((k) => definition[k].is(input[k])),
         create: identity,
         validate: (input, { is, create }) => {
@@ -72,16 +91,41 @@ export const record = <
             if (!isObject(input)) {
                 return failure({
                     error: errNoRecord(input),
-                    properties: {} as RecordErrors<Definition>['properties'],
+                    properties: null,
+                });
+            }
+
+            if (objectKeys(input).length < objectKeys(definition).length) {
+                return failure({
+                    error: errMissingProperties(input, Object.keys(definition)),
+                    properties: null,
+                });
+            }
+
+            if (objectKeys(input).length > objectKeys(definition).length) {
+                return failure({
+                    error: errUnexpectedProperties(
+                        input,
+                        Object.keys(definition),
+                    ),
+                    properties: null,
                 });
             }
 
             return failure({
                 error: null,
-                properties: objectKeys(definition).reduce((accum, key) => {
-                    accum[key] = definition[key].validate(input[key]);
-                    return accum;
-                }, {} as RecordErrors<Definition>['properties']),
+                properties: objectKeys(definition).reduce(
+                    (accum, key) => {
+                        accum[key] = definition[key].validate(input[key]);
+                        return accum;
+                    },
+                    {} as {
+                        [K in keyof Definition]: Either<
+                            Definition[K]['O'],
+                            Definition[K]['E']
+                        >;
+                    },
+                ),
             });
         },
     })();
