@@ -27,4 +27,4 @@ export const string = createSchema<string, string, ErrNoString, 'string'>({
     },
 });
 
-export type StringSchema = ReturnType<typeof string>;
+export type StringSchema = typeof string;

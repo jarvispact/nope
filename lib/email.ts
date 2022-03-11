@@ -28,7 +28,7 @@ export const email = extendSchema<
     Email,
     ErrNoEmail,
     'email'
->(string(), {
+>(string, {
     uri: 'email',
     is: (input): input is Email =>
         /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
@@ -39,4 +39,4 @@ export const email = extendSchema<
     },
 });
 
-export type EmailSchema = ReturnType<typeof email>;
+export type EmailSchema = typeof email;

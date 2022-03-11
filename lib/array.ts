@@ -52,4 +52,4 @@ export const array = <WrappedSchema extends Schema<any, any, any, any>>(
                 items: input.map(wrappedSchema.validate),
             });
         },
-    })();
+    });

@@ -5,7 +5,7 @@ import { tsExpect } from './test-utils';
 
 describe('array.ts', () => {
     it("should return status: 'SUCCESS' for input of type 'array' with no items", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate([]);
 
         if (either.status === 'FAILURE') {
@@ -19,7 +19,7 @@ describe('array.ts', () => {
     });
 
     it("should return status: 'SUCCESS' for input of type 'array' with items of type 'string'", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate(['42', '43'] as any);
 
         if (either.status === 'FAILURE') {
@@ -31,7 +31,7 @@ describe('array.ts', () => {
     });
 
     it("should return status: 'FAILURE' for input of type 'string'", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate('42' as any);
 
         if (either.status === 'SUCCESS') {
@@ -58,7 +58,7 @@ describe('array.ts', () => {
     });
 
     it("should return status: 'FAILURE' for input of type 'number'", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate(42 as any);
 
         if (either.status === 'SUCCESS') {
@@ -85,7 +85,7 @@ describe('array.ts', () => {
     });
 
     it("should return status: 'FAILURE' if all items are of type 'number'", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate([42, 43] as any);
 
         if (either.status === 'SUCCESS') {
@@ -131,7 +131,7 @@ describe('array.ts', () => {
     });
 
     it("should return status: 'FAILURE' if 1 item is of type 'number'", () => {
-        const schema = array(string());
+        const schema = array(string);
         const either = schema.validate(['42', 43] as any);
 
         if (either.status === 'SUCCESS') {

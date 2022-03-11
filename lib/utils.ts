@@ -45,13 +45,6 @@ export type Schema<Input, Output extends Input, Err, Uri extends string> = {
     validate: (input: Input) => Either<Output, Err>;
 };
 
-export type SchemaConstructor<
-    Input,
-    Output extends Input,
-    Err,
-    Uri extends string,
-> = () => Schema<Input, Output, Err, Uri>;
-
 export type CreateSchemaProps<
     Input,
     Output extends Input,
@@ -81,7 +74,7 @@ export const createSchema = <
     is,
     create,
     validate,
-}: CreateSchemaProps<Input, Output, Err, Uri>): SchemaConstructor<
+}: CreateSchemaProps<Input, Output, Err, Uri>): Schema<
     Input,
     Output,
     Err,
@@ -91,7 +84,7 @@ export const createSchema = <
     const O = null as unknown as Output;
     const E = null as unknown as Err;
 
-    return () => ({
+    return {
         I,
         O,
         E,
@@ -99,7 +92,7 @@ export const createSchema = <
         is,
         create,
         validate: (input) => validate(input, { uri, is, create }),
-    });
+    };
 };
 
 type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]

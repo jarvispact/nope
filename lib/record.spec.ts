@@ -21,8 +21,8 @@ describe('record.ts', () => {
 
     it("should return status: 'SUCCESS' for input of type 'record' with property definition", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate({
@@ -45,8 +45,8 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'string'", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate('42' as any);
@@ -73,8 +73,8 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'number'", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate(42 as any);
@@ -101,8 +101,8 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'record' but properties are missing on the input", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate({ a: 'a' } as any);
@@ -130,8 +130,8 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'record' but too many properties are on the input", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate({ a: 'a', b: 'b', c: 'c' } as any);
@@ -159,8 +159,8 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'record' when 1 property is not valid", () => {
         const schema = record({
-            a: string(),
-            b: string(),
+            a: string,
+            b: string,
         });
 
         const either = schema.validate({ a: 'a', b: 42 } as any);
@@ -196,10 +196,10 @@ describe('record.ts', () => {
 
     it("should return status: 'FAILURE' for input of type 'record' when 1 nested record property is not valid", () => {
         const schema = record({
-            a: string(),
+            a: string,
             b: record({
-                c: string(),
-                d: string(),
+                c: string,
+                d: string,
             }),
         });
 

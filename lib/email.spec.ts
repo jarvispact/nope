@@ -4,8 +4,7 @@ import { tsExpect } from './test-utils';
 
 describe('email.ts', () => {
     it("should return status: 'SUCCESS' with a valid email address", () => {
-        const schema = email();
-        const either = schema.validate('test@test.com');
+        const either = email.validate('test@test.com');
 
         if (either.status === 'FAILURE') {
             throw new Error('[TS-CHECK] should not be a failure');
@@ -18,8 +17,7 @@ describe('email.ts', () => {
     });
 
     it("should return status: 'FAILURE' and code: 'E_NO_EMAIL' with a invalid email address input", () => {
-        const schema = email();
-        const either = schema.validate('test');
+        const either = email.validate('test');
 
         if (either.status === 'SUCCESS') {
             throw new Error('[TS-CHECK] should not be a success');
@@ -44,10 +42,9 @@ describe('email.ts', () => {
     });
 
     it("should return status: 'FAILURE' and code: 'E_NO_EMAIL' with a number input", () => {
-        const schema = email();
         const input = '42' as any;
 
-        const either = schema.validate(input);
+        const either = email.validate(input);
 
         if (either.status === 'SUCCESS') {
             throw new Error('[TS-CHECK] should not be a success');
@@ -72,10 +69,9 @@ describe('email.ts', () => {
     });
 
     it("should return status: 'FAILURE' and codes: ['E_NO_STRING', 'E_NO_EMAIL'] with a number input", () => {
-        const schema = email();
         const input = 42 as any;
 
-        const either = schema.validate(input);
+        const either = email.validate(input);
 
         if (either.status === 'SUCCESS') {
             throw new Error('[TS-CHECK] should not be a success');
