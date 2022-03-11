@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    err,
+    createError,
     success,
     failure,
     getErrorDetails,
@@ -13,7 +13,7 @@ import {
 } from './utils';
 
 const errNoRecord = (input: unknown) =>
-    err(
+    createError(
         'record',
         'E_NO_RECORD',
         'input is not of type: "record"',
@@ -23,7 +23,7 @@ const errNoRecord = (input: unknown) =>
 type ErrNoRecord = ReturnType<typeof errNoRecord>;
 
 const errMissingProperties = (input: unknown, requiredProperties: string[]) =>
-    err(
+    createError(
         'record',
         'E_MISSING_RECORD_PROPERTIES',
         'input is missing record properties',
@@ -36,7 +36,7 @@ const errUnexpectedProperties = (
     input: unknown,
     requiredProperties: string[],
 ) =>
-    err(
+    createError(
         'record',
         'E_UNEXPECTED_RECORD_PROPERTIES',
         'input has unexpected record properties',

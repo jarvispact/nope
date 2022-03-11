@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createEmail, email } from './email';
+import { email } from './email';
 import { tsExpect } from './test-utils';
 
 describe('email.ts', () => {
@@ -12,7 +12,7 @@ describe('email.ts', () => {
 
         tsExpect(either, {
             status: 'SUCCESS',
-            value: createEmail('test@test.com'),
+            value: email.create('test@test.com'),
         });
     });
 

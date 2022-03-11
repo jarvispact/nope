@@ -1,26 +1,17 @@
 import { string, StringSchema } from './string';
-import {
-    err,
-    success,
-    failure,
-    Opaque,
-    extendSchema,
-    getErrorDetails,
-} from './utils';
+import { createError, Opaque, getErrorDetails, extendSchema } from './utils';
 
 type Email = Opaque<string, 'Email'>;
 
-const errNoEmail = (input: unknown) =>
-    err(
+const err = (input: StringSchema['I']) =>
+    createError(
         'email',
         'E_NO_EMAIL',
         'input is not of type: "email"',
         getErrorDetails('email', input),
     );
 
-type ErrNoEmail = ReturnType<typeof errNoEmail>;
-
-export const createEmail = (input: string) => input as Email;
+type ErrNoEmail = ReturnType<typeof err>;
 
 export const email = extendSchema<
     StringSchema,
@@ -32,11 +23,8 @@ export const email = extendSchema<
     uri: 'email',
     is: (input): input is Email =>
         /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-    create: createEmail,
-    validate: (input, { is, create }) => {
-        if (is(input)) return success(create(input));
-        return failure(errNoEmail(input));
-    },
+    create: (input: string) => input as Email,
+    err,
 });
 
 export type EmailSchema = typeof email;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    err,
+    createError,
     success,
     failure,
     getErrorDetails,
@@ -11,7 +11,7 @@ import {
 } from './utils';
 
 const errNoArray = (input: unknown) =>
-    err(
+    createError(
         'array',
         'E_NO_ARRAY',
         'input is not of type: "array"',

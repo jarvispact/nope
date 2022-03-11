@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 export type Success<T> = { status: 'SUCCESS'; value: T };
 export type Failure<T> = { status: 'FAILURE'; value: T };
 export type Either<S, F> = Success<S> | Failure<F>;
@@ -18,7 +18,7 @@ export const failure = <T>(v: T): Failure<T> => {
     };
 };
 
-export const err = <
+export const createError = <
     Uri extends string,
     Code extends string,
     Details extends { [Key: string]: unknown },
@@ -26,8 +26,7 @@ export const err = <
     uri: Uri,
     code: Code,
     message: string,
-    // @ts-ignore
-    details?: Details = {},
+    details: Details = {} as Details,
 ) => ({
     uri,
     code,
@@ -45,7 +44,7 @@ export type Schema<Input, Output extends Input, Err, Uri extends string> = {
     validate: (input: Input) => Either<Output, Err>;
 };
 
-export type CreateSchemaProps<
+type CreateSchemaPropsWithValidateFunction<
     Input,
     Output extends Input,
     Err,
@@ -64,6 +63,18 @@ export type CreateSchemaProps<
     ) => Either<Output, Err>;
 };
 
+type CreateSchemaPropsWithErrorConstructor<
+    Input,
+    Output extends Input,
+    Err,
+    Uri extends string,
+> = {
+    uri: Uri;
+    is: (input: Input) => input is Output;
+    create: (input: Input) => Output;
+    err: (input: Input) => Err;
+};
+
 export const createSchema = <
     Input,
     Output extends Input,
@@ -74,7 +85,7 @@ export const createSchema = <
     is,
     create,
     validate,
-}: CreateSchemaProps<Input, Output, Err, Uri>): Schema<
+}: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>): Schema<
     Input,
     Output,
     Err,
@@ -99,7 +110,40 @@ type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
     ? ElementType
     : ArrayType;
 
-export const extendSchema = <
+type ExtendSchemaOverload = {
+    <
+        S extends Schema<any, any, any, any>,
+        Input extends S['I'],
+        Output extends Input,
+        Err,
+        Uri extends string,
+    >(
+        schema: S,
+        {
+            uri,
+            is,
+            create,
+            validate,
+        }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>,
+    ): Schema<Input, Output, Array<Err | ArrayElement<S['E']>>, Uri>;
+    <
+        S extends Schema<any, any, any, any>,
+        Input extends S['I'],
+        Output extends Input,
+        Err,
+        Uri extends string,
+    >(
+        schema: S,
+        {
+            uri,
+            is,
+            create,
+            err,
+        }: CreateSchemaPropsWithErrorConstructor<Input, Output, Err, Uri>,
+    ): Schema<Input, Output, Array<Err | ArrayElement<S['E']>>, Uri>;
+};
+
+export const extendSchema: ExtendSchemaOverload = <
     S extends Schema<any, any, any, any>,
     Input extends S['I'],
     Output extends Input,
@@ -107,7 +151,59 @@ export const extendSchema = <
     Uri extends string,
 >(
     schema: S,
-    { uri, is, create, validate }: CreateSchemaProps<Input, Output, Err, Uri>,
+    {
+        uri,
+        is,
+        create,
+        err,
+        validate,
+    }: {
+        uri: Uri;
+        is: (input: Input) => input is Output;
+        create: (input: Input) => Output;
+        err?: (input: Input) => Array<Err | ArrayElement<S['E']>>;
+        validate?: (
+            input: Input,
+            ctx: {
+                uri: Uri;
+                is: (input: Input) => input is Output;
+                create: (input: Input) => Output;
+            },
+        ) => Either<Output, Array<Err | ArrayElement<S['E']>>>;
+    },
+) => {
+    if (err) {
+        return extendSchemaWithErrorConstructor(schema, {
+            uri,
+            is,
+            create,
+            err,
+        });
+    } else if (validate) {
+        return extendSchemaWithValidateFunction(schema, {
+            uri,
+            is,
+            create,
+            validate,
+        });
+    }
+    throw new Error('err');
+};
+
+const extendSchemaWithValidateFunction = <
+    S extends Schema<any, any, any, any>,
+    Input extends S['I'],
+    Output extends Input,
+    Err,
+    Uri extends string,
+>(
+    schema: S,
+    {
+        uri,
+        is,
+        create,
+        validate,
+    }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>,
 ) => {
     return createSchema({
         uri,
@@ -116,6 +212,43 @@ export const extendSchema = <
         validate: (input, ctx) => {
             const either = schema.validate(input);
             const result = validate(input, ctx);
+
+            const errors = [either, result]
+                .filter((e) => e.status === 'FAILURE')
+                .flatMap((e) => e.value) as Array<Err | ArrayElement<S['E']>>;
+
+            if (errors.length) return failure(errors);
+
+            return success(input);
+        },
+    });
+};
+
+const extendSchemaWithErrorConstructor = <
+    S extends Schema<any, any, any, any>,
+    Input extends S['I'],
+    Output extends Input,
+    Err,
+    Uri extends string,
+>(
+    schema: S,
+    {
+        uri,
+        is,
+        create,
+        err,
+    }: CreateSchemaPropsWithErrorConstructor<Input, Output, Err, Uri>,
+) => {
+    return createSchema({
+        uri,
+        is: (input): input is Output => schema.is(input) && is(input),
+        create,
+        validate: (input) => {
+            const either = schema.validate(input);
+
+            const result = is(input)
+                ? success(create(input))
+                : failure(err(input));
 
             const errors = [either, result]
                 .filter((e) => e.status === 'FAILURE')

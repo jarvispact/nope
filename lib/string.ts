@@ -1,5 +1,5 @@
 import {
-    err,
+    createError,
     createSchema,
     success,
     failure,
@@ -7,8 +7,8 @@ import {
     getErrorDetails,
 } from './utils';
 
-const errNoString = (input: unknown) =>
-    err(
+const errNoString = (input: string) =>
+    createError(
         'string',
         'E_NO_STRING',
         'input is not of type: "string"',
