@@ -7,21 +7,22 @@ import {
     getErrorDetails,
 } from './utils';
 
-const uri = 'string';
+const uri = 'date';
 
 const err = (input: string) =>
     createError(
         uri,
-        'E_NO_STRING',
-        'input is not of type: "string"',
+        'E_NO_DATE',
+        'input is not of type: "date"',
         getErrorDetails(uri, input),
     );
 
 type Err = ReturnType<typeof err>;
 
-export const string = createSchema<string, string, Err, 'string'>({
+export const date = createSchema<Date, Date, Err, 'date'>({
     uri: uri,
-    is: (input): input is string => typeof input === uri,
+    is: (input): input is Date =>
+        input instanceof Date && input.toString() !== 'Invalid Date',
     create: identity,
     validate: (input, { is, create }) => {
         if (is(input)) return success(create(input));
@@ -29,4 +30,4 @@ export const string = createSchema<string, string, Err, 'string'>({
     },
 });
 
-export type StringSchema = typeof string;
+export type DateSchema = typeof date;
