@@ -1,24 +1,24 @@
 import { Opaque } from './utils';
-export declare type Email = Opaque<string, 'Email'>;
-export declare const email: import("./utils").Schema<string, Email, ({
-    uri: "string";
-    code: "E_NO_STRING";
+export declare type Integer = Opaque<number, 'Integer'>;
+export declare const integer: import("./utils").Schema<number, Integer, ({
+    uri: "number";
+    code: "E_NO_NUMBER";
     message: string;
     details: {
-        expectedType: "string";
+        expectedType: "number";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
 } | {
-    uri: "email";
-    code: "E_NO_EMAIL";
+    uri: "integer";
+    code: "E_NO_INTEGER";
     message: string;
     details: {
-        expectedType: "email";
+        expectedType: "integer";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-})[], "email">;
-export declare type EmailSchema = typeof email;
+})[], "integer">;
+export declare type IntegerSchema = typeof integer;

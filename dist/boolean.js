@@ -1,8 +1,8 @@
 import { createError, createSchema, success, failure, identity, getErrorDetails, } from './utils';
-const uri = 'string';
-const err = (input) => createError(uri, 'E_NO_STRING', 'input is not of type: "string"', getErrorDetails(uri, input));
-export const string = createSchema({
-    uri: uri,
+const uri = 'boolean';
+const err = (input) => createError(uri, 'E_NO_BOOLEAN', 'input is not of type: "boolean"', getErrorDetails(uri, input));
+export const boolean = createSchema({
+    uri,
     is: (input) => typeof input === uri,
     create: identity,
     validate: (input, { is, create }) => {
@@ -11,4 +11,4 @@ export const string = createSchema({
         return failure(err(input));
     },
 });
-//# sourceMappingURL=string.js.map
+//# sourceMappingURL=boolean.js.map

@@ -1,12 +1,12 @@
-export declare const string: import("./utils").Schema<string, string, {
-    uri: "string";
-    code: "E_NO_STRING";
+export declare const boolean: import("./utils").Schema<boolean, boolean, {
+    uri: "boolean";
+    code: "E_NO_BOOLEAN";
     message: string;
     details: {
-        expectedType: "string";
+        expectedType: "boolean";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-}, "string">;
-export declare type StringSchema = typeof string;
+}, "boolean">;
+export declare type BooleanSchema = typeof boolean;

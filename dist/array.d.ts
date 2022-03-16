@@ -1,5 +1,5 @@
 import { Schema, Either } from './utils';
-declare const errNoArray: (input: unknown) => {
+declare const err: (input: unknown) => {
     uri: "array";
     code: "E_NO_ARRAY";
     message: string;
@@ -10,9 +10,9 @@ declare const errNoArray: (input: unknown) => {
         providedValue: unknown;
     };
 };
-declare type ErrNoArray = ReturnType<typeof errNoArray>;
+declare type Err = ReturnType<typeof err>;
 declare type ArrayErrors<WrappedSchema extends Schema<any, any, any, any>> = {
-    error: ErrNoArray | null;
+    error: Err | null;
     items: Either<WrappedSchema['O'], WrappedSchema['E']>[];
 };
 export declare const array: <WrappedSchema extends Schema<any, any, any, any>>(wrappedSchema: WrappedSchema) => Schema<WrappedSchema["I"][], WrappedSchema["O"][], ArrayErrors<WrappedSchema>, "array">;

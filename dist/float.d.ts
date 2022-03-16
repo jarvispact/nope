@@ -1,24 +1,24 @@
 import { Opaque } from './utils';
-export declare type Email = Opaque<string, 'Email'>;
-export declare const email: import("./utils").Schema<string, Email, ({
-    uri: "string";
-    code: "E_NO_STRING";
+export declare type Float = Opaque<number, 'Float'>;
+export declare const float: import("./utils").Schema<number, Float, ({
+    uri: "number";
+    code: "E_NO_NUMBER";
     message: string;
     details: {
-        expectedType: "string";
+        expectedType: "number";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
 } | {
-    uri: "email";
-    code: "E_NO_EMAIL";
+    uri: "float";
+    code: "E_NO_FLOAT";
     message: string;
     details: {
-        expectedType: "email";
+        expectedType: "float";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-})[], "email">;
-export declare type EmailSchema = typeof email;
+})[], "float">;
+export declare type FloatSchema = typeof float;

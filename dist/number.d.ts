@@ -1,12 +1,12 @@
-export declare const string: import("./utils").Schema<string, string, {
-    uri: "string";
-    code: "E_NO_STRING";
+export declare const number: import("./utils").Schema<number, number, {
+    uri: "number";
+    code: "E_NO_NUMBER";
     message: string;
     details: {
-        expectedType: "string";
+        expectedType: "number";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-}, "string">;
-export declare type StringSchema = typeof string;
+}, "number">;
+export declare type NumberSchema = typeof number;

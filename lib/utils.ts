@@ -45,23 +45,6 @@ export type Schema<Input, Output extends Input, Err, Uri extends string> = {
     serialize: () => string;
 };
 
-// export type LiteralSchema<
-//     Literal extends string | number | boolean,
-//     Input,
-//     Output extends Input,
-//     Err,
-//     Uri extends string,
-// > = {
-//     I: Input;
-//     O: Output;
-//     E: Err;
-//     uri: Uri;
-//     literal: Literal;
-//     is: (input: Input) => input is Output;
-//     create: (input: Input) => Output;
-//     validate: (input: Input) => Either<Output, Err>;
-// };
-
 type CreateSchemaPropsWithValidateFunction<
     Input,
     Output extends Input,
@@ -81,16 +64,6 @@ type CreateSchemaPropsWithValidateFunction<
     ) => Either<Output, Err>;
     serialize?: () => string;
 };
-
-// type CreateLiteralSchemaProps<
-//     Literal extends string | number | boolean,
-//     Input,
-//     Output extends Input,
-//     Err,
-//     Uri extends string,
-// > = CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri> & {
-//     literal: Literal;
-// };
 
 type CreateSchemaPropsWithErrorConstructor<
     Input,
@@ -139,41 +112,6 @@ export const createSchema = <
         serialize: serialize || defaultserialize,
     };
 };
-
-// export const createLiteralSchema = <
-//     Literal extends string | number | boolean,
-//     Input extends Literal,
-//     Output extends Input,
-//     Err,
-//     Uri extends string,
-// >({
-//     literal,
-//     uri,
-//     is,
-//     create,
-//     validate,
-// }: CreateLiteralSchemaProps<Literal, Input, Output, Err, Uri>): LiteralSchema<
-//     Literal,
-//     Input,
-//     Output,
-//     Err,
-//     Uri
-// > => {
-//     const I = null as unknown as Input;
-//     const O = null as unknown as Output;
-//     const E = null as unknown as Err;
-
-//     return {
-//         I,
-//         O,
-//         E,
-//         uri,
-//         literal,
-//         is,
-//         create,
-//         validate: (input) => validate(input, { uri, is, create }),
-//     };
-// };
 
 type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
     ? ElementType

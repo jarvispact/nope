@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const success = (v) => {
     return {
         status: 'SUCCESS',
@@ -10,19 +11,18 @@ export const failure = (v) => {
         value: v,
     };
 };
-export const err = (uri, code, message, 
-// @ts-ignore
-details = {}) => ({
+export const createError = (uri, code, message, details = {}) => ({
     uri,
     code,
     message,
     details,
 });
-export const createSchema = ({ uri, is, create, validate, }) => {
+export const createSchema = ({ uri, is, create, validate, serialize, }) => {
     const I = null;
     const O = null;
     const E = null;
-    return () => ({
+    const defaultserialize = () => uri;
+    return {
         I,
         O,
         E,
@@ -30,9 +30,29 @@ export const createSchema = ({ uri, is, create, validate, }) => {
         is,
         create,
         validate: (input) => validate(input, { uri, is, create }),
-    });
+        serialize: serialize || defaultserialize,
+    };
 };
-export const extendSchema = (schema, { uri, is, create, validate, }) => {
+export const extendSchema = (schema, { uri, is, create, err, validate, }) => {
+    if (err) {
+        return extendSchemaWithErrorConstructor(schema, {
+            uri,
+            is,
+            create,
+            err,
+        });
+    }
+    else if (validate) {
+        return extendSchemaWithValidateFunction(schema, {
+            uri,
+            is,
+            create,
+            validate,
+        });
+    }
+    throw new Error('you need to provide a "err" or "validate" function');
+};
+const extendSchemaWithValidateFunction = (schema, { uri, is, create, validate, }) => {
     return createSchema({
         uri,
         is: (input) => schema.is(input) && is(input),
@@ -49,10 +69,29 @@ export const extendSchema = (schema, { uri, is, create, validate, }) => {
         },
     });
 };
+const extendSchemaWithErrorConstructor = (schema, { uri, is, create, err, }) => {
+    return createSchema({
+        uri,
+        is: (input) => schema.is(input) && is(input),
+        create,
+        validate: (input) => {
+            const either = schema.validate(input);
+            const result = is(input)
+                ? success(create(input))
+                : failure(err(input));
+            const errors = [either, result]
+                .filter((e) => e.status === 'FAILURE')
+                .flatMap((e) => e.value);
+            if (errors.length)
+                return failure(errors);
+            return success(input);
+        },
+    });
+};
 export const identity = (val) => val;
 export const objectKeys = (rec) => Object.keys(rec);
 export const isObject = (v) => typeof v === 'object' && !Array.isArray(v) && v !== null;
-const getDisplayType = (value) => {
+export const getDisplayType = (value) => {
     if (value === null)
         return 'null';
     if (value instanceof Date)
