@@ -256,7 +256,7 @@ export const extendSchema: ExtendSchemaOverload = <
             validate,
         });
     }
-    throw new Error('err');
+    throw new Error('you need to provide a "err" or "validate" function');
 };
 
 const extendSchemaWithValidateFunction = <

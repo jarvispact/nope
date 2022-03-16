@@ -1,7 +1,7 @@
 import { string, StringSchema } from './string';
 import { createError, Opaque, getErrorDetails, extendSchema } from './utils';
 
-type Email = Opaque<string, 'Email'>;
+export type Email = Opaque<string, 'Email'>;
 
 const err = (input: StringSchema['I']) =>
     createError(
@@ -19,7 +19,7 @@ export const email = extendSchema<StringSchema, string, Email, Err, 'email'>(
         uri: 'email',
         is: (input): input is Email =>
             /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-        create: (input: string) => input as Email,
+        create: (input) => input as Email,
         err,
     },
 );
