@@ -11,20 +11,17 @@ const err = (input: StringSchema['I']) =>
         getErrorDetails('email', input),
     );
 
-type ErrNoEmail = ReturnType<typeof err>;
+type Err = ReturnType<typeof err>;
 
-export const email = extendSchema<
-    StringSchema,
+export const email = extendSchema<StringSchema, string, Email, Err, 'email'>(
     string,
-    Email,
-    ErrNoEmail,
-    'email'
->(string, {
-    uri: 'email',
-    is: (input): input is Email =>
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-    create: (input: string) => input as Email,
-    err,
-});
+    {
+        uri: 'email',
+        is: (input): input is Email =>
+            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+        create: (input: string) => input as Email,
+        err,
+    },
+);
 
 export type EmailSchema = typeof email;

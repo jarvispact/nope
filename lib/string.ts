@@ -7,7 +7,7 @@ import {
     getErrorDetails,
 } from './utils';
 
-const errNoString = (input: string) =>
+const err = (input: string) =>
     createError(
         'string',
         'E_NO_STRING',
@@ -15,15 +15,15 @@ const errNoString = (input: string) =>
         getErrorDetails('string', input),
     );
 
-type ErrNoString = ReturnType<typeof errNoString>;
+type Err = ReturnType<typeof err>;
 
-export const string = createSchema<string, string, ErrNoString, 'string'>({
+export const string = createSchema<string, string, Err, 'string'>({
     uri: 'string',
     is: (input): input is string => typeof input === 'string',
     create: identity,
     validate: (input, { is, create }) => {
         if (is(input)) return success(create(input));
-        return failure(errNoString(input));
+        return failure(err(input));
     },
 });
 

@@ -277,7 +277,7 @@ export const objectKeys = <T extends { [x: string]: unknown }>(rec: T) =>
 export const isObject = (v: unknown): v is Record<string, unknown> =>
     typeof v === 'object' && !Array.isArray(v) && v !== null;
 
-const getDisplayType = (value: unknown) => {
+export const getDisplayType = (value: unknown) => {
     if (value === null) return 'null';
     if (value instanceof Date) return 'date';
     if (isObject(value)) return 'record';
