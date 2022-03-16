@@ -10,7 +10,7 @@ import {
     Either,
 } from './utils';
 
-const errNoArray = (input: unknown) =>
+const err = (input: unknown) =>
     createError(
         'array',
         'E_NO_ARRAY',
@@ -18,10 +18,10 @@ const errNoArray = (input: unknown) =>
         getErrorDetails('array', input),
     );
 
-type ErrNoArray = ReturnType<typeof errNoArray>;
+type Err = ReturnType<typeof err>;
 
 type ArrayErrors<WrappedSchema extends Schema<any, any, any, any>> = {
-    error: ErrNoArray | null;
+    error: Err | null;
     items: Either<WrappedSchema['O'], WrappedSchema['E']>[];
 };
 
@@ -44,7 +44,7 @@ export const array = <WrappedSchema extends Schema<any, any, any, any>>(
             }
 
             if (!Array.isArray(input)) {
-                return failure({ error: errNoArray(input), items: [] });
+                return failure({ error: err(input), items: [] });
             }
 
             return failure({

@@ -1,10 +1,10 @@
 import {
     createError,
-    createSchema,
     success,
     failure,
     identity,
     getErrorDetails,
+    createSchema,
 } from './utils';
 
 const err = <T extends string | number | boolean>(input: unknown, literal: T) =>
@@ -28,6 +28,8 @@ export const literal = <T extends string | number | boolean>(literal: T) =>
             if (is(input)) return success(create(input));
             return failure(err(input, literal));
         },
+        serialize: () =>
+            typeof literal === 'string'
+                ? `literal("${literal}")`
+                : `literal(${literal})`,
     });
-
-export type LiteralSchema = ReturnType<typeof literal>;

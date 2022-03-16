@@ -42,7 +42,25 @@ export type Schema<Input, Output extends Input, Err, Uri extends string> = {
     is: (input: Input) => input is Output;
     create: (input: Input) => Output;
     validate: (input: Input) => Either<Output, Err>;
+    serialize: () => string;
 };
+
+// export type LiteralSchema<
+//     Literal extends string | number | boolean,
+//     Input,
+//     Output extends Input,
+//     Err,
+//     Uri extends string,
+// > = {
+//     I: Input;
+//     O: Output;
+//     E: Err;
+//     uri: Uri;
+//     literal: Literal;
+//     is: (input: Input) => input is Output;
+//     create: (input: Input) => Output;
+//     validate: (input: Input) => Either<Output, Err>;
+// };
 
 type CreateSchemaPropsWithValidateFunction<
     Input,
@@ -61,7 +79,18 @@ type CreateSchemaPropsWithValidateFunction<
             create: (input: Input) => Output;
         },
     ) => Either<Output, Err>;
+    serialize?: () => string;
 };
+
+// type CreateLiteralSchemaProps<
+//     Literal extends string | number | boolean,
+//     Input,
+//     Output extends Input,
+//     Err,
+//     Uri extends string,
+// > = CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri> & {
+//     literal: Literal;
+// };
 
 type CreateSchemaPropsWithErrorConstructor<
     Input,
@@ -73,6 +102,7 @@ type CreateSchemaPropsWithErrorConstructor<
     is: (input: Input) => input is Output;
     create: (input: Input) => Output;
     err: (input: Input) => Err;
+    serialize?: () => string;
 };
 
 export const createSchema = <
@@ -85,6 +115,7 @@ export const createSchema = <
     is,
     create,
     validate,
+    serialize,
 }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>): Schema<
     Input,
     Output,
@@ -95,6 +126,8 @@ export const createSchema = <
     const O = null as unknown as Output;
     const E = null as unknown as Err;
 
+    const defaultserialize = () => uri;
+
     return {
         I,
         O,
@@ -103,8 +136,44 @@ export const createSchema = <
         is,
         create,
         validate: (input) => validate(input, { uri, is, create }),
+        serialize: serialize || defaultserialize,
     };
 };
+
+// export const createLiteralSchema = <
+//     Literal extends string | number | boolean,
+//     Input extends Literal,
+//     Output extends Input,
+//     Err,
+//     Uri extends string,
+// >({
+//     literal,
+//     uri,
+//     is,
+//     create,
+//     validate,
+// }: CreateLiteralSchemaProps<Literal, Input, Output, Err, Uri>): LiteralSchema<
+//     Literal,
+//     Input,
+//     Output,
+//     Err,
+//     Uri
+// > => {
+//     const I = null as unknown as Input;
+//     const O = null as unknown as Output;
+//     const E = null as unknown as Err;
+
+//     return {
+//         I,
+//         O,
+//         E,
+//         uri,
+//         literal,
+//         is,
+//         create,
+//         validate: (input) => validate(input, { uri, is, create }),
+//     };
+// };
 
 type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
     ? ElementType
