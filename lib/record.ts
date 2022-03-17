@@ -18,7 +18,7 @@ const errNoRecord = (input: unknown) =>
     createError(
         uri,
         'E_NO_RECORD',
-        'input is not of type: "record"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 
@@ -27,7 +27,7 @@ type ErrNoRecord = ReturnType<typeof errNoRecord>;
 const errMissingProperties = (input: unknown, requiredProperties: string[]) =>
     createError(
         uri,
-        'E_MISSING_RECORD_PROPERTIES',
+        'E_RECORD_MISSING_PROPERTIES',
         'input is missing record properties',
         { ...getErrorDetails(uri, input), requiredProperties },
     );
@@ -40,7 +40,7 @@ const errUnexpectedProperties = (
 ) =>
     createError(
         uri,
-        'E_UNEXPECTED_RECORD_PROPERTIES',
+        'E_RECORD_UNEXPECTED_PROPERTIES',
         'input has unexpected record properties',
         { ...getErrorDetails(uri, input), requiredProperties },
     );

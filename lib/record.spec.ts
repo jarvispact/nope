@@ -114,7 +114,7 @@ describe('record.ts', () => {
         tsExpect(either.value, {
             error: {
                 uri: 'record',
-                code: 'E_MISSING_RECORD_PROPERTIES',
+                code: 'E_RECORD_MISSING_PROPERTIES',
                 message: 'input is missing record properties',
                 details: {
                     expectedType: 'record',
@@ -143,7 +143,7 @@ describe('record.ts', () => {
         tsExpect(either.value, {
             error: {
                 uri: 'record',
-                code: 'E_UNEXPECTED_RECORD_PROPERTIES',
+                code: 'E_RECORD_UNEXPECTED_PROPERTIES',
                 message: 'input has unexpected record properties',
                 details: {
                     expectedType: 'record',
