@@ -3,7 +3,7 @@ import { createError, Opaque, getErrorDetails, extendSchema } from './utils';
 
 const uri = 'email';
 
-export type Email = Opaque<string, 'Email'>;
+export type Email = Opaque<string, typeof uri>;
 
 const err = (input: StringSchema['I']) =>
     createError(

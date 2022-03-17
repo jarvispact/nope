@@ -3,7 +3,7 @@ import { createError, Opaque, getErrorDetails, extendSchema } from './utils';
 
 const uri = 'uuid';
 
-export type Uuid = Opaque<string, 'Uuid'>;
+export type Uuid = Opaque<string, typeof uri>;
 
 const err = (input: StringSchema['I']) =>
     createError(

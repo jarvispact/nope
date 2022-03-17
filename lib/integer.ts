@@ -3,7 +3,7 @@ import { createError, Opaque, getErrorDetails, extendSchema } from './utils';
 
 const uri = 'integer';
 
-export type Integer = Opaque<number, 'Integer'>;
+export type Integer = Opaque<number, typeof uri>;
 
 const err = (input: NumberSchema['I']) =>
     createError(
