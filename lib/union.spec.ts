@@ -75,7 +75,7 @@ describe('union.ts', () => {
             status: 'FAILURE',
             value: {
                 uri: 'union',
-                code: 'E_NO_UNION',
+                code: 'E_NOT_IN_UNION',
                 message: 'input is not of type: "union([string, number])"',
                 details: {
                     expectedType: 'union',
@@ -100,7 +100,7 @@ describe('union.ts', () => {
             status: 'FAILURE',
             value: {
                 uri: 'union',
-                code: 'E_NO_UNION',
+                code: 'E_NOT_IN_UNION',
                 message:
                     'input is not of type: "union([literal("A"), literal("B")])"',
                 details: {

@@ -14,7 +14,7 @@ const uri = 'union';
 const err = (input: unknown, humanReadableType: string) =>
     createError(
         uri,
-        'E_NO_UNION',
+        'E_NOT_IN_UNION',
         `input is not of type: "${humanReadableType}"`,
         getErrorDetails(uri, input),
     );
