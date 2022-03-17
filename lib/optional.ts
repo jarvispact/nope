@@ -8,9 +8,9 @@ export const optional = <WrappedSchema extends Schema<any, any, any, any>>(
         WrappedSchema['I'] | undefined,
         WrappedSchema['O'] | undefined,
         WrappedSchema['E'],
-        'array'
+        'optional'
     >({
-        uri: 'array',
+        uri: 'optional',
         is: (input): input is WrappedSchema['O'] | undefined =>
             input === undefined || wrappedSchema.is(input),
         create: identity,

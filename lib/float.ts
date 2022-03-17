@@ -9,7 +9,7 @@ const err = (input: NumberSchema['I']) =>
     createError(
         uri,
         'E_NO_FLOAT',
-        'input is not of type: "float"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 

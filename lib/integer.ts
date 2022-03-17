@@ -9,7 +9,7 @@ const err = (input: NumberSchema['I']) =>
     createError(
         uri,
         'E_NO_INTEGER',
-        'input is not of type: "integer"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 

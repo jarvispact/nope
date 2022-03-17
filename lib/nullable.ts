@@ -8,9 +8,9 @@ export const nullable = <WrappedSchema extends Schema<any, any, any, any>>(
         WrappedSchema['I'] | null,
         WrappedSchema['O'] | null,
         WrappedSchema['E'],
-        'array'
+        'nullable'
     >({
-        uri: 'array',
+        uri: 'nullable',
         is: (input): input is WrappedSchema['O'] | null =>
             input === null || wrappedSchema.is(input),
         create: identity,

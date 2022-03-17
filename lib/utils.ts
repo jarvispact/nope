@@ -60,6 +60,7 @@ type CreateSchemaPropsWithValidateFunction<
             uri: Uri;
             is: (input: Input) => input is Output;
             create: (input: Input) => Output;
+            serialize: () => string;
         },
     ) => Either<Output, Err>;
     serialize?: () => string;
@@ -108,7 +109,13 @@ export const createSchema = <
         uri,
         is,
         create,
-        validate: (input) => validate(input, { uri, is, create }),
+        validate: (input) =>
+            validate(input, {
+                uri,
+                is,
+                create,
+                serialize: serialize || defaultserialize,
+            }),
         serialize: serialize || defaultserialize,
     };
 };
@@ -175,6 +182,7 @@ export const extendSchema: ExtendSchemaOverload = <
                 uri: Uri;
                 is: (input: Input) => input is Output;
                 create: (input: Input) => Output;
+                serialize: () => string;
             },
         ) => Either<Output, Array<Err | ArrayElement<S['E']>>>;
     },

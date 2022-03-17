@@ -13,7 +13,7 @@ const err = (input: boolean) =>
     createError(
         uri,
         'E_NO_BOOLEAN',
-        'input is not of type: "boolean"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 

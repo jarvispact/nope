@@ -12,22 +12,24 @@ import {
     objectKeys,
 } from './utils';
 
+const uri = 'record';
+
 const errNoRecord = (input: unknown) =>
     createError(
-        'record',
+        uri,
         'E_NO_RECORD',
         'input is not of type: "record"',
-        getErrorDetails('record', input),
+        getErrorDetails(uri, input),
     );
 
 type ErrNoRecord = ReturnType<typeof errNoRecord>;
 
 const errMissingProperties = (input: unknown, requiredProperties: string[]) =>
     createError(
-        'record',
+        uri,
         'E_MISSING_RECORD_PROPERTIES',
         'input is missing record properties',
-        { ...getErrorDetails('record', input), requiredProperties },
+        { ...getErrorDetails(uri, input), requiredProperties },
     );
 
 type ErrMissingProperties = ReturnType<typeof errMissingProperties>;
@@ -37,10 +39,10 @@ const errUnexpectedProperties = (
     requiredProperties: string[],
 ) =>
     createError(
-        'record',
+        uri,
         'E_UNEXPECTED_RECORD_PROPERTIES',
         'input has unexpected record properties',
-        { ...getErrorDetails('record', input), requiredProperties },
+        { ...getErrorDetails(uri, input), requiredProperties },
     );
 
 type ErrUnexpectedProperties = ReturnType<typeof errUnexpectedProperties>;
@@ -77,7 +79,7 @@ export const record = <
         RecordErrors<Definition>,
         'record'
     >({
-        uri: 'record',
+        uri: uri,
         is: (input): input is FromDefinition<Definition, 'O'> =>
             isObject(input) &&
             objectKeys(input).length === objectKeys(definition).length &&

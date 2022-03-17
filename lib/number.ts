@@ -13,7 +13,7 @@ const err = (input: string) =>
     createError(
         uri,
         'E_NO_NUMBER',
-        'input is not of type: "number"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 

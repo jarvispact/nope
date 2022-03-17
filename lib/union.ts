@@ -11,21 +11,13 @@ import {
 
 const uri = 'union';
 
-const err = <WrappedSchemaList extends Schema<any, any, any, any>[]>(
-    input: unknown,
-    wrappedSchemaList: WrappedSchemaList,
-) => {
-    const humanReadableType = `union([${wrappedSchemaList
-        .map((s) => s.serialize())
-        .join(', ')}])`;
-
-    return createError(
+const err = (input: unknown, humanReadableType: string) =>
+    createError(
         uri,
         'E_NO_UNION',
         `input is not of type: "${humanReadableType}"`,
         getErrorDetails(uri, input),
     );
-};
 
 type Err = ReturnType<typeof err>;
 
@@ -38,15 +30,19 @@ export const union = <WrappedSchemaList extends Schema<any, any, any, any>[]>(
         Err,
         'union'
     >({
-        uri: uri,
+        uri,
         is: (input): input is WrappedSchemaList[number]['O'] =>
             wrappedSchemaList.some((s) => s.is(input)),
         create: identity,
-        validate: (input, { is, create }) => {
+        validate: (input, { is, create, serialize }) => {
             if (is(input)) {
                 return success(create(input));
             }
 
-            return failure(err(input, wrappedSchemaList));
+            return failure(err(input, serialize()));
         },
+        serialize: () =>
+            `union([${wrappedSchemaList
+                .map((s) => s.serialize())
+                .join(', ')}])`,
     });

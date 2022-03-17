@@ -10,12 +10,14 @@ import {
     Either,
 } from './utils';
 
+const uri = 'array';
+
 const err = (input: unknown) =>
     createError(
-        'array',
+        uri,
         'E_NO_ARRAY',
-        'input is not of type: "array"',
-        getErrorDetails('array', input),
+        `input is not of type: "${uri}"`,
+        getErrorDetails(uri, input),
     );
 
 type Err = ReturnType<typeof err>;
@@ -34,7 +36,7 @@ export const array = <WrappedSchema extends Schema<any, any, any, any>>(
         ArrayErrors<WrappedSchema>,
         'array'
     >({
-        uri: 'array',
+        uri,
         is: (input): input is WrappedSchema['O'][] =>
             Array.isArray(input) && input.every(wrappedSchema.is),
         create: identity,

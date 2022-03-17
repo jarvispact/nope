@@ -13,14 +13,14 @@ const err = (input: string) =>
     createError(
         uri,
         'E_NO_DATE',
-        'input is not of type: "date"',
+        `input is not of type: "${uri}"`,
         getErrorDetails(uri, input),
     );
 
 type Err = ReturnType<typeof err>;
 
 export const date = createSchema<Date, Date, Err, 'date'>({
-    uri: uri,
+    uri,
     is: (input): input is Date =>
         input instanceof Date && input.toString() !== 'Invalid Date',
     create: identity,
