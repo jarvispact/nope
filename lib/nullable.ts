@@ -15,10 +15,7 @@ export const nullable = <WrappedSchema extends Schema<any, any, any, any>>(
             input === null || wrappedSchema.is(input),
         create: identity,
         validate: (input, { is, create }) => {
-            if (is(input)) {
-                return success(create(input));
-            }
-
+            if (is(input)) return success(create(input));
             return wrappedSchema.validate(input);
         },
     });
