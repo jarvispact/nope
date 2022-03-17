@@ -1,14 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import './style.css';
-import { record, email, date, string, union, literal } from '../lib/nope';
+import {
+    record,
+    email,
+    date,
+    string,
+    union,
+    literal,
+    uuid,
+    dateString,
+} from '../lib/nope';
 
 const PersonSchema = record({
+    id: uuid,
     email,
+    username: string,
     firstname: string,
     lastname: string,
-    importedAt: date,
-    sourceSystem: union([literal('SYS1'), literal('SYS2')]),
+    birthday: dateString,
+    source: record({
+        importedAt: date,
+        system: union([literal('SYS1'), literal('SYS2')]),
+    }),
 });
 
 type I = typeof PersonSchema['I'];
@@ -16,19 +30,29 @@ type I = typeof PersonSchema['I'];
 // type E = typeof PersonSchema['E'];
 
 const validPerson: I = {
+    id: '1bfeea64-43da-4ef8-a6a5-e33512d7d169',
     email: 'tony@starkindustries.com',
+    username: 'ironman',
     firstname: 'Tony',
     lastname: 'Stark',
-    importedAt: new Date(),
-    sourceSystem: 'SYS1',
+    birthday: '1970-05-29',
+    source: {
+        importedAt: new Date(),
+        system: 'SYS1',
+    },
 };
 
-const invalidPerson2 = {
-    email: 'test',
-    firstname: 42,
+const invalidPerson = {
+    id: '1bfeea64-43da-4ef8-a6a5-',
+    email: 'tony@starkindustries',
+    username: 'ironman',
+    firstname: 'Tony',
     lastname: 42,
-    importedAt: 'brokendate',
-    sourceSystem: 'AVENGERS-DB',
+    birthday: '1970-05-35',
+    source: {
+        importedAt: Date.now(),
+        system: 'AVENGERS-DB',
+    },
 } as any;
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -43,17 +67,7 @@ app.innerHTML = `
                 2,
             )}</pre>
             <pre class="pre">${JSON.stringify(
-                { invalidPerson0: PersonSchema.validate(null as any) },
-                null,
-                2,
-            )}</pre>
-            <pre class="pre">${JSON.stringify(
-                { invalidPerson1: PersonSchema.validate({} as any) },
-                null,
-                2,
-            )}</pre>
-            <pre class="pre">${JSON.stringify(
-                { invalidPerson2: PersonSchema.validate(invalidPerson2) },
+                { invalidPerson: PersonSchema.validate(invalidPerson) },
                 null,
                 2,
             )}</pre>
