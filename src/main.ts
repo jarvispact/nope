@@ -12,6 +12,24 @@ import {
     dateString,
 } from '../lib/nope';
 
+const supportedLanguages = [
+    'de-AT',
+    'de-DE',
+    'de-CH',
+    'en-US',
+    'en-GB',
+] as const;
+
+const LanguageSchema = union(supportedLanguages.map((sl) => literal(sl)));
+
+const ProfileDataSchema = record(
+    {
+        theme: union([literal('LIGHT'), literal('DARK')]),
+        language: LanguageSchema,
+    },
+    { requiredProperties: [] },
+);
+
 const PersonSchema = record({
     id: uuid,
     email,
@@ -23,6 +41,7 @@ const PersonSchema = record({
         importedAt: date,
         system: union([literal('SYS1'), literal('SYS2')]),
     }),
+    profileData: ProfileDataSchema,
 });
 
 type I = typeof PersonSchema['I'];
@@ -40,6 +59,7 @@ const validPerson: I = {
         importedAt: new Date(),
         system: 'SYS1',
     },
+    profileData: {},
 };
 
 const invalidPerson = {
@@ -53,6 +73,7 @@ const invalidPerson = {
         importedAt: Date.now(),
         system: 'AVENGERS-DB',
     },
+    profileData: null,
 } as any;
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

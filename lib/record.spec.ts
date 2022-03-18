@@ -245,4 +245,280 @@ describe('record.ts', () => {
             },
         });
     });
+
+    describe('with options', () => {
+        describe('requiredProperties', () => {
+            describe('empty requiredProperties', () => {
+                it("should return status: 'SUCCESS' for input of type 'record' without property definition and no input properties", () => {
+                    const schema = record(
+                        {},
+                        {
+                            requiredProperties: [],
+                        },
+                    );
+
+                    const either = schema.validate({});
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: {},
+                    });
+                });
+
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and no input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: [],
+                        },
+                    );
+
+                    const either = schema.validate({});
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: {},
+                    });
+                });
+
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and all input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: [],
+                        },
+                    );
+
+                    const either = schema.validate({ a: 'a', b: 'b' });
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: { a: 'a', b: 'b' },
+                    });
+                });
+
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and partial input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: [],
+                        },
+                    );
+
+                    const either = schema.validate({ a: 'a' });
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: { a: 'a' },
+                    });
+                });
+
+                it("should return status: 'FAILURE' for input of type 'record' with property definition and too many input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: [],
+                        },
+                    );
+
+                    const input = { a: 'a', b: 'b', c: 'c' } as any;
+                    const either = schema.validate(input);
+
+                    if (either.status === 'SUCCESS') {
+                        throw new Error('[TS-CHECK] should not be a success');
+                    }
+
+                    // TODO: error object does not indicate that a unknown property was passed
+                    tsExpect(either.value, {
+                        error: {
+                            uri: 'record',
+                            code: 'E_RECORD_UNEXPECTED_PROPERTIES',
+                            message: 'input has unexpected record properties',
+                            details: {
+                                expectedType: 'record',
+                                providedType: 'record',
+                                providedNativeType: 'object',
+                                providedValue: { a: 'a', b: 'b', c: 'c' },
+                                requiredProperties: [],
+                            },
+                        },
+                        properties: null,
+                    });
+                });
+            });
+
+            describe('partial requiredProperties', () => {
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and partial input", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: ['a'],
+                        },
+                    );
+
+                    const either = schema.validate({ a: 'a' });
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: { a: 'a' },
+                    });
+                });
+
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and all input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: ['a'],
+                        },
+                    );
+
+                    const either = schema.validate({ a: 'a', b: 'b' });
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: { a: 'a', b: 'b' },
+                    });
+                });
+
+                it("should return status: 'FAILURE' for input of type 'record' with property definition and too many input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: ['a'],
+                        },
+                    );
+
+                    const input = { a: 'a', b: 'b', c: 'c' } as any;
+                    const either = schema.validate(input);
+
+                    if (either.status === 'SUCCESS') {
+                        throw new Error('[TS-CHECK] should not be a success');
+                    }
+
+                    // TODO: error object does not indicate that a unknown property was passed
+                    tsExpect(either.value, {
+                        error: {
+                            uri: 'record',
+                            code: 'E_RECORD_UNEXPECTED_PROPERTIES',
+                            message: 'input has unexpected record properties',
+                            details: {
+                                expectedType: 'record',
+                                providedType: 'record',
+                                providedNativeType: 'object',
+                                providedValue: { a: 'a', b: 'b', c: 'c' },
+                                requiredProperties: ['a'],
+                            },
+                        },
+                        properties: null,
+                    });
+                });
+            });
+
+            describe('all requiredProperties', () => {
+                it("should return status: 'SUCCESS' for input of type 'record' with property definition and all input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: ['a', 'b'],
+                        },
+                    );
+
+                    const either = schema.validate({ a: 'a', b: 'b' });
+
+                    if (either.status === 'FAILURE') {
+                        throw new Error('[TS-CHECK] should not be a failure');
+                    }
+
+                    tsExpect(either, {
+                        status: 'SUCCESS',
+                        value: { a: 'a', b: 'b' },
+                    });
+                });
+
+                it("should return status: 'FAILURE' for input of type 'record' with property definition and too many input properties", () => {
+                    const schema = record(
+                        {
+                            a: string,
+                            b: string,
+                        },
+                        {
+                            requiredProperties: ['a', 'b'],
+                        },
+                    );
+
+                    const input = { a: 'a', b: 'b', c: 'c' } as any;
+                    const either = schema.validate(input);
+
+                    if (either.status === 'SUCCESS') {
+                        throw new Error('[TS-CHECK] should not be a success');
+                    }
+
+                    // TODO: error object does not indicate that a unknown property was passed
+                    tsExpect(either.value, {
+                        error: {
+                            uri: 'record',
+                            code: 'E_RECORD_UNEXPECTED_PROPERTIES',
+                            message: 'input has unexpected record properties',
+                            details: {
+                                expectedType: 'record',
+                                providedType: 'record',
+                                providedNativeType: 'object',
+                                providedValue: { a: 'a', b: 'b', c: 'c' },
+                                requiredProperties: ['a', 'b'],
+                            },
+                        },
+                        properties: null,
+                    });
+                });
+            });
+        });
+    });
 });

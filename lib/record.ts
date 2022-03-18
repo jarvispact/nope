@@ -61,29 +61,79 @@ type RecordErrors<
         | null;
 };
 
+type RequiredPart<
+    Definition extends { [Key: string]: Schema<any, any, any, any> },
+    T extends 'I' | 'O' | 'E',
+    OptionalKeys extends keyof Definition,
+> = {
+    [K in OptionalKeys]: Definition[K][T];
+};
+
+type OptionalPart<
+    Definition extends { [Key: string]: Schema<any, any, any, any> },
+    T extends 'I' | 'O' | 'E',
+    OptionalKeys extends keyof Definition,
+> = {
+    [K in OptionalKeys]?: Definition[K][T];
+};
+
 type FromDefinition<
     Definition extends { [Key: string]: Schema<any, any, any, any> },
     T extends 'I' | 'O' | 'E',
-> = {
-    [K in keyof Definition]: Definition[K][T];
-};
+    RequiredKey extends keyof Definition,
+    OptionalKey extends keyof Definition = keyof Definition,
+> = RequiredPart<Definition, T, RequiredKey> &
+    OptionalPart<Definition, T, OptionalKey>;
 
 export const record = <
     Definition extends { [Key: string]: Schema<any, any, any, any> },
+    RequiredKey extends keyof Definition,
 >(
     definition: Definition,
+    options: {
+        requiredProperties?: RequiredKey[];
+    } = {},
 ) =>
     createSchema<
-        FromDefinition<Definition, 'I'>,
-        FromDefinition<Definition, 'O'>,
+        FromDefinition<Definition, 'I', RequiredKey>,
+        FromDefinition<Definition, 'O', RequiredKey>,
         RecordErrors<Definition>,
         'record'
     >({
         uri: uri,
-        is: (input): input is FromDefinition<Definition, 'O'> =>
-            isObject(input) &&
-            objectKeys(input).length === objectKeys(definition).length &&
-            objectKeys(definition).every((k) => definition[k].is(input[k])),
+        is: (input): input is FromDefinition<Definition, 'O', RequiredKey> => {
+            const definitionKeys = objectKeys(definition);
+            const definitionKeysLength = definitionKeys.length;
+            const inputKeys = objectKeys(input);
+            const inputKeysLength = inputKeys.length;
+
+            const requiredKeys =
+                options.requiredProperties || objectKeys(definition);
+
+            if (
+                options.requiredProperties &&
+                options.requiredProperties.length !== definitionKeysLength
+            ) {
+                const inputSatisfiesRequiredProperties =
+                    inputKeysLength >= options.requiredProperties.length &&
+                    inputKeysLength <= definitionKeysLength;
+
+                return (
+                    isObject(input) &&
+                    inputSatisfiesRequiredProperties &&
+                    requiredKeys.every((k) => definition[k].is(input[k]))
+                );
+            }
+
+            const inputSatisfiesRequiredProperties =
+                inputKeysLength === definitionKeysLength;
+
+            return (
+                isObject(input) &&
+                inputSatisfiesRequiredProperties &&
+                requiredKeys.every((k) => definition[k].is(input[k]))
+            );
+        },
         create: identity,
         validate: (input, { is, create }) => {
             if (is(input)) {
@@ -97,9 +147,16 @@ export const record = <
                 });
             }
 
-            if (objectKeys(input).length < objectKeys(definition).length) {
+            const requiredKeys =
+                options.requiredProperties || objectKeys(definition);
+
+            if (objectKeys(input).length < requiredKeys.length) {
                 return failure({
-                    error: errMissingProperties(input, Object.keys(definition)),
+                    error: errMissingProperties(
+                        input,
+                        (options.requiredProperties as string[]) ||
+                            Object.keys(definition),
+                    ),
                     properties: null,
                 });
             }
@@ -108,7 +165,8 @@ export const record = <
                 return failure({
                     error: errUnexpectedProperties(
                         input,
-                        Object.keys(definition),
+                        (options.requiredProperties as string[]) ||
+                            Object.keys(definition),
                     ),
                     properties: null,
                 });
@@ -116,7 +174,7 @@ export const record = <
 
             return failure({
                 error: null,
-                properties: objectKeys(definition).reduce(
+                properties: requiredKeys.reduce(
                     (accum, key) => {
                         accum[key] = definition[key].validate(input[key]);
                         return accum;
