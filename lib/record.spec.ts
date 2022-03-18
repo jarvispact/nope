@@ -59,7 +59,8 @@ describe('record.ts', () => {
             error: {
                 uri: 'record',
                 code: 'E_NO_RECORD',
-                message: 'input is not of type: "record"',
+                message:
+                    'input is not of type: "record({ a: string, b: string })"',
                 details: {
                     expectedType: 'record',
                     providedType: 'string',
@@ -87,7 +88,8 @@ describe('record.ts', () => {
             error: {
                 uri: 'record',
                 code: 'E_NO_RECORD',
-                message: 'input is not of type: "record"',
+                message:
+                    'input is not of type: "record({ a: string, b: string })"',
                 details: {
                     expectedType: 'record',
                     providedType: 'number',

@@ -14,11 +14,11 @@ import {
 
 const uri = 'record';
 
-const errNoRecord = (input: unknown) =>
+const errNoRecord = (input: unknown, humanReadableType: string) =>
     createError(
         uri,
         'E_NO_RECORD',
-        `input is not of type: "${uri}"`,
+        `input is not of type: "${humanReadableType}"`,
         getErrorDetails(uri, input),
     );
 
@@ -102,6 +102,8 @@ export const record = <
     >({
         uri: uri,
         is: (input): input is FromDefinition<Definition, 'O', RequiredKey> => {
+            if (!isObject(input)) return false;
+
             const definitionKeys = objectKeys(definition);
             const definitionKeysLength = definitionKeys.length;
             const inputKeys = objectKeys(input);
@@ -119,7 +121,6 @@ export const record = <
                     inputKeysLength <= definitionKeysLength;
 
                 return (
-                    isObject(input) &&
                     inputSatisfiesRequiredProperties &&
                     requiredKeys.every((k) => definition[k].is(input[k]))
                 );
@@ -129,20 +130,19 @@ export const record = <
                 inputKeysLength === definitionKeysLength;
 
             return (
-                isObject(input) &&
                 inputSatisfiesRequiredProperties &&
                 requiredKeys.every((k) => definition[k].is(input[k]))
             );
         },
         create: identity,
-        validate: (input, { is, create }) => {
+        validate: (input, { is, create, serialize }) => {
             if (is(input)) {
                 return success(create(input));
             }
 
             if (!isObject(input)) {
                 return failure({
-                    error: errNoRecord(input),
+                    error: errNoRecord(input, serialize()),
                     properties: null,
                 });
             }
@@ -187,5 +187,14 @@ export const record = <
                     },
                 ),
             });
+        },
+        serialize: () => {
+            const serializedObj = Object.keys(definition)
+                .map((key) =>
+                    [`${key}: `, `${definition[key].serialize()}`].join(''),
+                )
+                .join(', ');
+
+            return `record({ ${serializedObj} })`;
         },
     });

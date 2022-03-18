@@ -12,15 +12,20 @@ import {
     dateString,
 } from '../lib/nope';
 
-const supportedLanguages = [
-    'de-AT',
-    'de-DE',
-    'de-CH',
-    'en-US',
-    'en-GB',
-] as const;
+const countries = ['AT', 'DE', 'CH', 'US', 'GB'] as const;
 
-const LanguageSchema = union(supportedLanguages.map((sl) => literal(sl)));
+const CountrySchema = union(countries.map(literal));
+
+const AddressSchema = record({
+    street: string,
+    zip: string,
+    city: string,
+    country: CountrySchema,
+});
+
+const languages = ['de-AT', 'de-DE', 'de-CH', 'en-US', 'en-GB'] as const;
+
+const LanguageSchema = union(languages.map(literal));
 
 const ProfileDataSchema = record(
     {
@@ -37,6 +42,7 @@ const PersonSchema = record({
     firstname: string,
     lastname: string,
     birthday: dateString,
+    address: AddressSchema,
     source: record({
         importedAt: date,
         system: union([literal('SYS1'), literal('SYS2')]),
@@ -55,6 +61,12 @@ const validPerson: I = {
     firstname: 'Tony',
     lastname: 'Stark',
     birthday: '1970-05-29',
+    address: {
+        street: '10880 Malibu Point',
+        zip: '90265',
+        city: 'Malibu',
+        country: 'US',
+    },
     source: {
         importedAt: new Date(),
         system: 'SYS1',
@@ -69,6 +81,12 @@ const invalidPerson = {
     firstname: 'Tony',
     lastname: 42,
     birthday: '1970-05-35',
+    address: {
+        street: '10880 Malibu Point',
+        zip: 90265,
+        city: 'Malibu',
+        country: 'CZ',
+    },
     source: {
         importedAt: Date.now(),
         system: 'AVENGERS-DB',
@@ -80,18 +98,16 @@ const invalidPerson = {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 app.innerHTML = `
-    <div class="flex">
-        <div class="scrollable">
-            <pre class="pre">${JSON.stringify(
-                { validPerson: PersonSchema.validate(validPerson) },
-                null,
-                2,
-            )}</pre>
-            <pre class="pre">${JSON.stringify(
-                { invalidPerson: PersonSchema.validate(invalidPerson) },
-                null,
-                2,
-            )}</pre>
-        </div>
+    <div class="container">
+        <pre class="pre">${JSON.stringify(
+            { validPerson: PersonSchema.validate(validPerson) },
+            null,
+            2,
+        )}</pre>
+        <pre class="pre">${JSON.stringify(
+            { invalidPerson: PersonSchema.validate(invalidPerson) },
+            null,
+            2,
+        )}</pre>
     </div>
 `;
