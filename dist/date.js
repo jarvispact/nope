@@ -1,8 +1,8 @@
 import { createError, createSchema, success, failure, identity, getErrorDetails, } from './utils';
 const uri = 'date';
-const err = (input) => createError(uri, 'E_NO_DATE', 'input is not of type: "date"', getErrorDetails(uri, input));
+const err = (input) => createError(uri, 'E_NO_DATE', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
 export const date = createSchema({
-    uri: uri,
+    uri,
     is: (input) => input instanceof Date && input.toString() !== 'Invalid Date',
     create: identity,
     validate: (input, { is, create }) => {

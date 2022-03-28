@@ -29,7 +29,12 @@ export const createSchema = ({ uri, is, create, validate, serialize, }) => {
         uri,
         is,
         create,
-        validate: (input) => validate(input, { uri, is, create }),
+        validate: (input) => validate(input, {
+            uri,
+            is,
+            create,
+            serialize: serialize || defaultserialize,
+        }),
         serialize: serialize || defaultserialize,
     };
 };

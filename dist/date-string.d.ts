@@ -1,7 +1,7 @@
 import { Opaque } from './utils';
-declare const uri = "email";
-export declare type Email = Opaque<string, typeof uri>;
-export declare const email: import("./utils").Schema<string, Email, ({
+declare const uri = "date-string";
+export declare type DateString = Opaque<string, typeof uri>;
+export declare const dateString: import("./utils").Schema<string, DateString, ({
     uri: "string";
     code: "E_NO_STRING";
     message: string;
@@ -12,15 +12,15 @@ export declare const email: import("./utils").Schema<string, Email, ({
         providedValue: unknown;
     };
 } | {
-    uri: "email";
-    code: "E_NO_EMAIL";
+    uri: "date-string";
+    code: "E_NO_DATE_STRING";
     message: string;
     details: {
-        expectedType: "email";
+        expectedType: "date-string";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-})[], "email">;
-export declare type EmailSchema = typeof email;
+})[], "date-string">;
+export declare type DateStringSchema = typeof dateString;
 export {};

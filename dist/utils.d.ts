@@ -35,6 +35,7 @@ declare type CreateSchemaPropsWithValidateFunction<Input, Output extends Input, 
         uri: Uri;
         is: (input: Input) => input is Output;
         create: (input: Input) => Output;
+        serialize: () => string;
     }) => Either<Output, Err>;
     serialize?: () => string;
 };

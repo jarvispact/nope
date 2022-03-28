@@ -1,13 +1,14 @@
 import { createError, success, failure, identity, getErrorDetails, createSchema, } from './utils';
-const err = (input, literal) => createError('literal', 'E_NO_LITERAL', `input is not of type: "literal(${typeof literal === 'string' ? `"${literal}"` : literal})"`, getErrorDetails('literal', input));
+const uri = 'literal';
+const err = (input, readableType) => createError(uri, 'E_NO_LITERAL', `input is not of type: "${readableType}"`, getErrorDetails(uri, input));
 export const literal = (literal) => createSchema({
-    uri: 'literal',
+    uri: uri,
     is: (input) => input === literal,
     create: identity,
-    validate: (input, { is, create }) => {
+    validate: (input, { is, create, serialize }) => {
         if (is(input))
             return success(create(input));
-        return failure(err(input, literal));
+        return failure(err(input, serialize()));
     },
     serialize: () => typeof literal === 'string'
         ? `literal("${literal}")`

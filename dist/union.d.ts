@@ -1,7 +1,7 @@
 import { Schema } from './utils';
 export declare const union: <WrappedSchemaList extends Schema<any, any, any, any>[]>(wrappedSchemaList: WrappedSchemaList) => Schema<WrappedSchemaList[number]["I"], WrappedSchemaList[number]["O"], {
     uri: "union";
-    code: "E_NO_UNION";
+    code: "E_NOT_IN_UNION";
     message: string;
     details: {
         expectedType: "union";

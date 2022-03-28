@@ -1,6 +1,6 @@
 import { createError, createSchema, success, failure, identity, getErrorDetails, } from './utils';
 const uri = 'boolean';
-const err = (input) => createError(uri, 'E_NO_BOOLEAN', 'input is not of type: "boolean"', getErrorDetails(uri, input));
+const err = (input) => createError(uri, 'E_NO_BOOLEAN', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
 export const boolean = createSchema({
     uri,
     is: (input) => typeof input === uri,

@@ -1,5 +1,6 @@
 import { Opaque } from './utils';
-export declare type Integer = Opaque<number, 'Integer'>;
+declare const uri = "integer";
+export declare type Integer = Opaque<number, typeof uri>;
 export declare const integer: import("./utils").Schema<number, Integer, ({
     uri: "number";
     code: "E_NO_NUMBER";
@@ -22,3 +23,4 @@ export declare const integer: import("./utils").Schema<number, Integer, ({
     };
 })[], "integer">;
 export declare type IntegerSchema = typeof integer;
+export {};

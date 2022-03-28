@@ -1,6 +1,6 @@
 import { createError, createSchema, success, failure, identity, getErrorDetails, } from './utils';
 const uri = 'number';
-const err = (input) => createError(uri, 'E_NO_NUMBER', 'input is not of type: "number"', getErrorDetails(uri, input));
+const err = (input) => createError(uri, 'E_NO_NUMBER', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
 export const number = createSchema({
     uri,
     is: (input) => typeof input === uri,

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createError, success, failure, getErrorDetails, identity, createSchema, } from './utils';
-const err = (input) => createError('array', 'E_NO_ARRAY', 'input is not of type: "array"', getErrorDetails('array', input));
+const uri = 'array';
+const err = (input) => createError(uri, 'E_NO_ARRAY', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
 export const array = (wrappedSchema) => createSchema({
-    uri: 'array',
+    uri,
     is: (input) => Array.isArray(input) && input.every(wrappedSchema.is),
     create: identity,
     validate: (input, { is, create }) => {

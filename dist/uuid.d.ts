@@ -1,7 +1,7 @@
 import { Opaque } from './utils';
-declare const uri = "email";
-export declare type Email = Opaque<string, typeof uri>;
-export declare const email: import("./utils").Schema<string, Email, ({
+declare const uri = "uuid";
+export declare type Uuid = Opaque<string, typeof uri>;
+export declare const uuid: import("./utils").Schema<string, Uuid, ({
     uri: "string";
     code: "E_NO_STRING";
     message: string;
@@ -12,15 +12,15 @@ export declare const email: import("./utils").Schema<string, Email, ({
         providedValue: unknown;
     };
 } | {
-    uri: "email";
-    code: "E_NO_EMAIL";
+    uri: "uuid";
+    code: "E_NO_UUID";
     message: string;
     details: {
-        expectedType: "email";
+        expectedType: "uuid";
         providedType: string;
         providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         providedValue: unknown;
     };
-})[], "email">;
-export declare type EmailSchema = typeof email;
+})[], "uuid">;
+export declare type UuidSchema = typeof uuid;
 export {};
