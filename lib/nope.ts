@@ -1,5 +1,6 @@
 export * from './array';
 export * from './boolean';
+export * from './constrained-string';
 export * from './date-string';
 export * from './date';
 export * from './email';

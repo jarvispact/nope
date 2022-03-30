@@ -18,6 +18,14 @@ export const failure = <T>(v: T): Failure<T> => {
     };
 };
 
+export const isSuccess = <S extends Success<any>, F extends Failure<any>>(
+    either: Either<S['value'], F['value']>,
+): either is S => either.status === 'SUCCESS';
+
+export const isFailure = <S extends Success<any>, F extends Failure<any>>(
+    either: Either<S['value'], F['value']>,
+): either is F => either.status === 'FAILURE';
+
 export const createError = <
     Uri extends string,
     Code extends string,
@@ -139,7 +147,12 @@ type ExtendSchemaOverload = {
             create,
             validate,
         }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>,
-    ): Schema<Input, Output, Array<Err | ArrayElement<S['E']>>, Uri>;
+    ): Schema<
+        Input,
+        Output,
+        Array<ArrayElement<Err> | ArrayElement<S['E']>>,
+        Uri
+    >;
     <
         S extends Schema<any, any, any, any>,
         Input extends S['I'],
@@ -230,7 +243,9 @@ const extendSchemaWithValidateFunction = <
 
             const errors = [either, result]
                 .filter((e) => e.status === 'FAILURE')
-                .flatMap((e) => e.value) as Array<Err | ArrayElement<S['E']>>;
+                .flatMap((e) => e.value) as Array<
+                ArrayElement<Err> | ArrayElement<S['E']>
+            >;
 
             if (errors.length) return failure(errors);
 
@@ -309,3 +324,6 @@ export const getErrorDetails = <T extends string>(
     providedNativeType: typeof input,
     providedValue: input,
 });
+
+export const isNotNil = <T>(val: T | undefined | null): val is T =>
+    val !== undefined && val !== null;
