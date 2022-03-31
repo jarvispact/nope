@@ -18,13 +18,11 @@ export const failure = <T>(v: T): Failure<T> => {
     };
 };
 
-export const isSuccess = <S extends Success<any>, F extends Failure<any>>(
-    either: Either<S['value'], F['value']>,
-): either is S => either.status === 'SUCCESS';
+export const isSuccess = <S, F>(either: Either<S, F>): either is Success<S> =>
+    either.status === 'SUCCESS';
 
-export const isFailure = <S extends Success<any>, F extends Failure<any>>(
-    either: Either<S['value'], F['value']>,
-): either is F => either.status === 'FAILURE';
+export const isFailure = <S, F>(either: Either<S, F>): either is Failure<F> =>
+    either.status === 'FAILURE';
 
 export const createError = <
     Uri extends string,
