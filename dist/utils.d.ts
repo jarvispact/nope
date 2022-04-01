@@ -9,6 +9,8 @@ export declare type Failure<T> = {
 export declare type Either<S, F> = Success<S> | Failure<F>;
 export declare const success: <T>(v: T) => Success<T>;
 export declare const failure: <T>(v: T) => Failure<T>;
+export declare const isSuccess: <S, F>(either: Either<S, F>) => either is Success<S>;
+export declare const isFailure: <S, F>(either: Either<S, F>) => either is Failure<F>;
 export declare const createError: <Uri extends string, Code extends string, Details extends {
     [Key: string]: unknown;
 }>(uri: Uri, code: Code, message: string, details?: Details) => {
@@ -49,7 +51,7 @@ declare type CreateSchemaPropsWithErrorConstructor<Input, Output extends Input, 
 export declare const createSchema: <Input, Output extends Input, Err, Uri extends string>({ uri, is, create, validate, serialize, }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>) => Schema<Input, Output, Err, Uri>;
 declare type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[] ? ElementType : ArrayType;
 declare type ExtendSchemaOverload = {
-    <S extends Schema<any, any, any, any>, Input extends S['I'], Output extends Input, Err, Uri extends string>(schema: S, { uri, is, create, validate, }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>): Schema<Input, Output, Array<Err | ArrayElement<S['E']>>, Uri>;
+    <S extends Schema<any, any, any, any>, Input extends S['I'], Output extends Input, Err, Uri extends string>(schema: S, { uri, is, create, validate, }: CreateSchemaPropsWithValidateFunction<Input, Output, Err, Uri>): Schema<Input, Output, Array<ArrayElement<Err> | ArrayElement<S['E']>>, Uri>;
     <S extends Schema<any, any, any, any>, Input extends S['I'], Output extends Input, Err, Uri extends string>(schema: S, { uri, is, create, err, }: CreateSchemaPropsWithErrorConstructor<Input, Output, Err, Uri>): Schema<Input, Output, Array<Err | ArrayElement<S['E']>>, Uri>;
 };
 export declare const extendSchema: ExtendSchemaOverload;
@@ -70,4 +72,5 @@ export declare const getErrorDetails: <T extends string>(expectedType: T, input:
     providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
     providedValue: unknown;
 };
+export declare const isNotNil: <T>(val: T | null | undefined) => val is T;
 export {};

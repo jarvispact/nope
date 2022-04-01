@@ -11,6 +11,8 @@ export const failure = (v) => {
         value: v,
     };
 };
+export const isSuccess = (either) => either.status === 'SUCCESS';
+export const isFailure = (either) => either.status === 'FAILURE';
 export const createError = (uri, code, message, details = {}) => ({
     uri,
     code,
@@ -79,7 +81,7 @@ const extendSchemaWithErrorConstructor = (schema, { uri, is, create, err, }) => 
         uri,
         is: (input) => schema.is(input) && is(input),
         create,
-        validate: (input) => {
+        validate: (input, { is }) => {
             const either = schema.validate(input);
             const result = is(input)
                 ? success(create(input))
@@ -113,4 +115,5 @@ export const getErrorDetails = (expectedType, input) => ({
     providedNativeType: typeof input,
     providedValue: input,
 });
+export const isNotNil = (val) => val !== undefined && val !== null;
 //# sourceMappingURL=utils.js.map
