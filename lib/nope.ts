@@ -7,6 +7,7 @@ export * from './email';
 export * from './float';
 export * from './integer';
 export * from './literal';
+export * from './non-empty-string';
 export * from './nullable';
 export * from './number';
 export * from './optional';

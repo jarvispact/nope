@@ -271,7 +271,7 @@ const extendSchemaWithErrorConstructor = <
         uri,
         is: (input): input is Output => schema.is(input) && is(input),
         create,
-        validate: (input) => {
+        validate: (input, { is }) => {
             const either = schema.validate(input);
 
             const result = is(input)
