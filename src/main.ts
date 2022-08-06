@@ -1,19 +1,25 @@
-import { emailSchema, recordSchema, stringSchema } from '../lib/test';
+import {
+    arraySchema,
+    emailSchema,
+    recordSchema,
+    stringSchema,
+} from '../lib/test';
+import { isFailure } from '../lib/utils';
 import './style.css';
 
 const PersonSchema = recordSchema({
     firstname: stringSchema,
     email: emailSchema,
-    nested: recordSchema({
-        firstname: stringSchema,
-        email: emailSchema,
-    }),
+    // friends: arraySchema(emailSchema),
 });
 
 const either = PersonSchema.validate({} as any);
-const errors = PersonSchema.collectErrors({ nested: {} } as any);
+if (isFailure(either)) {
+    const errors = PersonSchema.collectErrors(either);
+    const item = errors[0];
+}
 
-console.log({ either, errors });
+console.log({ either });
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const app = document.querySelector<HTMLDivElement>('#app')!;

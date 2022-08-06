@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createError,
     Either,
+    Failure,
     failure,
     isFailure,
     isObject,
@@ -10,6 +12,7 @@ import {
     Schema,
     schema,
     SchemaError,
+    Success,
     success,
 } from './utils';
 
@@ -69,9 +72,6 @@ type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
     validate: (
         input: ItemSchema['I'][],
     ) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
-    collectErrors: (
-        input: ItemSchema['I'][],
-    ) => (SchemaError<'array', 'E_ARRAY'> | ItemSchema['E'])[];
 };
 
 export const arraySchema = <ItemSchema extends Schema<any, any, any, any>>(
@@ -106,14 +106,6 @@ export const arraySchema = <ItemSchema extends Schema<any, any, any, any>>(
 
     return {
         ..._schema,
-        collectErrors: (input) => {
-            const either = _schema.validate(input);
-            if (isSuccess(either)) return [];
-            return [
-                ...(either.value.error ? [either.value.error] : []),
-                ...either.value.items.filter(isFailure),
-            ];
-        },
     };
 };
 
@@ -127,6 +119,17 @@ type RecordSchemaError<
         [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
     };
 };
+
+type RemoveNull<T> = T extends null ? never : T;
+
+type ObjectValues<T extends { [K: string]: any }> = T[keyof T][];
+type F = ObjectValues<{ firstname: string; age: number }>;
+
+// try to use a Object.values approach with conditionals
+
+type TakeFailure<T extends Either<any, any>> = T extends Success<T['value']>
+    ? never
+    : T['value'];
 
 type RecordSchema<
     Definition extends {
@@ -146,9 +149,13 @@ type RecordSchema<
         { [K in keyof Definition]: Definition[K]['O'] },
         RecordSchemaError<Definition>
     >;
-    collectErrors: (input: { [K in keyof Definition]: Definition[K]['I'] }) => (
-        | SchemaError<'record', 'E_RECORD'>
-        | Definition[string]['E']
+    collectErrors: (
+        failure: Failure<RecordSchemaError<Definition>>,
+    ) => (
+        | RemoveNull<RecordSchemaError<Definition>['error']>
+        | TakeFailure<
+              RecordSchemaError<Definition>['properties'][keyof RecordSchemaError<Definition>['properties']]
+          >
     )[];
 };
 
@@ -198,15 +205,6 @@ export const recordSchema = <
 
     return {
         ..._schema,
-        collectErrors: (input) => {
-            const either = _schema.validate(input);
-            if (isSuccess(either)) return [];
-            return [
-                ...(either.value.error ? [either.value.error] : []),
-                ...objectKeys(either.value.properties)
-                    .filter((key) => isFailure(either.value.properties[key]))
-                    .map((key) => either.value.properties[key]),
-            ];
-        },
+        collectErrors: () => null as any,
     };
 };
