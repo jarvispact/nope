@@ -55,31 +55,26 @@ export const emailSchema = schema<
               ),
 });
 
-type ArraySchemaError<
-    ItemSchema extends Schema<string, unknown, unknown, unknown>,
-> = {
+type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
     error: SchemaError<'array', 'E_ARRAY'> | null;
     items: Either<ItemSchema['O'], ItemSchema['E']>[];
 };
 
-type ArraySchema<ItemSchema extends Schema<string, unknown, unknown, unknown>> =
-    {
-        uri: 'array';
-        I: ItemSchema['I'][];
-        O: ItemSchema['O'][];
-        E: ArraySchemaError<ItemSchema>;
-        is: (input: ItemSchema['I'][]) => input is ItemSchema['O'][];
-        validate: (
-            input: ItemSchema['I'][],
-        ) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
-        collectErrors: (
-            input: ItemSchema['I'][],
-        ) => (SchemaError<'array', 'E_ARRAY'> | ItemSchema['E'])[];
-    };
+type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
+    uri: 'array';
+    I: ItemSchema['I'][];
+    O: ItemSchema['O'][];
+    E: ArraySchemaError<ItemSchema>;
+    is: (input: ItemSchema['I'][]) => input is ItemSchema['O'][];
+    validate: (
+        input: ItemSchema['I'][],
+    ) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
+    collectErrors: (
+        input: ItemSchema['I'][],
+    ) => (SchemaError<'array', 'E_ARRAY'> | ItemSchema['E'])[];
+};
 
-export const arraySchema = <
-    ItemSchema extends Schema<string, unknown, unknown, unknown>,
->(
+export const arraySchema = <ItemSchema extends Schema<any, any, any, any>>(
     itemSchema: ItemSchema,
 ): ArraySchema<ItemSchema> => {
     const _schema = schema<
@@ -124,7 +119,7 @@ export const arraySchema = <
 
 type RecordSchemaError<
     Definition extends {
-        [Key: string]: Schema<string, unknown, unknown, unknown>;
+        [Key: string]: Schema<any, any, any, any>;
     },
 > = {
     error: SchemaError<'record', 'E_RECORD'> | null;
@@ -135,7 +130,7 @@ type RecordSchemaError<
 
 type RecordSchema<
     Definition extends {
-        [Key: string]: Schema<string, unknown, unknown, unknown>;
+        [Key: string]: Schema<any, any, any, any>;
     },
 > = {
     uri: 'record';
@@ -159,11 +154,15 @@ type RecordSchema<
 
 export const recordSchema = <
     Definition extends {
-        [Key: string]: Schema<string, unknown, unknown, unknown>;
+        [Key: string]: Schema<any, any, any, any>;
     },
 >(
     definition: Definition,
 ): RecordSchema<Definition> => {
+    type Properties = {
+        [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
+    };
+
     const _schema = schema<
         'record',
         { [K in keyof Definition]: Definition[K]['I'] },
@@ -185,19 +184,14 @@ export const recordSchema = <
                         'E_RECORD',
                         `input: "${input}" is not of type record`,
                     ),
-                    properties: {} as {
-                        [K in keyof Definition]: Either<
-                            Definition[K]['O'],
-                            Definition[K]['E']
-                        >;
-                    },
+                    properties: {} as Properties,
                 });
             return failure({
                 error: null,
                 properties: objectKeys(definition).reduce((accum, defKey) => {
                     accum[defKey] = definition[defKey].validate(input[defKey]);
                     return accum;
-                }, {} as { [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']> }),
+                }, {} as Properties),
             });
         },
     });
