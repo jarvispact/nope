@@ -1,0 +1,62 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {
+    createError,
+    Either,
+    failure,
+    Schema,
+    schema,
+    SchemaError,
+    success,
+} from './utils';
+
+export type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
+    error: SchemaError<'array', 'E_ARRAY'> | null;
+    items: Either<ItemSchema['O'], ItemSchema['E']>[];
+};
+
+export type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
+    uri: 'array';
+    I: ItemSchema['I'][];
+    O: ItemSchema['O'][];
+    E: ArraySchemaError<ItemSchema>;
+    is: (input: ItemSchema['I'][]) => input is ItemSchema['O'][];
+    validate: (
+        input: ItemSchema['I'][],
+    ) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
+};
+
+export const array = <ItemSchema extends Schema<any, any, any, any>>(
+    itemSchema: ItemSchema,
+): ArraySchema<ItemSchema> => {
+    const _schema = schema<
+        'array',
+        ItemSchema['I'][],
+        ItemSchema['O'][],
+        ArraySchemaError<ItemSchema>
+    >({
+        uri: 'array',
+        is: (arrayInput) =>
+            Array.isArray(arrayInput) ? arrayInput.every(itemSchema.is) : false,
+        validate: (arrayInput, { uri, is }) => {
+            if (is(arrayInput)) return success(arrayInput);
+            if (!Array.isArray(arrayInput))
+                return failure({
+                    error: createError(
+                        uri,
+                        'E_ARRAY',
+                        `input: "${arrayInput}" is not of type array`,
+                    ),
+                    items: [],
+                });
+            return failure({
+                error: null,
+                items: arrayInput.map(itemSchema.validate),
+            });
+        },
+    });
+
+    return {
+        ..._schema,
+    };
+};

@@ -1,40 +1,38 @@
-import {
-    arraySchema,
-    booleanSchema,
-    emailSchema,
-    stringLiteralSchema,
-    numberSchema,
-    recordSchema,
-    stringSchema,
-    numberLiteralSchema,
-    booleanLiteralSchema,
-} from '../lib/test';
+import { array } from '../lib/array';
+import { boolean } from '../lib/boolean';
+import { booleanLiteral } from '../lib/boolean-literal';
+import { email } from '../lib/email';
+import { number } from '../lib/number';
+import { numberLiteral } from '../lib/number-literal';
+import { record } from '../lib/record';
+import { string } from '../lib/string';
+import { stringLiteral } from '../lib/string-literal';
 import { isFailure } from '../lib/utils';
 import './style.css';
 
-const PersonSchema = recordSchema({
-    firstname: stringSchema,
-    email: emailSchema,
-    test: recordSchema({
-        foo: numberLiteralSchema(42),
-        whaat: recordSchema({
-            ok: stringLiteralSchema('abc'),
-            t: arraySchema(recordSchema({ tt: booleanSchema })),
+const PersonSchema = record({
+    firstname: string,
+    email: email,
+    test: record({
+        foo: numberLiteral(42),
+        whaat: record({
+            ok: stringLiteral('abc'),
+            t: array(record({ tt: boolean })),
         }),
     }),
-    test2: arraySchema(booleanLiteralSchema(true)),
-    list: arraySchema(
-        recordSchema({
-            test: numberLiteralSchema(42),
-            what: arraySchema(
-                recordSchema({
-                    omg: stringLiteralSchema('abc'),
+    test2: array(booleanLiteral(true)),
+    list: array(
+        record({
+            test: numberLiteral(42),
+            what: array(
+                record({
+                    omg: stringLiteral('abc'),
                 }),
             ),
         }),
     ),
-    test3: recordSchema({
-        what: numberSchema,
+    test3: record({
+        what: number,
     }),
 });
 
