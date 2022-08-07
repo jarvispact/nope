@@ -1,13 +1,15 @@
 import { createError, failure, schema, SchemaError, success } from './utils';
 
+const uri = 'number';
+
 export const number = schema<
-    'number',
+    typeof uri,
     number,
     number,
-    SchemaError<'number', 'E_NUMBER'>
+    SchemaError<typeof uri, 'E_NUMBER'>
 >({
-    uri: 'number',
-    is: (input) => typeof input === 'number',
+    uri,
+    is: (input) => typeof input === typeof uri,
     validate: (input, { uri, is }) =>
         is(input)
             ? success(input)

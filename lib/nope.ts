@@ -8,3 +8,4 @@ export * from './record';
 export * from './string-literal';
 export * from './string';
 export * from './union';
+export * from './uuid';

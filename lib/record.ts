@@ -15,12 +15,14 @@ import {
     success,
 } from './utils';
 
+const uri = 'record';
+
 type RecordSchemaError<
     Definition extends {
         [Key: string]: Schema<any, any, any, any>;
     },
 > = {
-    error: SchemaError<'record', 'E_RECORD'> | null;
+    error: SchemaError<typeof uri, 'E_RECORD'> | null;
     properties: {
         [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
     };
@@ -94,7 +96,7 @@ type RecordSchema<
         [Key: string]: Schema<any, any, any, any>;
     },
 > = {
-    uri: 'record';
+    uri: typeof uri;
     I: { [K in keyof Definition]: Definition[K]['I'] };
     O: { [K in keyof Definition]: Definition[K]['O'] };
     E: RecordSchemaError<Definition>;
@@ -125,12 +127,12 @@ export const record = <
     };
 
     const _schema = schema<
-        'record',
+        typeof uri,
         { [K in keyof Definition]: Definition[K]['I'] },
         { [K in keyof Definition]: Definition[K]['O'] },
         RecordSchemaError<Definition>
     >({
-        uri: 'record',
+        uri,
         is: (input) =>
             isObject(input) &&
             objectKeys(definition).every((defKey) =>

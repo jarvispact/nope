@@ -10,13 +10,15 @@ import {
     success,
 } from './utils';
 
+const uri = 'array';
+
 export type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
-    error: SchemaError<'array', 'E_ARRAY'> | null;
+    error: SchemaError<typeof uri, 'E_ARRAY'> | null;
     items: Either<ItemSchema['O'], ItemSchema['E']>[];
 };
 
 export type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
-    uri: 'array';
+    uri: typeof uri;
     I: ItemSchema['I'][];
     O: ItemSchema['O'][];
     E: ArraySchemaError<ItemSchema>;
@@ -30,12 +32,12 @@ export const array = <ItemSchema extends Schema<any, any, any, any>>(
     itemSchema: ItemSchema,
 ): ArraySchema<ItemSchema> => {
     const _schema = schema<
-        'array',
+        typeof uri,
         ItemSchema['I'][],
         ItemSchema['O'][],
         ArraySchemaError<ItemSchema>
     >({
-        uri: 'array',
+        uri,
         is: (arrayInput) =>
             Array.isArray(arrayInput) ? arrayInput.every(itemSchema.is) : false,
         validate: (arrayInput, { uri, is }) => {

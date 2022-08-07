@@ -1,13 +1,15 @@
 import { createError, failure, schema, SchemaError, success } from './utils';
 
+const uri = 'boolean';
+
 export const boolean = schema<
-    'boolean',
+    typeof uri,
     boolean,
     boolean,
-    SchemaError<'boolean', 'E_BOOLEAN'>
+    SchemaError<typeof uri, 'E_BOOLEAN'>
 >({
-    uri: 'boolean',
-    is: (input) => typeof input === 'boolean',
+    uri,
+    is: (input) => typeof input === uri,
     validate: (input, { uri, is }) =>
         is(input)
             ? success(input)

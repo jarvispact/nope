@@ -1,13 +1,15 @@
 import { createError, failure, schema, SchemaError, success } from './utils';
 
+const uri = 'number-literal';
+
 export const numberLiteral = <Literal extends number>(literal: Literal) =>
     schema<
-        'number-literal',
+        typeof uri,
         number,
         Literal,
-        SchemaError<'number-literal', 'E_NUMBER_LITERAL'>
+        SchemaError<typeof uri, 'E_NUMBER_LITERAL'>
     >({
-        uri: 'number-literal',
+        uri,
         is: (input) => input === literal,
         validate: (input, { uri, is }) =>
             is(input)

@@ -1,13 +1,15 @@
 import { createError, failure, schema, SchemaError, success } from './utils';
 
+const uri = 'boolean-literal';
+
 export const booleanLiteral = <Literal extends boolean>(literal: Literal) =>
     schema<
-        'boolean-literal',
+        typeof uri,
         boolean,
         Literal,
-        SchemaError<'boolean-literal', 'E_BOOLEAN_LITERAL'>
+        SchemaError<typeof uri, 'E_BOOLEAN_LITERAL'>
     >({
-        uri: 'boolean-literal',
+        uri,
         is: (input) => input === literal,
         validate: (input, { uri, is }) =>
             is(input)

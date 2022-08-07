@@ -8,30 +8,32 @@ import {
     success,
 } from './utils';
 
-const uri = 'email';
+const uri = 'uuid';
 
-export type Email = Opaque<string, typeof uri>;
+export type Uuid = Opaque<string, typeof uri>;
 
-export const email = schema<
+export const uuid = schema<
     typeof uri,
     string,
-    Email,
-    SchemaError<typeof uri, 'E_EMAIL'>
+    Uuid,
+    SchemaError<typeof uri, 'E_UUID'>
 >({
     uri,
     is: (input) =>
         string.is(input) &&
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+            input,
+        ),
     validate: (input, { uri, is }) =>
         is(input)
             ? success(input)
             : failure(
                   createError(
                       uri,
-                      'E_EMAIL',
+                      'E_UUID',
                       `input: "${input}" is not of type ${uri}`,
                   ),
               ),
 });
 
-export type EmailSchema = typeof email;
+export type UuidSchema = typeof uuid;

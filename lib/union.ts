@@ -9,14 +9,16 @@ import {
     success,
 } from './utils';
 
+const uri = 'union';
+
 export const union = <S extends Schema<any, any, any, any>[]>(schemaList: S) =>
     schema<
-        'union',
+        typeof uri,
         AutoComplete<S[number]['O'], S[number]['I']>,
         S[number]['O'],
         S[number]['E']
     >({
-        uri: 'union',
+        uri,
         is: (input) => schemaList.some((s) => s.is(input)),
         validate: (input, { uri, is }) =>
             is(input)
