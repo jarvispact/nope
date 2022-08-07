@@ -15,21 +15,26 @@ import './style.css';
 const PersonSchema = recordSchema({
     firstname: stringSchema,
     email: emailSchema,
-    // friends: arraySchema(emailSchema),
-    nested: recordSchema({
-        age: numberSchema,
-        nested2: recordSchema({
-            what: booleanSchema,
-            nested3: recordSchema({
-                bar: stringLiteralSchema('abc'),
-            }),
-            nested4: recordSchema({
-                baz: numberLiteralSchema(42),
-                nested5: recordSchema({
-                    baz: booleanLiteralSchema(false),
-                }),
-            }),
+    test: recordSchema({
+        foo: numberLiteralSchema(42),
+        whaat: recordSchema({
+            ok: stringLiteralSchema('abc'),
+            t: arraySchema(recordSchema({ tt: booleanSchema })),
         }),
+    }),
+    test2: arraySchema(booleanLiteralSchema(true)),
+    list: arraySchema(
+        recordSchema({
+            test: numberLiteralSchema(42),
+            what: arraySchema(
+                recordSchema({
+                    omg: stringLiteralSchema('abc'),
+                }),
+            ),
+        }),
+    ),
+    test3: recordSchema({
+        what: numberSchema,
     }),
 });
 

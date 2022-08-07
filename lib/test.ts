@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+    ArrayItem,
     createError,
     Either,
     Failure,
@@ -245,24 +246,59 @@ type TakeFailure<T extends Either<any, any>> = T extends Success<T['value']>
     ? never
     : T['value'];
 
-type CollectRecordProperties<T extends { [K: string]: Either<any, any> }> =
-    ObjectValues<{
-        [K in keyof T]: TakeFailure<T[K]> extends RecordSchemaError<{
-            [Key: string]: Schema<any, any, any, any>;
-        }>
-            ? CollectRecordProperties<TakeFailure<T[K]>['properties']>
-            : TakeFailure<T[K]>;
-    }>[number];
+// type CollectNestedProperties<
+//     T extends
+//         | RecordSchemaError<any>
+//         | ArraySchemaError<any>
+//         | { [K: string]: Either<any, any> }
+//         | Either<any, any>,
+// > = T extends Either<any, any>
+//     ? TakeFailure<T>
+//     : T extends { [K: string]: Either<any, any> }
+//     ? ObjectValues<{
+//           [K in keyof T]: TakeFailure<T[K]> extends RecordSchemaError<any>
+//               ? CollectNestedProperties<TakeFailure<T[K]>>
+//               : TakeFailure<T[K]> extends ArraySchemaError<any>
+//               ? CollectNestedProperties<TakeFailure<T[K]>>
+//               : TakeFailure<T[K]>;
+//       }>[number]
+//     : T extends ArraySchemaError<any>
+//     ? RemoveNull<T['error']> | CollectNestedProperties<T['items'][number]>
+//     : T extends RecordSchemaError<any>
+//     ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']>
+//     : never;
 
-type CollectErrors<
-    T extends Failure<
-        RecordSchemaError<{
-            [Key: string]: Schema<any, any, any, any>;
-        }>
-    >,
-> = (
+type CollectNestedProperties<
+    T extends
+        | RecordSchemaError<any>
+        | ArraySchemaError<any>
+        | { [K: string]: Either<any, any> }
+        | Either<any, any>,
+> = T extends Either<any, any>
+    ? TakeFailure<T>
+    : T extends { [K: string]: Either<any, any> }
+    ? ObjectValues<{
+          [K in keyof T]: TakeFailure<T[K]> extends RecordSchemaError<any>
+              ? CollectNestedProperties<TakeFailure<T[K]>>
+              : TakeFailure<T[K]> extends ArraySchemaError<any>
+              ? CollectNestedProperties<TakeFailure<T[K]>>
+              : TakeFailure<T[K]>;
+      }>[number]
+    : T extends ArraySchemaError<any>
+    ?
+          | RemoveNull<T['error']>
+          | CollectNestedProperties<
+                T['items'][number] extends Either<any, RecordSchemaError<any>>
+                    ? TakeFailure<T['items'][number]>
+                    : T['items'][number]
+            >
+    : T extends RecordSchemaError<any>
+    ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']>
+    : never;
+
+type CollectErrors<T extends Failure<RecordSchemaError<any>>> = (
     | RemoveNull<T['value']['error']>
-    | CollectRecordProperties<T['value']['properties']>
+    | CollectNestedProperties<T['value']['properties']>
 )[];
 
 type RecordSchema<
