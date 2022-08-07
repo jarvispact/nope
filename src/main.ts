@@ -7,7 +7,7 @@ import { numberLiteral } from '../lib/number-literal';
 import { record } from '../lib/record';
 import { string } from '../lib/string';
 import { stringLiteral } from '../lib/string-literal';
-import { isFailure } from '../lib/utils';
+// import { isFailure } from '../lib/utils';
 import './style.css';
 
 const PersonSchema = record({
@@ -37,10 +37,10 @@ const PersonSchema = record({
 });
 
 const res = PersonSchema.validate({} as any);
-if (isFailure(res)) {
-    const errors = PersonSchema.collectErrors(res);
-    // const item = errors[0].code;
-}
+// if (isFailure(res)) {
+//     const errors = PersonSchema.collectErrors(res);
+//     // const item = errors[0].code;
+// }
 
 console.log({ either: res });
 

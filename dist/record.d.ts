@@ -1,66 +1,51 @@
-import { Schema, Either } from './utils';
-declare const errNoRecord: (input: unknown, humanReadableType: string) => {
-    uri: "record";
-    code: "E_NO_RECORD";
-    message: string;
-    details: {
-        expectedType: "record";
-        providedType: string;
-        providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
-        providedValue: unknown;
-    };
-};
-declare type ErrNoRecord = ReturnType<typeof errNoRecord>;
-declare const errMissingProperties: (input: unknown, requiredProperties: string[]) => {
-    uri: "record";
-    code: "E_RECORD_MISSING_PROPERTIES";
-    message: string;
-    details: {
-        requiredProperties: string[];
-        expectedType: "record";
-        providedType: string;
-        providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
-        providedValue: unknown;
-    };
-};
-declare type ErrMissingProperties = ReturnType<typeof errMissingProperties>;
-declare const errUnexpectedProperties: (input: unknown, requiredProperties: string[]) => {
-    uri: "record";
-    code: "E_RECORD_UNEXPECTED_PROPERTIES";
-    message: string;
-    details: {
-        requiredProperties: string[];
-        expectedType: "record";
-        providedType: string;
-        providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
-        providedValue: unknown;
-    };
-};
-declare type ErrUnexpectedProperties = ReturnType<typeof errUnexpectedProperties>;
-declare type RecordErrors<Definition extends {
+import { ArraySchemaError } from './array';
+import { Either, Failure, Schema, SchemaError, Success } from './utils';
+declare type RecordSchemaError<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
 }> = {
-    error: ErrNoRecord | ErrMissingProperties | ErrUnexpectedProperties | null;
+    error: SchemaError<'record', 'E_RECORD'> | null;
     properties: {
         [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
-    } | null;
+    };
 };
-declare type RequiredPart<Definition extends {
+declare type RemoveNull<T> = T extends null ? never : T;
+declare type ObjectValues<T extends {
+    [K: string]: any;
+}> = T[keyof T][];
+declare type TakeFailure<T extends Either<any, any>> = T extends Success<T['value']> ? never : T['value'];
+declare type CollectNestedProperties<T extends RecordSchemaError<any> | ArraySchemaError<any> | {
+    [K: string]: Either<any, any>;
+} | Either<any, any>> = T extends Either<any, any> ? TakeFailure<T> : T extends {
+    [K: string]: Either<any, any>;
+} ? ObjectValues<{
+    [K in keyof T]: TakeFailure<T[K]> extends RecordSchemaError<any> ? CollectNestedProperties<TakeFailure<T[K]>> : TakeFailure<T[K]> extends ArraySchemaError<any> ? CollectNestedProperties<TakeFailure<T[K]>> : TakeFailure<T[K]>;
+}>[number] : T extends ArraySchemaError<any> ? RemoveNull<T['error']> | CollectNestedProperties<T['items'][number] extends Either<any, RecordSchemaError<any>> ? TakeFailure<T['items'][number]> : T['items'][number]> : T extends RecordSchemaError<any> ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']> : never;
+declare type CollectErrors<T extends Failure<RecordSchemaError<any>>> = (RemoveNull<T['value']['error']> | CollectNestedProperties<T['value']['properties']>)[];
+declare type RecordSchema<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
-}, T extends 'I' | 'O' | 'E', OptionalKeys extends keyof Definition> = {
-    [K in OptionalKeys]: Definition[K][T];
+}> = {
+    uri: 'record';
+    I: {
+        [K in keyof Definition]: Definition[K]['I'];
+    };
+    O: {
+        [K in keyof Definition]: Definition[K]['O'];
+    };
+    E: RecordSchemaError<Definition>;
+    definition: Definition;
+    is: (input: {
+        [K in keyof Definition]: Definition[K]['I'];
+    }) => input is {
+        [K in keyof Definition]: Definition[K]['O'];
+    };
+    validate: (input: {
+        [K in keyof Definition]: Definition[K]['I'];
+    }) => Either<{
+        [K in keyof Definition]: Definition[K]['O'];
+    }, RecordSchemaError<Definition>>;
+    collectErrors: (failure: Failure<RecordSchemaError<Definition>>) => CollectErrors<Failure<RecordSchemaError<Definition>>>;
 };
-declare type OptionalPart<Definition extends {
-    [Key: string]: Schema<any, any, any, any>;
-}, T extends 'I' | 'O' | 'E', OptionalKeys extends keyof Definition> = {
-    [K in OptionalKeys]?: Definition[K][T];
-};
-declare type FromDefinition<Definition extends {
-    [Key: string]: Schema<any, any, any, any>;
-}, T extends 'I' | 'O' | 'E', RequiredKey extends keyof Definition, OptionalKey extends keyof Definition = keyof Definition> = RequiredPart<Definition, T, RequiredKey> & OptionalPart<Definition, T, OptionalKey>;
 export declare const record: <Definition extends {
     [Key: string]: Schema<any, any, any, any>;
-}, RequiredKey extends keyof Definition>(definition: Definition, options?: {
-    requiredProperties?: RequiredKey[] | undefined;
-}) => Schema<FromDefinition<Definition, "I", RequiredKey, keyof Definition>, FromDefinition<Definition, "O", RequiredKey, keyof Definition>, RecordErrors<Definition>, "record">;
+}>(definition: Definition) => RecordSchema<Definition>;
 export {};

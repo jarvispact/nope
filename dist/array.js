@@ -1,22 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createError, success, failure, getErrorDetails, identity, createSchema, } from './utils';
-const uri = 'array';
-const err = (input) => createError(uri, 'E_NO_ARRAY', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
-export const array = (wrappedSchema) => createSchema({
-    uri,
-    is: (input) => Array.isArray(input) && input.every(wrappedSchema.is),
-    create: identity,
-    validate: (input, { is, create }) => {
-        if (is(input)) {
-            return success(create(input));
-        }
-        if (!Array.isArray(input)) {
-            return failure({ error: err(input), items: [] });
-        }
-        return failure({
-            error: null,
-            items: input.map(wrappedSchema.validate),
-        });
-    },
-});
+import { createError, failure, schema, success, } from './utils';
+export const array = (itemSchema) => {
+    const _schema = schema({
+        uri: 'array',
+        is: (arrayInput) => Array.isArray(arrayInput) ? arrayInput.every(itemSchema.is) : false,
+        validate: (arrayInput, { uri, is }) => {
+            if (is(arrayInput))
+                return success(arrayInput);
+            if (!Array.isArray(arrayInput))
+                return failure({
+                    error: createError(uri, 'E_ARRAY', `input: "${arrayInput}" is not of type array`),
+                    items: [],
+                });
+            return failure({
+                error: null,
+                items: arrayInput.map(itemSchema.validate),
+            });
+        },
+    });
+    return {
+        ..._schema,
+    };
+};
 //# sourceMappingURL=array.js.map

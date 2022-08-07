@@ -1,19 +1,14 @@
-import { Schema, Either } from './utils';
-declare const err: (input: unknown) => {
-    uri: "array";
-    code: "E_NO_ARRAY";
-    message: string;
-    details: {
-        expectedType: "array";
-        providedType: string;
-        providedNativeType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
-        providedValue: unknown;
-    };
+import { Either, Schema, SchemaError } from './utils';
+export declare type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
+    error: SchemaError<'array', 'E_ARRAY'> | null;
+    items: Either<ItemSchema['O'], ItemSchema['E']>[];
 };
-declare type Err = ReturnType<typeof err>;
-declare type ArrayErrors<WrappedSchema extends Schema<any, any, any, any>> = {
-    error: Err | null;
-    items: Either<WrappedSchema['O'], WrappedSchema['E']>[];
+export declare type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
+    uri: 'array';
+    I: ItemSchema['I'][];
+    O: ItemSchema['O'][];
+    E: ArraySchemaError<ItemSchema>;
+    is: (input: ItemSchema['I'][]) => input is ItemSchema['O'][];
+    validate: (input: ItemSchema['I'][]) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
 };
-export declare const array: <WrappedSchema extends Schema<any, any, any, any>>(wrappedSchema: WrappedSchema) => Schema<WrappedSchema["I"][], WrappedSchema["O"][], ArrayErrors<WrappedSchema>, "array">;
-export {};
+export declare const array: <ItemSchema extends Schema<any, any, any, any>>(itemSchema: ItemSchema) => ArraySchema<ItemSchema>;

@@ -1,14 +1,9 @@
-import { createError, createSchema, success, failure, identity, getErrorDetails, } from './utils';
-const uri = 'string';
-const err = (input) => createError(uri, 'E_NO_STRING', `input is not of type: "${uri}"`, getErrorDetails(uri, input));
-export const string = createSchema({
-    uri,
-    is: (input) => typeof input === uri,
-    create: identity,
-    validate: (input, { is, create }) => {
-        if (is(input))
-            return success(create(input));
-        return failure(err(input));
-    },
+import { createError, failure, schema, success } from './utils';
+export const string = schema({
+    uri: 'string',
+    is: (input) => typeof input === 'string',
+    validate: (input, { uri, is }) => is(input)
+        ? success(input)
+        : failure(createError(uri, 'E_STRING', `input: "${input}" is not of type ${uri}`)),
 });
 //# sourceMappingURL=string.js.map
