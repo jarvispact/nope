@@ -41,7 +41,7 @@ const PersonSchema = recordSchema({
 const res = PersonSchema.validate({} as any);
 if (isFailure(res)) {
     const errors = PersonSchema.collectErrors(res);
-    const item = errors[0].code;
+    // const item = errors[0].code;
 }
 
 console.log({ either: res });

@@ -7,6 +7,10 @@ export const isObject = (v: unknown): v is Record<string, unknown> =>
     v !== null &&
     !(v instanceof Date);
 
+export type AutoComplete<T extends U, U = string> =
+    | T
+    | (U & { _TS_AUTOCOMPLETE_?: never });
+
 export type Success<T> = { status: 'SUCCESS'; value: T };
 export type Failure<T> = { status: 'FAILURE'; value: T };
 export type Either<S, F> = Success<S> | Failure<F>;
@@ -44,9 +48,6 @@ export type SchemaError<Uri extends string, Code extends string> = {
     code: Code;
     message: string;
 };
-
-export type ArrayItem<ArrayType> =
-    ArrayType extends readonly (infer ElementType)[] ? ElementType : ArrayType;
 
 export const createError = <Uri extends string, Code extends string>(
     uri: Uri,

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    ArrayItem,
+    AutoComplete,
     createError,
     Either,
     Failure,
@@ -30,7 +30,7 @@ export const stringSchema = schema<
                   createError(
                       uri,
                       'E_STRING',
-                      `input: "${input}" is not of type string`,
+                      `input: "${input}" is not of type ${uri}`,
                   ),
               ),
 });
@@ -52,7 +52,7 @@ export const numberSchema = schema<
                   createError(
                       uri,
                       'E_NUMBER',
-                      `input: "${input}" is not of type number`,
+                      `input: "${input}" is not of type ${uri}`,
                   ),
               ),
 });
@@ -74,7 +74,7 @@ export const booleanSchema = schema<
                   createError(
                       uri,
                       'E_BOOLEAN',
-                      `input: "${input}" is not of type boolean`,
+                      `input: "${input}" is not of type ${uri}`,
                   ),
               ),
 });
@@ -152,6 +152,33 @@ export const booleanLiteralSchema = <Literal extends boolean>(
 
 export type BooleanLiteralSchema = typeof booleanLiteralSchema;
 
+export const unionSchema = <S extends Schema<any, any, any, any>[]>(
+    schemaList: S,
+) =>
+    schema<
+        'union',
+        AutoComplete<S[number]['O'], S[number]['I']>,
+        S[number]['O'],
+        S[number]['E']
+    >({
+        uri: 'union',
+        is: (input) => schemaList.some((s) => s.is(input)),
+        validate: (input, { uri, is }) =>
+            is(input)
+                ? success(input)
+                : failure(
+                      createError(
+                          uri,
+                          'E_UNION',
+                          `input: "${input}" is not of type ${uri}(${schemaList
+                              .map((s) => s.uri)
+                              .join(', ')})`,
+                      ),
+                  ),
+    });
+
+export type UnionSchema = typeof unionSchema;
+
 export type Email = Opaque<string, 'Email'>;
 
 export const emailSchema = schema<
@@ -169,7 +196,7 @@ export const emailSchema = schema<
                   createError(
                       uri,
                       'E_EMAIL',
-                      `input: "${input}" is not of type email`,
+                      `input: "${input}" is not of type ${uri}`,
                   ),
               ),
 });
