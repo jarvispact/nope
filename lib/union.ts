@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {
-    AutoComplete,
-    createError,
-    failure,
-    Schema,
-    schema,
-    success,
-} from './utils';
+import { AutoComplete, createError, Schema, schema } from './utils';
 
 const uri = 'union';
 
@@ -19,19 +12,14 @@ export const union = <S extends Schema<any, any, any, any>[]>(schemaList: S) =>
         S[number]['E']
     >({
         uri,
+        displayString: `${schemaList.map((s) => s.displayString).join(' | ')}`,
         is: (input) => schemaList.some((s) => s.is(input)),
-        validate: (input, { uri, is }) =>
-            is(input)
-                ? success(input)
-                : failure(
-                      createError(
-                          uri,
-                          'E_UNION',
-                          `input: "${input}" is not of type ${uri}(${schemaList
-                              .map((s) => s.uri)
-                              .join(', ')})`,
-                      ),
-                  ),
+        err: (input, { displayString }) =>
+            createError(
+                uri,
+                'E_UNION',
+                `input: "${input}" is not of type: ${displayString}`,
+            ),
     });
 
 export type UnionSchema = typeof union;

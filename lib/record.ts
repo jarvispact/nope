@@ -5,14 +5,12 @@ import {
     createError,
     Either,
     Failure,
-    failure,
-    isObject,
+    isRecord,
     objectKeys,
     Schema,
     schema,
     SchemaError,
     Success,
-    success,
 } from './utils';
 
 const uri = 'record';
@@ -97,6 +95,7 @@ type RecordSchema<
     },
 > = {
     uri: typeof uri;
+    displayString: string;
     I: { [K in keyof Definition]: Definition[K]['I'] };
     O: { [K in keyof Definition]: Definition[K]['O'] };
     E: RecordSchemaError<Definition>;
@@ -104,6 +103,9 @@ type RecordSchema<
     is: (input: { [K in keyof Definition]: Definition[K]['I'] }) => input is {
         [K in keyof Definition]: Definition[K]['O'];
     };
+    err: (input: {
+        [K in keyof Definition]: Definition[K]['I'];
+    }) => RecordSchemaError<Definition>;
     validate: (input: {
         [K in keyof Definition]: Definition[K]['I'];
     }) => Either<
@@ -133,30 +135,36 @@ export const record = <
         RecordSchemaError<Definition>
     >({
         uri,
+        displayString: `record({${objectKeys(definition)
+            .map((key) => `${key.toString()}: ${definition[key].displayString}`)
+            .join(', ')}})`,
         is: (input) =>
-            isObject(input) &&
+            isRecord(input) &&
             objectKeys(definition).every((defKey) =>
                 definition[defKey].is(input[defKey]),
             ),
-        validate: (input, { uri, is }) => {
-            if (is(input)) return success(input);
-            if (!isObject(input))
-                return failure({
-                    error: createError(
-                        uri,
-                        'E_RECORD',
-                        `input: "${input}" is not of type record`,
-                    ),
-                    properties: {} as Properties,
-                });
-            return failure({
-                error: null,
-                properties: objectKeys(definition).reduce((accum, defKey) => {
-                    accum[defKey] = definition[defKey].validate(input[defKey]);
-                    return accum;
-                }, {} as Properties),
-            });
-        },
+        err: (input, { displayString }) =>
+            isRecord(input)
+                ? {
+                      error: null,
+                      properties: objectKeys(definition).reduce(
+                          (accum, defKey) => {
+                              accum[defKey] = definition[defKey].validate(
+                                  input[defKey],
+                              );
+                              return accum;
+                          },
+                          {} as Properties,
+                      ),
+                  }
+                : {
+                      error: createError(
+                          uri,
+                          'E_RECORD',
+                          `input: "${input}" is not of type: ${displayString}`,
+                      ),
+                      properties: {} as Properties,
+                  },
     });
 
     return {

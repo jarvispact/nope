@@ -1,4 +1,4 @@
-import { createError, failure, schema, SchemaError, success } from './utils';
+import { createError, schema, SchemaError } from './utils';
 
 const uri = 'boolean';
 
@@ -10,16 +10,12 @@ export const boolean = schema<
 >({
     uri,
     is: (input) => typeof input === uri,
-    validate: (input, { uri, is }) =>
-        is(input)
-            ? success(input)
-            : failure(
-                  createError(
-                      uri,
-                      'E_BOOLEAN',
-                      `input: "${input}" is not of type ${uri}`,
-                  ),
-              ),
+    err: (input) =>
+        createError(
+            uri,
+            'E_BOOLEAN',
+            `input: "${input}" is not of type: ${uri}`,
+        ),
 });
 
 export type BooleanSchema = typeof boolean;

@@ -1,54 +1,51 @@
-import { array } from '../lib/array';
-import { boolean } from '../lib/boolean';
-import { booleanLiteral } from '../lib/boolean-literal';
-import { email } from '../lib/email';
-import { number } from '../lib/number';
-import { numberLiteral } from '../lib/number-literal';
-import { record } from '../lib/record';
-import { string } from '../lib/string';
-import { stringLiteral } from '../lib/string-literal';
-// import { isFailure } from '../lib/utils';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {
+    array,
+    email,
+    float,
+    Infer,
+    record,
+    string,
+    stringLiteral,
+    union,
+} from '../lib/nope';
+import { InvoiceNumberSchema } from './invoice-number';
 import './style.css';
+
+const countryCodes = ['AT', 'DE', 'CH'] as const;
+const CountryCodeSchema = union(countryCodes.map(stringLiteral));
+
+const InvoiceSchema = record({ number: InvoiceNumberSchema, amount: float });
 
 const PersonSchema = record({
     firstname: string,
     email: email,
-    test: record({
-        foo: numberLiteral(42),
-        whaat: record({
-            ok: stringLiteral('abc'),
-            t: array(record({ tt: boolean })),
-        }),
+    groups: array(string),
+    address: record({
+        street: string,
+        country: CountryCodeSchema,
     }),
-    test2: array(booleanLiteral(true)),
-    list: array(
-        record({
-            test: numberLiteral(42),
-            what: array(
-                record({
-                    omg: stringLiteral('abc'),
-                }),
-            ),
-        }),
-    ),
-    test3: record({
-        what: number,
-    }),
+    invoices: array(InvoiceSchema),
 });
 
-const res = PersonSchema.validate({} as any);
-// if (isFailure(res)) {
-//     const errors = PersonSchema.collectErrors(res);
-//     // const item = errors[0].code;
-// }
+type Person = Infer<typeof PersonSchema>;
 
-console.log({ either: res });
+const either = PersonSchema.validate({
+    firstname: 'test',
+    email: 'test@test.com',
+    groups: [],
+    address: { country: 'AT', street: 'street' },
+    invoices: [{ number: 'RE-42', amount: 44.0 }],
+});
+
+console.log({ either });
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 app.innerHTML = `
     <div class="container">
-        <pre class="pre">${JSON.stringify({}, null, 2)}</pre>
+        <pre class="pre">${JSON.stringify(either, null, 2)}</pre>
     </div>
 `;

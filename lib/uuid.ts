@@ -1,12 +1,5 @@
 import { string } from './string';
-import {
-    createError,
-    failure,
-    Opaque,
-    schema,
-    SchemaError,
-    success,
-} from './utils';
+import { createError, Opaque, schema, SchemaError } from './utils';
 
 const uri = 'uuid';
 
@@ -24,16 +17,8 @@ export const uuid = schema<
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
             input,
         ),
-    validate: (input, { uri, is }) =>
-        is(input)
-            ? success(input)
-            : failure(
-                  createError(
-                      uri,
-                      'E_UUID',
-                      `input: "${input}" is not of type ${uri}`,
-                  ),
-              ),
+    err: (input) =>
+        createError(uri, 'E_UUID', `input: "${input}" is not of type: ${uri}`),
 });
 
 export type UuidSchema = typeof uuid;
