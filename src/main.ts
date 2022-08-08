@@ -4,15 +4,12 @@ import {
     array,
     email,
     float,
-    Infer,
-    isValid,
     nullSchema,
     record,
     string,
     literal,
     undefinedSchema,
     union,
-    valueOf,
 } from '../lib/nope';
 import { InvoiceNumberSchema } from './invoice-number';
 import './style.css';
@@ -35,7 +32,7 @@ const PersonSchema = record({
     invoices: array(InvoiceSchema),
 });
 
-type Person = Infer<typeof PersonSchema>;
+// type Person = Infer<typeof PersonSchema>;
 
 const either = PersonSchema.validate({
     firstname: '',
@@ -49,12 +46,12 @@ const either = PersonSchema.validate({
 
 console.log({ either });
 
-if (isValid(either)) {
-    const data = valueOf(either);
-} else {
-    const errors = PersonSchema.collectErrors(either);
-    errors[0].code;
-}
+// if (isValid(either)) {
+//     const data = valueOf(either);
+// } else {
+//     const errors = PersonSchema.collectErrors(either);
+//     errors[0].code;
+// }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const app = document.querySelector<HTMLDivElement>('#app')!;

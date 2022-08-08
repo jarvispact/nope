@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createError, failure, schema, success, } from './utils';
+import { createError, schema } from './utils';
+const uri = 'union';
 export const union = (schemaList) => schema({
-    uri: 'union',
+    uri,
+    displayString: `${schemaList.map((s) => s.displayString).join(' | ')}`,
     is: (input) => schemaList.some((s) => s.is(input)),
-    validate: (input, { uri, is }) => is(input)
-        ? success(input)
-        : failure(createError(uri, 'E_UNION', `input: "${input}" is not of type ${uri}(${schemaList
-            .map((s) => s.uri)
-            .join(', ')})`)),
+    err: (input, { displayString }) => createError(uri, 'E_UNION', `input: "${input}" is not of type: ${displayString}`),
 });
 //# sourceMappingURL=union.js.map

@@ -1,10 +1,10 @@
 import { string } from './string';
-import { createError, failure, schema, success, } from './utils';
+import { createError, schema } from './utils';
+const uri = 'email';
 export const email = schema({
-    uri: 'email',
-    is: (input) => string.is(input) && input.includes('@'),
-    validate: (input, { uri, is }) => is(input)
-        ? success(input)
-        : failure(createError(uri, 'E_EMAIL', `input: "${input}" is not of type ${uri}`)),
+    uri,
+    is: (input) => string.is(input) &&
+        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+    err: (input) => createError(uri, 'E_EMAIL', `input: "${input}" is not of type: ${uri}`),
 });
 //# sourceMappingURL=email.js.map

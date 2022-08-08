@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createError, failure, isObject, objectKeys, schema, success, } from './utils';
+import { createError, isRecord, objectKeys, schema, } from './utils';
+const uri = 'record';
 export const record = (definition) => {
     const _schema = schema({
-        uri: 'record',
-        is: (input) => isObject(input) &&
+        uri,
+        displayString: `record({${objectKeys(definition)
+            .map((key) => `${key.toString()}: ${definition[key].displayString}`)
+            .join(', ')}})`,
+        is: (input) => isRecord(input) &&
             objectKeys(definition).every((defKey) => definition[defKey].is(input[defKey])),
-        validate: (input, { uri, is }) => {
-            if (is(input))
-                return success(input);
-            if (!isObject(input))
-                return failure({
-                    error: createError(uri, 'E_RECORD', `input: "${input}" is not of type record`),
-                    properties: {},
-                });
-            return failure({
+        err: (input, { displayString }) => isRecord(input)
+            ? {
                 error: null,
                 properties: objectKeys(definition).reduce((accum, defKey) => {
                     accum[defKey] = definition[defKey].validate(input[defKey]);
                     return accum;
                 }, {}),
-            });
-        },
+            }
+            : {
+                error: createError(uri, 'E_RECORD', `input: "${input}" is not of type: ${displayString}`),
+                properties: {},
+            },
     });
     return {
         ..._schema,

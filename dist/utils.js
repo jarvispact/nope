@@ -1,32 +1,40 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const objectKeys = (rec) => Object.keys(rec);
-export const isObject = (v) => typeof v === 'object' &&
+export const isRecord = (v) => typeof v === 'object' &&
     !Array.isArray(v) &&
     v !== null &&
     !(v instanceof Date);
-export const success = (v) => {
+export const valid = (v) => {
     return {
-        status: 'SUCCESS',
+        status: 'VALID',
         value: v,
     };
 };
-export const failure = (v) => {
+export const invalid = (v) => {
     return {
-        status: 'FAILURE',
+        status: 'INVALID',
         value: v,
     };
 };
-export const isSuccess = (either) => either.status === 'SUCCESS';
-export const isFailure = (either) => either.status === 'FAILURE';
+export const valueOf = (either) => either.value;
+export const isValid = (either) => either.status === 'VALID';
+export const isInvalid = (either) => either.status === 'INVALID';
 export const createError = (uri, code, message) => ({ uri, code, message });
-export const schema = ({ uri, is, validate, }) => {
+export const schema = ({ uri, displayString = uri, is, err, validate, }) => {
     const _is = (input) => is(input);
-    const _validate = (input) => validate(input, { is: _is, uri });
+    const _err = (input) => err(input, { uri, displayString });
+    const defaultValidate = (input) => _is(input) ? valid(input) : invalid(_err(input));
+    const _validate = (input) => validate
+        ? validate(input, { uri, displayString, is: _is, err: _err })
+        : defaultValidate(input);
     return {
         uri,
+        displayString,
         I: null,
         O: null,
         E: null,
         is: _is,
+        err: _err,
         validate: _validate,
     };
 };
