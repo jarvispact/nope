@@ -1,23 +1,20 @@
 import { createError, schema, SchemaError } from './utils';
 
-const uri = 'string-literal';
+const uri = 'literal';
 
-export const stringLiteral = <Literal extends string>(literal: Literal) =>
-    schema<
-        typeof uri,
-        string,
-        Literal,
-        SchemaError<typeof uri, 'E_STRING_LITERAL'>
-    >({
+export const literal = <Literal extends string | number | boolean>(
+    literal: Literal,
+) =>
+    schema<typeof uri, Literal, Literal, SchemaError<typeof uri, 'E_LITERAL'>>({
         uri,
         displayString: `${uri}(${literal})`,
         is: (input) => input === literal,
         err: (input) =>
             createError(
                 uri,
-                'E_STRING_LITERAL',
+                'E_LITERAL',
                 `input: "${input}" is not of type: ${uri}(${literal})`,
             ),
     });
 
-export type StringLiteralSchema = typeof stringLiteral;
+export type LiteralSchema = typeof literal;

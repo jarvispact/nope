@@ -9,7 +9,7 @@ import {
     nullSchema,
     record,
     string,
-    stringLiteral,
+    literal,
     undefinedSchema,
     union,
     valueOf,
@@ -18,7 +18,7 @@ import { InvoiceNumberSchema } from './invoice-number';
 import './style.css';
 
 const countryCodes = ['AT', 'DE', 'CH'] as const;
-const CountryCodeSchema = union(countryCodes.map(stringLiteral));
+const CountryCodeSchema = union(countryCodes.map(literal));
 
 const InvoiceSchema = record({ number: InvoiceNumberSchema, amount: float });
 
