@@ -5,12 +5,15 @@ import {
     createError,
     Either,
     Invalid,
+    isInvalid,
     isRecord,
+    isValid,
     objectKeys,
     Schema,
     schema,
     SchemaError,
     Valid,
+    valueOf,
 } from './utils';
 
 const uri = 'record';
@@ -117,6 +120,32 @@ type RecordSchema<
     ) => CollectErrors<Invalid<RecordSchemaError<Definition>>>;
 };
 
+const recursiveCollectErrors = (
+    accum: any[],
+    invalidInput: Either<any, any>,
+) => {
+    if (isValid(invalidInput)) return accum;
+    const schemaError = valueOf(invalidInput);
+
+    if ('error' in schemaError && 'properties' in schemaError) {
+        if (schemaError.error !== null) accum.push(schemaError.error);
+
+        objectKeys(schemaError.properties).map((key) => {
+            recursiveCollectErrors(accum, schemaError.properties[key]);
+        });
+    } else if ('error' in schemaError && 'items' in schemaError) {
+        if (schemaError.error !== null) accum.push(schemaError.error);
+
+        schemaError.items.forEach((item: any) => {
+            recursiveCollectErrors(accum, item);
+        });
+    } else {
+        accum.push(schemaError);
+    }
+
+    return accum;
+};
+
 export const record = <
     Definition extends {
         [Key: string]: Schema<any, any, any, any>;
@@ -167,9 +196,12 @@ export const record = <
                   },
     });
 
+    const collectErrors: any = (invalidInput: any) =>
+        recursiveCollectErrors([], invalidInput);
+
     return {
         ..._schema,
         definition,
-        collectErrors: () => null as any,
+        collectErrors,
     };
 };
