@@ -5,10 +5,12 @@ import {
     email,
     float,
     Infer,
+    isValid,
     record,
     string,
     stringLiteral,
     union,
+    valueOf,
 } from '../lib/nope';
 import { InvoiceNumberSchema } from './invoice-number';
 import './style.css';
@@ -40,6 +42,10 @@ const either = PersonSchema.validate({
 });
 
 console.log({ either });
+
+if (isValid(either)) {
+    const data = valueOf(either);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const app = document.querySelector<HTMLDivElement>('#app')!;

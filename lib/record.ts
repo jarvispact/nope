@@ -4,13 +4,13 @@ import { ArraySchemaError } from './array';
 import {
     createError,
     Either,
-    Failure,
+    Invalid,
     isRecord,
     objectKeys,
     Schema,
     schema,
     SchemaError,
-    Success,
+    Valid,
 } from './utils';
 
 const uri = 'record';
@@ -30,7 +30,7 @@ type RemoveNull<T> = T extends null ? never : T;
 
 type ObjectValues<T extends { [K: string]: any }> = T[keyof T][];
 
-type TakeFailure<T extends Either<any, any>> = T extends Success<T['value']>
+type TakeFailure<T extends Either<any, any>> = T extends Valid<T['value']>
     ? never
     : T['value'];
 
@@ -84,7 +84,7 @@ type CollectNestedProperties<
     ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']>
     : never;
 
-type CollectErrors<T extends Failure<RecordSchemaError<any>>> = (
+type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = (
     | RemoveNull<T['value']['error']>
     | CollectNestedProperties<T['value']['properties']>
 )[];
@@ -113,8 +113,8 @@ type RecordSchema<
         RecordSchemaError<Definition>
     >;
     collectErrors: (
-        failure: Failure<RecordSchemaError<Definition>>,
-    ) => CollectErrors<Failure<RecordSchemaError<Definition>>>;
+        failure: Invalid<RecordSchemaError<Definition>>,
+    ) => CollectErrors<Invalid<RecordSchemaError<Definition>>>;
 };
 
 export const record = <

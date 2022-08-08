@@ -15,29 +15,31 @@ export type AutoComplete<T extends U, U = string> =
 
 export type Infer<T extends Schema<any, any, any, any>> = T['O'];
 
-export type Success<T> = { status: 'SUCCESS'; value: T };
-export type Failure<T> = { status: 'FAILURE'; value: T };
-export type Either<S, F> = Success<S> | Failure<F>;
+export type Valid<T> = { status: 'VALID'; value: T };
+export type Invalid<T> = { status: 'INVALID'; value: T };
+export type Either<S, F> = Valid<S> | Invalid<F>;
 
-export const success = <T>(v: T): Success<T> => {
+export const valid = <T>(v: T): Valid<T> => {
     return {
-        status: 'SUCCESS',
+        status: 'VALID',
         value: v,
     };
 };
 
-export const failure = <T>(v: T): Failure<T> => {
+export const invalid = <T>(v: T): Invalid<T> => {
     return {
-        status: 'FAILURE',
+        status: 'INVALID',
         value: v,
     };
 };
 
-export const isSuccess = <S, F>(either: Either<S, F>): either is Success<S> =>
-    either.status === 'SUCCESS';
+export const valueOf = <S, F>(either: Either<S, F>) => either.value;
 
-export const isFailure = <S, F>(either: Either<S, F>): either is Failure<F> =>
-    either.status === 'FAILURE';
+export const isValid = <S, F>(either: Either<S, F>): either is Valid<S> =>
+    either.status === 'VALID';
+
+export const isInvalid = <S, F>(either: Either<S, F>): either is Invalid<F> =>
+    either.status === 'INVALID';
 
 declare const tag: unique symbol;
 
@@ -102,7 +104,7 @@ export const schema = <Uri extends string, I, O extends I, E>({
     const _err = (input: I) => err(input, { uri, displayString });
 
     const defaultValidate = (input: I) =>
-        _is(input) ? success(input) : failure(_err(input));
+        _is(input) ? valid(input) : invalid(_err(input));
 
     const _validate = (input: I) =>
         validate
