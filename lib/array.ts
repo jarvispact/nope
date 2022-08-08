@@ -9,18 +9,12 @@ export type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
     items: Either<ItemSchema['O'], ItemSchema['E']>[];
 };
 
-export type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = {
-    uri: typeof uri;
-    displayString: string;
-    I: ItemSchema['I'][];
-    O: ItemSchema['O'][];
-    E: ArraySchemaError<ItemSchema>;
-    is: (input: ItemSchema['I'][]) => input is ItemSchema['O'][];
-    err: (input: ItemSchema['I'][]) => ArraySchemaError<ItemSchema>;
-    validate: (
-        input: ItemSchema['I'][],
-    ) => Either<ItemSchema['O'][], ArraySchemaError<ItemSchema>>;
-};
+export type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = Schema<
+    typeof uri,
+    ItemSchema['I'][],
+    ItemSchema['O'][],
+    ArraySchemaError<ItemSchema>
+>;
 
 export const array = <ItemSchema extends Schema<any, any, any, any>>(
     itemSchema: ItemSchema,
