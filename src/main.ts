@@ -6,9 +6,11 @@ import {
     float,
     Infer,
     isValid,
+    nullSchema,
     record,
     string,
     stringLiteral,
+    undefinedSchema,
     union,
     valueOf,
 } from '../lib/nope';
@@ -21,7 +23,9 @@ const CountryCodeSchema = union(countryCodes.map(stringLiteral));
 const InvoiceSchema = record({ number: InvoiceNumberSchema, amount: float });
 
 const PersonSchema = record({
-    firstname: string,
+    firstname: union([string, undefinedSchema]),
+    lastname: union([string, nullSchema]),
+    name: union([string, nullSchema, undefinedSchema]),
     email: email,
     groups: array(string),
     address: record({
@@ -34,7 +38,9 @@ const PersonSchema = record({
 type Person = Infer<typeof PersonSchema>;
 
 const either = PersonSchema.validate({
-    firstname: 'test',
+    firstname: '',
+    lastname: '',
+    name: '',
     email: 'test@test.com',
     groups: [],
     address: { country: 'AT', street: 'street' },
@@ -45,6 +51,9 @@ console.log({ either });
 
 if (isValid(either)) {
     const data = valueOf(either);
+} else {
+    const errors = PersonSchema.collectErrors(either);
+    errors[0].code;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
