@@ -11,7 +11,7 @@ export const array = (itemSchema) => schema({
             items: arrayInput.map(itemSchema.validate),
         }
         : {
-            error: createError(uri, 'E_ARRAY', `input: "${arrayInput}" is not of type: ${displayString}`),
+            error: createError(uri, 'E_ARRAY', `input: "${arrayInput}" is not of type: ${displayString}`, arrayInput),
             items: [],
         },
 });

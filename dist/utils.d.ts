@@ -25,12 +25,13 @@ declare type Tagged<Token> = {
     readonly [tag]: Token;
 };
 export declare type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
-export declare type SchemaError<Uri extends string, Code extends string> = {
+export declare type SchemaError<Uri extends string, Code extends string, Input> = {
     uri: Uri;
     code: Code;
     message: string;
+    input: Input;
 };
-export declare const createError: <Uri extends string, Code extends string>(uri: Uri, code: Code, message: string) => SchemaError<Uri, Code>;
+export declare const createError: <Uri extends string, Code extends string, Input>(uri: Uri, code: Code, message: string, input: Input) => SchemaError<Uri, Code, Input>;
 declare type ErrContext<Uri extends string> = {
     uri: Uri;
     displayString: string;

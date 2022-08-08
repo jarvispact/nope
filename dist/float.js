@@ -4,6 +4,6 @@ const uri = 'float';
 export const float = schema({
     uri,
     is: (input) => number.is(input),
-    err: (input) => createError(uri, 'E_FLOAT', `input: "${input}" is not of type: ${uri}`),
+    err: (input) => createError(uri, 'E_FLOAT', `input: "${input}" is not of type: ${uri}`, input),
 });
 //# sourceMappingURL=float.js.map

@@ -3,6 +3,6 @@ const uri = 'null';
 export const nullSchema = schema({
     uri,
     is: (input) => input === null,
-    err: (input) => createError(uri, 'E_NULL', `input: "${input}" is not of type: ${uri}`),
+    err: (input) => createError(uri, 'E_NULL', `input: "${input}" is not of type: ${uri}`, input),
 });
 //# sourceMappingURL=null.js.map

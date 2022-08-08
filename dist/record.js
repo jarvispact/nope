@@ -1,6 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createError, isRecord, objectKeys, schema, } from './utils';
+import { createError, isRecord, isValid, objectKeys, schema, valueOf, } from './utils';
 const uri = 'record';
+const recursiveCollectErrors = (accum, path, invalidInput) => {
+    if (isValid(invalidInput))
+        return accum;
+    const schemaError = valueOf(invalidInput);
+    if ('error' in schemaError && 'properties' in schemaError) {
+        if (schemaError.error !== null)
+            accum.push({ path, ...schemaError.error });
+        objectKeys(schemaError.properties).map((key) => {
+            recursiveCollectErrors(accum, `${path}.${key}`, schemaError.properties[key]);
+        });
+    }
+    else if ('error' in schemaError && 'items' in schemaError) {
+        if (schemaError.error !== null)
+            accum.push({ path, ...schemaError.error });
+        schemaError.items.forEach((item, idx) => {
+            recursiveCollectErrors(accum, `${path}.${idx}`, item);
+        });
+    }
+    else {
+        accum.push({ path, ...schemaError });
+    }
+    return accum;
+};
 export const record = (definition) => {
     const _schema = schema({
         uri,
@@ -18,14 +41,15 @@ export const record = (definition) => {
                 }, {}),
             }
             : {
-                error: createError(uri, 'E_RECORD', `input: "${input}" is not of type: ${displayString}`),
+                error: createError(uri, 'E_RECORD', `input: "${input}" is not of type: ${displayString}`, input),
                 properties: {},
             },
     });
+    const collectErrors = (invalidInput) => recursiveCollectErrors([], '$', invalidInput);
     return {
         ..._schema,
         definition,
-        collectErrors: () => null,
+        collectErrors,
     };
 };
 //# sourceMappingURL=record.js.map

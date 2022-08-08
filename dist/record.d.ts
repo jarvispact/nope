@@ -4,7 +4,9 @@ declare const uri = "record";
 declare type RecordSchemaError<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
 }> = {
-    error: SchemaError<typeof uri, 'E_RECORD'> | null;
+    error: SchemaError<typeof uri, 'E_RECORD', {
+        [K in keyof Definition]: Definition[K]['I'];
+    }> | null;
     properties: {
         [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
     };
@@ -21,33 +23,17 @@ declare type CollectNestedProperties<T extends RecordSchemaError<any> | ArraySch
 } ? ObjectValues<{
     [K in keyof T]: TakeFailure<T[K]> extends RecordSchemaError<any> ? CollectNestedProperties<TakeFailure<T[K]>> : TakeFailure<T[K]> extends ArraySchemaError<any> ? CollectNestedProperties<TakeFailure<T[K]>> : TakeFailure<T[K]>;
 }>[number] : T extends ArraySchemaError<any> ? RemoveNull<T['error']> | CollectNestedProperties<T['items'][number] extends Either<any, RecordSchemaError<any>> ? TakeFailure<T['items'][number]> : T['items'][number]> : T extends RecordSchemaError<any> ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']> : never;
-declare type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = (RemoveNull<T['value']['error']> | CollectNestedProperties<T['value']['properties']>)[];
+declare type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = ((RemoveNull<T['value']['error']> | CollectNestedProperties<T['value']['properties']>) & {
+    path: string;
+})[];
 declare type RecordSchema<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
-}> = {
-    uri: typeof uri;
-    displayString: string;
-    I: {
-        [K in keyof Definition]: Definition[K]['I'];
-    };
-    O: {
-        [K in keyof Definition]: Definition[K]['O'];
-    };
-    E: RecordSchemaError<Definition>;
+}> = Schema<typeof uri, {
+    [K in keyof Definition]: Definition[K]['I'];
+}, {
+    [K in keyof Definition]: Definition[K]['O'];
+}, RecordSchemaError<Definition>> & {
     definition: Definition;
-    is: (input: {
-        [K in keyof Definition]: Definition[K]['I'];
-    }) => input is {
-        [K in keyof Definition]: Definition[K]['O'];
-    };
-    err: (input: {
-        [K in keyof Definition]: Definition[K]['I'];
-    }) => RecordSchemaError<Definition>;
-    validate: (input: {
-        [K in keyof Definition]: Definition[K]['I'];
-    }) => Either<{
-        [K in keyof Definition]: Definition[K]['O'];
-    }, RecordSchemaError<Definition>>;
     collectErrors: (failure: Invalid<RecordSchemaError<Definition>>) => CollectErrors<Invalid<RecordSchemaError<Definition>>>;
 };
 export declare const record: <Definition extends {

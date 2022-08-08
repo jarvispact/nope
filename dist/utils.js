@@ -19,7 +19,7 @@ export const invalid = (v) => {
 export const valueOf = (either) => either.value;
 export const isValid = (either) => either.status === 'VALID';
 export const isInvalid = (either) => either.status === 'INVALID';
-export const createError = (uri, code, message) => ({ uri, code, message });
+export const createError = (uri, code, message, input) => ({ uri, code, message, input });
 export const schema = ({ uri, displayString = uri, is, err, validate, }) => {
     const _is = (input) => is(input);
     const _err = (input) => err(input, { uri, displayString });

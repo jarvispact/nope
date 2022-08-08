@@ -5,6 +5,6 @@ export const union = (schemaList) => schema({
     uri,
     displayString: `${schemaList.map((s) => s.displayString).join(' | ')}`,
     is: (input) => schemaList.some((s) => s.is(input)),
-    err: (input, { displayString }) => createError(uri, 'E_UNION', `input: "${input}" is not of type: ${displayString}`),
+    err: (input, { displayString }) => createError(uri, 'E_UNION', `input: "${input}" is not of type: ${displayString}`, input),
 });
 //# sourceMappingURL=union.js.map
