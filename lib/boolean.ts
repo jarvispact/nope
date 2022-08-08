@@ -6,7 +6,7 @@ export const boolean = schema<
     typeof uri,
     boolean,
     boolean,
-    SchemaError<typeof uri, 'E_BOOLEAN'>
+    SchemaError<typeof uri, 'E_BOOLEAN', boolean>
 >({
     uri,
     is: (input) => typeof input === uri,
@@ -15,6 +15,7 @@ export const boolean = schema<
             uri,
             'E_BOOLEAN',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

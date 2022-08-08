@@ -6,7 +6,7 @@ export const undefinedSchema = schema<
     typeof uri,
     undefined,
     undefined,
-    SchemaError<typeof uri, 'E_UNDEFINED'>
+    SchemaError<typeof uri, 'E_UNDEFINED', undefined>
 >({
     uri,
     is: (input) => input === undefined,
@@ -15,6 +15,7 @@ export const undefinedSchema = schema<
             uri,
             'E_UNDEFINED',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

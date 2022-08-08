@@ -6,7 +6,7 @@ export const string = schema<
     typeof uri,
     string,
     string,
-    SchemaError<typeof uri, 'E_STRING'>
+    SchemaError<typeof uri, 'E_STRING', string>
 >({
     uri,
     is: (input) => typeof input === uri,
@@ -15,6 +15,7 @@ export const string = schema<
             uri,
             'E_STRING',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

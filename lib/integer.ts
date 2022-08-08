@@ -9,7 +9,7 @@ export const integer = schema<
     typeof uri,
     number,
     Integer,
-    SchemaError<typeof uri, 'E_INTEGER'>
+    SchemaError<typeof uri, 'E_INTEGER', number>
 >({
     uri,
     is: (input) => number.is(input) && Number.isInteger(input),
@@ -18,6 +18,7 @@ export const integer = schema<
             uri,
             'E_INTEGER',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

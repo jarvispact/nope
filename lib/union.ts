@@ -19,6 +19,7 @@ export const union = <S extends Schema<any, any, any, any>[]>(schemaList: S) =>
                 uri,
                 'E_UNION',
                 `input: "${input}" is not of type: ${displayString}`,
+                input,
             ),
     });
 

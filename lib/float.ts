@@ -9,12 +9,17 @@ export const float = schema<
     typeof uri,
     number,
     Float,
-    SchemaError<typeof uri, 'E_FLOAT'>
+    SchemaError<typeof uri, 'E_FLOAT', number>
 >({
     uri,
     is: (input) => number.is(input),
     err: (input) =>
-        createError(uri, 'E_FLOAT', `input: "${input}" is not of type: ${uri}`),
+        createError(
+            uri,
+            'E_FLOAT',
+            `input: "${input}" is not of type: ${uri}`,
+            input,
+        ),
 });
 
 export type FloatSchema = typeof float;

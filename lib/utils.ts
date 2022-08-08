@@ -49,17 +49,19 @@ declare type Tagged<Token> = {
 
 export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
 
-export type SchemaError<Uri extends string, Code extends string> = {
+export type SchemaError<Uri extends string, Code extends string, Input> = {
     uri: Uri;
     code: Code;
     message: string;
+    input: Input;
 };
 
-export const createError = <Uri extends string, Code extends string>(
+export const createError = <Uri extends string, Code extends string, Input>(
     uri: Uri,
     code: Code,
     message: string,
-): SchemaError<Uri, Code> => ({ uri, code, message });
+    input: Input,
+): SchemaError<Uri, Code, Input> => ({ uri, code, message, input });
 
 type ErrContext<Uri extends string> = {
     uri: Uri;

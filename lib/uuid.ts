@@ -9,7 +9,7 @@ export const uuid = schema<
     typeof uri,
     string,
     Uuid,
-    SchemaError<typeof uri, 'E_UUID'>
+    SchemaError<typeof uri, 'E_UUID', string>
 >({
     uri,
     is: (input) =>
@@ -18,7 +18,12 @@ export const uuid = schema<
             input,
         ),
     err: (input) =>
-        createError(uri, 'E_UUID', `input: "${input}" is not of type: ${uri}`),
+        createError(
+            uri,
+            'E_UUID',
+            `input: "${input}" is not of type: ${uri}`,
+            input,
+        ),
 });
 
 export type UuidSchema = typeof uuid;

@@ -6,7 +6,7 @@ export const number = schema<
     typeof uri,
     number,
     number,
-    SchemaError<typeof uri, 'E_NUMBER'>
+    SchemaError<typeof uri, 'E_NUMBER', number>
 >({
     uri,
     is: (input) => typeof input === uri,
@@ -15,6 +15,7 @@ export const number = schema<
             uri,
             'E_NUMBER',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

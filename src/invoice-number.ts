@@ -9,7 +9,7 @@ export const InvoiceNumberSchema = schema<
     typeof uri,
     string,
     InvoiceNumber,
-    SchemaError<typeof uri, 'E_INVOICE_NUMBER'>
+    SchemaError<typeof uri, 'E_INVOICE_NUMBER', string>
 >({
     uri,
     is: (input) => string.is(input) && input.startsWith('RE-'),
@@ -18,6 +18,7 @@ export const InvoiceNumberSchema = schema<
             uri,
             'E_INVOICE_NUMBER',
             `input: "${input}" is not of type: ${uri}`,
+            input,
         ),
 });
 

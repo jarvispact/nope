@@ -5,7 +5,6 @@ import {
     createError,
     Either,
     Invalid,
-    isInvalid,
     isRecord,
     isValid,
     objectKeys,
@@ -23,7 +22,11 @@ type RecordSchemaError<
         [Key: string]: Schema<any, any, any, any>;
     },
 > = {
-    error: SchemaError<typeof uri, 'E_RECORD'> | null;
+    error: SchemaError<
+        typeof uri,
+        'E_RECORD',
+        { [K in keyof Definition]: Definition[K]['I'] }
+    > | null;
     properties: {
         [K in keyof Definition]: Either<Definition[K]['O'], Definition[K]['E']>;
     };
@@ -87,10 +90,10 @@ type CollectNestedProperties<
     ? RemoveNull<T['error']> | CollectNestedProperties<T['properties']>
     : never;
 
-type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = (
+type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = ((
     | RemoveNull<T['value']['error']>
     | CollectNestedProperties<T['value']['properties']>
-)[];
+) & { path: string })[];
 
 type RecordSchema<
     Definition extends {
@@ -122,25 +125,32 @@ type RecordSchema<
 
 const recursiveCollectErrors = (
     accum: any[],
+    path: string,
     invalidInput: Either<any, any>,
 ) => {
     if (isValid(invalidInput)) return accum;
     const schemaError = valueOf(invalidInput);
 
     if ('error' in schemaError && 'properties' in schemaError) {
-        if (schemaError.error !== null) accum.push(schemaError.error);
+        if (schemaError.error !== null)
+            accum.push({ path, ...schemaError.error });
 
-        objectKeys(schemaError.properties).map((key) => {
-            recursiveCollectErrors(accum, schemaError.properties[key]);
+        objectKeys(schemaError.properties).map((key: any) => {
+            recursiveCollectErrors(
+                accum,
+                `${path}.${key}`,
+                schemaError.properties[key],
+            );
         });
     } else if ('error' in schemaError && 'items' in schemaError) {
-        if (schemaError.error !== null) accum.push(schemaError.error);
+        if (schemaError.error !== null)
+            accum.push({ path, ...schemaError.error });
 
-        schemaError.items.forEach((item: any) => {
-            recursiveCollectErrors(accum, item);
+        schemaError.items.forEach((item: any, idx: number) => {
+            recursiveCollectErrors(accum, `${path}.${idx}`, item);
         });
     } else {
-        accum.push(schemaError);
+        accum.push({ path, ...schemaError });
     }
 
     return accum;
@@ -191,13 +201,14 @@ export const record = <
                           uri,
                           'E_RECORD',
                           `input: "${input}" is not of type: ${displayString}`,
+                          input,
                       ),
                       properties: {} as Properties,
                   },
     });
 
     const collectErrors: any = (invalidInput: any) =>
-        recursiveCollectErrors([], invalidInput);
+        recursiveCollectErrors([], '$', invalidInput);
 
     return {
         ..._schema,
