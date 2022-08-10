@@ -26,6 +26,7 @@ const PersonSchema = record({
     firstname: union([string, undefinedSchema]),
     lastname: union([string, nullSchema]),
     name: union([string, nullSchema, undefinedSchema]),
+    test: union([literal('a'), literal('b')]),
     email: email,
     groups: array(string),
     address: record({
@@ -48,9 +49,10 @@ const either = PersonSchema.validate({
     firstname: 42,
     lastname: 4242,
     name: 444222,
+    test: 'a',
     email: 'test',
     groups: [42],
-    address: { country: 'AU', street: true },
+    address: [],
     deliveryAddresses: [{ country: 'EN', street: [] }],
     invoices: [{ number: '42' }],
 } as any);

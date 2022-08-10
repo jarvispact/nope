@@ -17,7 +17,7 @@ import {
 
 const uri = 'record';
 
-type RecordSchemaError<
+export type RecordSchemaError<
     Definition extends {
         [Key: string]: Schema<any, any, any, any>;
     },
@@ -73,7 +73,7 @@ type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = ((
     | CollectNestedProperties<T['value']['properties']>
 ) & { path: string })[];
 
-type RecordSchema<
+export type RecordSchema<
     Definition extends {
         [Key: string]: Schema<any, any, any, any>;
     },

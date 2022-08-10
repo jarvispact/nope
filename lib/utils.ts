@@ -9,11 +9,8 @@ export const isRecord = (v: unknown): v is Record<string, unknown> =>
     v !== null &&
     !(v instanceof Date);
 
-export type AutoComplete<T extends U, U = string> =
-    | T
-    | (U & { _TS_AUTOCOMPLETE_?: never });
-
 export type Infer<T extends Schema<any, any, any, any>> = T['O'];
+export type InferInput<T extends Schema<any, any, any, any>> = T['I'];
 
 export type Valid<T> = { status: 'VALID'; value: T };
 export type Invalid<T> = { status: 'INVALID'; value: T };
@@ -34,6 +31,17 @@ export const invalid = <T>(v: T): Invalid<T> => {
 };
 
 export const valueOf = <S, F>(either: Either<S, F>) => either.value;
+
+export const fold = <
+    V,
+    I,
+    OnValid extends (value: V) => any,
+    OnInvalid extends (value: I) => any,
+>(
+    either: Either<V, I>,
+    { onValid, onInvalid }: { onValid: OnValid; onInvalid: OnInvalid },
+): ReturnType<OnValid> | ReturnType<OnInvalid> =>
+    isValid(either) ? onValid(either.value) : onInvalid(either.value);
 
 export const isValid = <S, F>(either: Either<S, F>): either is Valid<S> =>
     either.status === 'VALID';
