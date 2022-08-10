@@ -1,25 +1,26 @@
-import { number } from './number';
+import { NumberSchema } from './number';
 import { createError, Opaque, schema, SchemaError } from './utils';
 
-const uri = 'float';
+const uri = 'FloatSchema';
+const errorCode = 'E_FLOAT_SCHEMA';
 
 export type Float = Opaque<number, typeof uri>;
 
-export const float = schema<
+export const FloatSchema = schema<
     typeof uri,
     number,
     Float,
-    SchemaError<typeof uri, 'E_FLOAT', number>
+    SchemaError<typeof uri, typeof errorCode, number>
 >({
     uri,
-    is: (input) => number.is(input),
+    is: (input) => NumberSchema.is(input),
     err: (input) =>
         createError(
             uri,
-            'E_FLOAT',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type FloatSchema = typeof float;
+export type FloatSchema = typeof FloatSchema;

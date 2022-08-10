@@ -2,10 +2,11 @@
 
 import { createError, Either, Schema, schema, SchemaError } from './utils';
 
-const uri = 'array';
+const uri = 'ArraySchema';
+const errorCode = 'E_ARRAY_SCHEMA';
 
 export type ArraySchemaError<ItemSchema extends Schema<any, any, any, any>> = {
-    error: SchemaError<typeof uri, 'E_ARRAY', ItemSchema['I'][]> | null;
+    error: SchemaError<typeof uri, typeof errorCode, ItemSchema['I'][]> | null;
     items: Either<ItemSchema['O'], ItemSchema['E']>[];
 };
 
@@ -16,7 +17,7 @@ export type ArraySchema<ItemSchema extends Schema<any, any, any, any>> = Schema<
     ArraySchemaError<ItemSchema>
 >;
 
-export const array = <ItemSchema extends Schema<any, any, any, any>>(
+export const ArraySchema = <ItemSchema extends Schema<any, any, any, any>>(
     itemSchema: ItemSchema,
 ): ArraySchema<ItemSchema> =>
     schema<
@@ -38,7 +39,7 @@ export const array = <ItemSchema extends Schema<any, any, any, any>>(
                 : {
                       error: createError(
                           uri,
-                          'E_ARRAY',
+                          errorCode,
                           `input: "${arrayInput}" is not of type: ${displayString}`,
                           arrayInput,
                       ),

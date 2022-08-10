@@ -15,7 +15,8 @@ import {
     valueOf,
 } from './utils';
 
-const uri = 'record';
+const uri = 'RecordSchema';
+const errorCode = 'E_RECORD_SCHEMA';
 
 export type RecordSchemaError<
     Definition extends {
@@ -24,7 +25,7 @@ export type RecordSchemaError<
 > = {
     error: SchemaError<
         typeof uri,
-        'E_RECORD',
+        typeof errorCode,
         { [K in keyof Definition]: Definition[K]['I'] }
     > | null;
     properties: {
@@ -122,7 +123,7 @@ const recursiveCollectErrors = (
     return accum;
 };
 
-export const record = <
+export const RecordSchema = <
     Definition extends {
         [Key: string]: Schema<any, any, any, any>;
     },
@@ -165,7 +166,7 @@ export const record = <
                 : {
                       error: createError(
                           uri,
-                          'E_RECORD',
+                          errorCode,
                           `input: "${input}" is not of type: ${displayString}`,
                           input,
                       ),

@@ -1,4 +1,4 @@
-import { string } from '../lib/string';
+import { StringSchema } from '../lib/string';
 import { createError, Opaque, schema, SchemaError } from '../lib/utils';
 
 const uri = 'invoice-number';
@@ -12,7 +12,7 @@ export const InvoiceNumberSchema = schema<
     SchemaError<typeof uri, 'E_INVOICE_NUMBER', string>
 >({
     uri,
-    is: (input) => string.is(input) && input.startsWith('RE-'),
+    is: (input) => StringSchema.is(input) && input.startsWith('RE-'),
     err: (input) =>
         createError(
             uri,

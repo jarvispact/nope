@@ -1,45 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-    array,
-    email,
-    float,
-    nullSchema,
-    record,
-    string,
-    literal,
-    undefinedSchema,
-    union,
-    uuid,
+    ArraySchema,
+    EmailSchema,
+    FloatSchema,
+    NullSchema,
+    RecordSchema,
+    StringSchema,
+    LiteralSchema,
+    UndefinedSchema,
+    UnionSchema,
+    UuidSchema,
     isInvalid,
 } from '../lib/nope';
 import { InvoiceNumberSchema } from './invoice-number';
 import './style.css';
 
 const countryCodes = ['AT', 'DE', 'CH'] as const;
-const CountryCodeSchema = union(countryCodes.map(literal));
+const CountryCodeSchema = UnionSchema(countryCodes.map(LiteralSchema));
 
-const InvoiceSchema = record({ number: InvoiceNumberSchema, amount: float });
+const InvoiceSchema = RecordSchema({
+    number: InvoiceNumberSchema,
+    amount: FloatSchema,
+});
 
-const PersonSchema = record({
-    id: uuid,
-    firstname: union([string, undefinedSchema]),
-    lastname: union([string, nullSchema]),
-    name: union([string, nullSchema, undefinedSchema]),
-    test: union([literal('a'), literal('b')]),
-    email: email,
-    groups: array(string),
-    address: record({
-        street: string,
+const PersonSchema = RecordSchema({
+    id: UuidSchema,
+    firstname: UnionSchema([StringSchema, UndefinedSchema]),
+    lastname: UnionSchema([StringSchema, NullSchema]),
+    name: UnionSchema([StringSchema, NullSchema, UndefinedSchema]),
+    test: UnionSchema([LiteralSchema('a'), LiteralSchema('b')]),
+    email: EmailSchema,
+    groups: ArraySchema(StringSchema),
+    address: RecordSchema({
+        street: StringSchema,
         country: CountryCodeSchema,
     }),
-    deliveryAddresses: array(
-        record({
-            street: string,
+    deliveryAddresses: ArraySchema(
+        RecordSchema({
+            street: StringSchema,
             country: CountryCodeSchema,
         }),
     ),
-    invoices: array(InvoiceSchema),
+    invoices: ArraySchema(InvoiceSchema),
 });
 
 // type Person = Infer<typeof PersonSchema>;

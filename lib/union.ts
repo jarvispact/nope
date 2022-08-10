@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { createError, Schema, schema } from './utils';
+import { createError, Schema, schema, SchemaError } from './utils';
 
-const uri = 'union';
+const uri = 'UnionSchema';
+const errorCode = 'E_UNION_SCHEMA';
 
-export const union = <S extends Schema<any, any, any, any>[]>(schemaList: S) =>
-    schema<typeof uri, S[number]['I'], S[number]['O'], S[number]['E']>({
+export const UnionSchema = <S extends Schema<any, any, any, any>[]>(
+    schemaList: S,
+) =>
+    schema<
+        typeof uri,
+        S[number]['I'],
+        S[number]['O'],
+        SchemaError<typeof uri, typeof errorCode, S[number]['I']>
+    >({
         uri,
         displayString: `${schemaList.map((s) => s.displayString).join(' | ')}`,
         is: (input) => schemaList.some((s) => s.is(input)),
         err: (input, { displayString }) =>
             createError(
                 uri,
-                'E_UNION',
+                errorCode,
                 `input: "${input}" is not of type: ${displayString}`,
                 input,
             ),
     });
 
-export type UnionSchema = typeof union;
+export type UnionSchema = typeof UnionSchema;

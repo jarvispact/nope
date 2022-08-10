@@ -1,22 +1,23 @@
 import { createError, schema, SchemaError } from './utils';
 
-const uri = 'number';
+const uri = 'NumberSchema';
+const errorCode = 'E_NUMBER_SCHEMA';
 
-export const number = schema<
+export const NumberSchema = schema<
     typeof uri,
     number,
     number,
-    SchemaError<typeof uri, 'E_NUMBER', number>
+    SchemaError<typeof uri, typeof errorCode, number>
 >({
     uri,
-    is: (input) => typeof input === uri,
+    is: (input) => typeof input === 'number',
     err: (input) =>
         createError(
             uri,
-            'E_NUMBER',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type NumberSchema = typeof number;
+export type NumberSchema = typeof NumberSchema;

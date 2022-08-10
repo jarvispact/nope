@@ -1,25 +1,26 @@
-import { number } from './number';
+import { NumberSchema } from './number';
 import { createError, Opaque, schema, SchemaError } from './utils';
 
-const uri = 'integer';
+const uri = 'IntegerSchema';
+const errorCode = 'E_INTEGER_SCHEMA';
 
 export type Integer = Opaque<number, typeof uri>;
 
-export const integer = schema<
+export const IntegerSchema = schema<
     typeof uri,
     number,
     Integer,
-    SchemaError<typeof uri, 'E_INTEGER', number>
+    SchemaError<typeof uri, typeof errorCode, number>
 >({
     uri,
-    is: (input) => number.is(input) && Number.isInteger(input),
+    is: (input) => NumberSchema.is(input) && Number.isInteger(input),
     err: (input) =>
         createError(
             uri,
-            'E_INTEGER',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type IntegerSchema = typeof integer;
+export type IntegerSchema = typeof IntegerSchema;

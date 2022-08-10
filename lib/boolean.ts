@@ -1,22 +1,23 @@
 import { createError, schema, SchemaError } from './utils';
 
-const uri = 'boolean';
+const uri = 'BooleanSchema';
+const errorCode = 'E_BOOLEAN_SCHEMA';
 
-export const boolean = schema<
+export const BooleanSchema = schema<
     typeof uri,
     boolean,
     boolean,
-    SchemaError<typeof uri, 'E_BOOLEAN', boolean>
+    SchemaError<typeof uri, typeof errorCode, boolean>
 >({
     uri,
-    is: (input) => typeof input === uri,
+    is: (input) => typeof input === 'boolean',
     err: (input) =>
         createError(
             uri,
-            'E_BOOLEAN',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type BooleanSchema = typeof boolean;
+export type BooleanSchema = typeof BooleanSchema;

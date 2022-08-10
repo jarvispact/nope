@@ -1,22 +1,23 @@
 import { createError, schema, SchemaError } from './utils';
 
-const uri = 'undefined';
+const uri = 'UndefinedSchema';
+const errorCode = 'E_UNDEFINED_SCHEMA';
 
-export const undefinedSchema = schema<
+export const UndefinedSchema = schema<
     typeof uri,
     undefined,
     undefined,
-    SchemaError<typeof uri, 'E_UNDEFINED', undefined>
+    SchemaError<typeof uri, typeof errorCode, undefined>
 >({
     uri,
     is: (input) => input === undefined,
     err: (input) =>
         createError(
             uri,
-            'E_UNDEFINED',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type UndefinedSchema = typeof undefinedSchema;
+export type UndefinedSchema = typeof UndefinedSchema;

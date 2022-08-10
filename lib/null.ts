@@ -1,22 +1,23 @@
 import { createError, schema, SchemaError } from './utils';
 
-const uri = 'null';
+const uri = 'NullSchema';
+const errorCode = 'E_NULL_SCHEMA';
 
-export const nullSchema = schema<
+export const NullSchema = schema<
     typeof uri,
     null,
     null,
-    SchemaError<typeof uri, 'E_NULL', null>
+    SchemaError<typeof uri, typeof errorCode, null>
 >({
     uri,
     is: (input) => input === null,
     err: (input) =>
         createError(
             uri,
-            'E_NULL',
+            errorCode,
             `input: "${input}" is not of type: ${uri}`,
             input,
         ),
 });
 
-export type NullSchema = typeof nullSchema;
+export type NullSchema = typeof NullSchema;
