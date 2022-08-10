@@ -1,3 +1,3 @@
 import { SchemaError } from './utils';
-export declare const boolean: import("./utils").Schema<"boolean", boolean, boolean, SchemaError<"boolean", "E_BOOLEAN", boolean>>;
-export declare type BooleanSchema = typeof boolean;
+export declare const BooleanSchema: import("./utils").Schema<"BooleanSchema", boolean, boolean, SchemaError<"BooleanSchema", "E_BOOLEAN_SCHEMA", boolean>>;
+export declare type BooleanSchema = typeof BooleanSchema;

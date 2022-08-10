@@ -1,10 +1,11 @@
 import { ArraySchemaError } from './array';
 import { Either, Invalid, Schema, SchemaError, Valid } from './utils';
-declare const uri = "record";
-declare type RecordSchemaError<Definition extends {
+declare const uri = "RecordSchema";
+declare const errorCode = "E_RECORD_SCHEMA";
+export declare type RecordSchemaError<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
 }> = {
-    error: SchemaError<typeof uri, 'E_RECORD', {
+    error: SchemaError<typeof uri, typeof errorCode, {
         [K in keyof Definition]: Definition[K]['I'];
     }> | null;
     properties: {
@@ -26,7 +27,7 @@ declare type CollectNestedProperties<T extends RecordSchemaError<any> | ArraySch
 declare type CollectErrors<T extends Invalid<RecordSchemaError<any>>> = ((RemoveNull<T['value']['error']> | CollectNestedProperties<T['value']['properties']>) & {
     path: string;
 })[];
-declare type RecordSchema<Definition extends {
+export declare type RecordSchema<Definition extends {
     [Key: string]: Schema<any, any, any, any>;
 }> = Schema<typeof uri, {
     [K in keyof Definition]: Definition[K]['I'];
@@ -36,7 +37,7 @@ declare type RecordSchema<Definition extends {
     definition: Definition;
     collectErrors: (failure: Invalid<RecordSchemaError<Definition>>) => CollectErrors<Invalid<RecordSchemaError<Definition>>>;
 };
-export declare const record: <Definition extends {
+export declare const RecordSchema: <Definition extends {
     [Key: string]: Schema<any, any, any, any>;
 }>(definition: Definition) => RecordSchema<Definition>;
 export {};

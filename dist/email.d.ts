@@ -1,6 +1,6 @@
 import { Opaque, SchemaError } from './utils';
-declare const uri = "email";
+declare const uri = "EmailSchema";
 export declare type Email = Opaque<string, typeof uri>;
-export declare const email: import("./utils").Schema<"email", string, Email, SchemaError<"email", "E_EMAIL", string>>;
-export declare type EmailSchema = typeof email;
+export declare const EmailSchema: import("./utils").Schema<"EmailSchema", string, Email, SchemaError<"EmailSchema", "E_EMAIL_SCHEMA", string>>;
+export declare type EmailSchema = typeof EmailSchema;
 export {};

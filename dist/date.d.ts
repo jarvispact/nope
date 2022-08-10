@@ -1,3 +1,3 @@
 import { SchemaError } from './utils';
-export declare const date: import("./utils").Schema<"date", Date, Date, SchemaError<"date", "E_DATE", Date>>;
-export declare type DateSchema = typeof date;
+export declare const DateSchema: import("./utils").Schema<"DateSchema", Date, Date, SchemaError<"DateSchema", "E_DATE_SCHEMA", Date>>;
+export declare type DateSchema = typeof DateSchema;

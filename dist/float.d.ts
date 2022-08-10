@@ -1,6 +1,6 @@
 import { Opaque, SchemaError } from './utils';
-declare const uri = "float";
+declare const uri = "FloatSchema";
 export declare type Float = Opaque<number, typeof uri>;
-export declare const float: import("./utils").Schema<"float", number, Float, SchemaError<"float", "E_FLOAT", number>>;
-export declare type FloatSchema = typeof float;
+export declare const FloatSchema: import("./utils").Schema<"FloatSchema", number, Float, SchemaError<"FloatSchema", "E_FLOAT_SCHEMA", number>>;
+export declare type FloatSchema = typeof FloatSchema;
 export {};

@@ -1,3 +1,3 @@
 import { SchemaError } from './utils';
-export declare const number: import("./utils").Schema<"number", number, number, SchemaError<"number", "E_NUMBER", number>>;
-export declare type NumberSchema = typeof number;
+export declare const NumberSchema: import("./utils").Schema<"NumberSchema", number, number, SchemaError<"NumberSchema", "E_NUMBER_SCHEMA", number>>;
+export declare type NumberSchema = typeof NumberSchema;

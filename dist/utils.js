@@ -17,6 +17,7 @@ export const invalid = (v) => {
     };
 };
 export const valueOf = (either) => either.value;
+export const fold = (either, { onValid, onInvalid }) => isValid(either) ? onValid(either.value) : onInvalid(either.value);
 export const isValid = (either) => either.status === 'VALID';
 export const isInvalid = (either) => either.status === 'INVALID';
 export const createError = (uri, code, message, input) => ({ uri, code, message, input });

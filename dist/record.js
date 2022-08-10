@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createError, isRecord, isValid, objectKeys, schema, valueOf, } from './utils';
-const uri = 'record';
+const uri = 'RecordSchema';
+const errorCode = 'E_RECORD_SCHEMA';
 const recursiveCollectErrors = (accum, path, invalidInput) => {
     if (isValid(invalidInput))
         return accum;
@@ -24,7 +25,7 @@ const recursiveCollectErrors = (accum, path, invalidInput) => {
     }
     return accum;
 };
-export const record = (definition) => {
+export const RecordSchema = (definition) => {
     const _schema = schema({
         uri,
         displayString: `record({${objectKeys(definition)
@@ -41,7 +42,7 @@ export const record = (definition) => {
                 }, {}),
             }
             : {
-                error: createError(uri, 'E_RECORD', `input: "${input}" is not of type: ${displayString}`, input),
+                error: createError(uri, errorCode, `input: "${input}" is not of type: ${displayString}`, input),
                 properties: {},
             },
     });

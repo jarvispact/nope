@@ -1,10 +1,11 @@
-import { string } from './string';
+import { StringSchema } from './string';
 import { createError, schema } from './utils';
-const uri = 'uuid';
-export const uuid = schema({
+const uri = 'UuidSchema';
+const errorCode = 'E_UUID_SCHEMA';
+export const UuidSchema = schema({
     uri,
-    is: (input) => string.is(input) &&
+    is: (input) => StringSchema.is(input) &&
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input),
-    err: (input) => createError(uri, 'E_UUID', `input: "${input}" is not of type: ${uri}`, input),
+    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
 });
 //# sourceMappingURL=uuid.js.map

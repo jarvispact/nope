@@ -1,9 +1,10 @@
-import { number } from './number';
+import { NumberSchema } from './number';
 import { createError, schema } from './utils';
-const uri = 'float';
-export const float = schema({
+const uri = 'FloatSchema';
+const errorCode = 'E_FLOAT_SCHEMA';
+export const FloatSchema = schema({
     uri,
-    is: (input) => number.is(input),
-    err: (input) => createError(uri, 'E_FLOAT', `input: "${input}" is not of type: ${uri}`, input),
+    is: (input) => NumberSchema.is(input),
+    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
 });
 //# sourceMappingURL=float.js.map

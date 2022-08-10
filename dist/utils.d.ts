@@ -2,10 +2,8 @@ export declare const objectKeys: <T extends {
     [x: string]: unknown;
 }>(rec: T) => (keyof T)[];
 export declare const isRecord: (v: unknown) => v is Record<string, unknown>;
-export declare type AutoComplete<T extends U, U = string> = T | (U & {
-    _TS_AUTOCOMPLETE_?: never;
-});
 export declare type Infer<T extends Schema<any, any, any, any>> = T['O'];
+export declare type InferInput<T extends Schema<any, any, any, any>> = T['I'];
 export declare type Valid<T> = {
     status: 'VALID';
     value: T;
@@ -18,6 +16,10 @@ export declare type Either<S, F> = Valid<S> | Invalid<F>;
 export declare const valid: <T>(v: T) => Valid<T>;
 export declare const invalid: <T>(v: T) => Invalid<T>;
 export declare const valueOf: <S, F>(either: Either<S, F>) => S | F;
+export declare const fold: <V, I, OnValid extends (value: V) => any, OnInvalid extends (value: I) => any>(either: Either<V, I>, { onValid, onInvalid }: {
+    onValid: OnValid;
+    onInvalid: OnInvalid;
+}) => ReturnType<OnValid> | ReturnType<OnInvalid>;
 export declare const isValid: <S, F>(either: Either<S, F>) => either is Valid<S>;
 export declare const isInvalid: <S, F>(either: Either<S, F>) => either is Invalid<F>;
 declare const tag: unique symbol;
