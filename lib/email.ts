@@ -6,6 +6,9 @@ const errorCode = 'E_EMAIL_SCHEMA';
 
 export type Email = Opaque<string, typeof uri>;
 
+const emailRegex =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+
 export const EmailSchema = schema<
     typeof uri,
     string,
@@ -13,9 +16,7 @@ export const EmailSchema = schema<
     SchemaError<typeof uri, typeof errorCode, string>
 >({
     uri,
-    is: (input) =>
-        StringSchema.is(input) &&
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
+    is: (input) => StringSchema.is(input) && emailRegex.test(input),
     err: (input) =>
         createError(
             uri,
