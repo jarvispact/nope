@@ -6,6 +6,9 @@ const errorCode = 'E_UUID_SCHEMA';
 
 export type Uuid = Opaque<string, typeof uri>;
 
+const uuidRegex =
+    /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
 export const UuidSchema = schema<
     typeof uri,
     string,
@@ -13,11 +16,7 @@ export const UuidSchema = schema<
     SchemaError<typeof uri, typeof errorCode, string>
 >({
     uri,
-    is: (input) =>
-        StringSchema.is(input) &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-            input,
-        ),
+    is: (input) => StringSchema.is(input) && uuidRegex.test(input),
     err: (input) =>
         createError(
             uri,
