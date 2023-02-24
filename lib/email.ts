@@ -1,29 +1,19 @@
-import { StringSchema } from './string';
-import { createError, Opaque, schema, SchemaError } from './utils';
+import { StringValidation } from './string';
+import { createError, extendValidation, Opaque, schema } from './utils';
 
-const uri = 'EmailSchema';
-const errorCode = 'E_EMAIL_SCHEMA';
-
-export type Email = Opaque<string, typeof uri>;
+const tag = 'Email';
+export type Email = Opaque<string, typeof tag>;
 
 const emailRegex =
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 
-export const EmailSchema = schema<
-    typeof uri,
-    string,
-    Email,
-    SchemaError<typeof uri, typeof errorCode, string>
->({
-    uri,
-    is: (input) => StringSchema.is(input) && emailRegex.test(input),
-    err: (input) =>
-        createError(
-            uri,
-            errorCode,
-            `input: "${input}" is not of type: ${uri}`,
-            input,
-        ),
+export const EmailValidation = extendValidation(StringValidation)({
+    is: (input): input is Email => emailRegex.test(input),
+    err: createError({ code: 'E_EMAIL' }),
 });
 
-export type EmailSchema = typeof EmailSchema;
+export const EmailSchema = schema({
+    uri: 'EmailSchema',
+    create: (input: string) => input as Email,
+    validation: EmailValidation,
+});

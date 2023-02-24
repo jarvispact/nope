@@ -1,23 +1,12 @@
-import { createError, schema, SchemaError } from './utils';
+import { createError, schema, validation } from './utils';
 
-const uri = 'DateSchema';
-const errorCode = 'E_DATE_SCHEMA';
-
-export const DateSchema = schema<
-    typeof uri,
-    Date,
-    Date,
-    SchemaError<typeof uri, typeof errorCode, Date>
->({
-    uri,
-    is: (input) => input instanceof Date && input.toString() !== 'Invalid Date',
-    err: (input) =>
-        createError(
-            uri,
-            errorCode,
-            `input: "${input}" is not of type: ${uri}`,
-            input,
-        ),
+export const DateValidation = validation({
+    is: (input): input is Date => input instanceof Date && input.toString() !== 'Invalid Date',
+    err: createError({ code: 'E_DATE' }),
 });
 
-export type DateSchema = typeof DateSchema;
+export const DateSchema = schema({
+    uri: 'DateSchema',
+    create: (input) => input,
+    validation: DateValidation,
+});

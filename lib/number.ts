@@ -1,23 +1,12 @@
-import { createError, schema, SchemaError } from './utils';
+import { createError, schema, validation } from './utils';
 
-const uri = 'NumberSchema';
-const errorCode = 'E_NUMBER_SCHEMA';
-
-export const NumberSchema = schema<
-    typeof uri,
-    number,
-    number,
-    SchemaError<typeof uri, typeof errorCode, number>
->({
-    uri,
-    is: (input) => typeof input === 'number',
-    err: (input) =>
-        createError(
-            uri,
-            errorCode,
-            `input: "${input}" is not of type: ${uri}`,
-            input,
-        ),
+export const NumberValidation = validation({
+    is: (input): input is number => typeof input === 'number' && !Number.isNaN(input),
+    err: createError({ code: 'E_NUMBER' }),
 });
 
-export type NumberSchema = typeof NumberSchema;
+export const NumberSchema = schema({
+    uri: 'NumberSchema',
+    create: (input) => Number(input),
+    validation: NumberValidation,
+});

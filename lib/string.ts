@@ -1,23 +1,12 @@
-import { createError, schema, SchemaError } from './utils';
+import { schema, createError, validation } from './utils';
 
-const uri = 'StringSchema';
-const errorCode = 'E_STRING_SCHEMA';
-
-export const StringSchema = schema<
-    typeof uri,
-    string,
-    string,
-    SchemaError<typeof uri, typeof errorCode, string>
->({
-    uri,
-    is: (input) => typeof input === 'string',
-    err: (input) =>
-        createError(
-            uri,
-            errorCode,
-            `input: "${input}" is not of type: ${uri}`,
-            input,
-        ),
+export const StringValidation = validation({
+    is: (input): input is string => typeof input === 'string',
+    err: createError({ code: 'E_STRING' }),
 });
 
-export type StringSchema = typeof StringSchema;
+export const StringSchema = schema({
+    uri: 'StringSchema',
+    create: (input) => String(input),
+    validation: StringValidation,
+});

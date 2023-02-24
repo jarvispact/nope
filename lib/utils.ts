@@ -1,53 +1,76 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const objectKeys = <T extends { [x: string]: unknown }>(rec: T) =>
-    Object.keys(rec) as Array<keyof T>;
+// UTILS
 
-export const isRecord = (v: unknown): v is Record<string, unknown> =>
-    typeof v === 'object' &&
-    !Array.isArray(v) &&
-    v !== null &&
-    !(v instanceof Date);
+export const objectKeys = <T extends Record<string, unknown>>(obj: T) => Object.keys(obj) as Array<keyof T>;
 
-export type Infer<T extends Schema<any, any, any, any>> = T['O'];
-export type InferInput<T extends Schema<any, any, any, any>> = T['I'];
+export const isObject = (v: unknown): v is Record<string, unknown> =>
+    typeof v === 'object' && !Array.isArray(v) && v !== null && !(v instanceof Date);
 
-export type Valid<T> = { status: 'VALID'; value: T };
-export type Invalid<T> = { status: 'INVALID'; value: T };
-export type Either<S, F> = Valid<S> | Invalid<F>;
+export const inputToDisplayString = (value: unknown): string => {
+    switch (typeof value) {
+        case 'string':
+            return `'${value}'`;
+        case 'number':
+        case 'boolean':
+            return value.toString();
+        case 'object': {
+            if (Array.isArray(value)) return 'array';
+            if (value === null) return 'null';
+            if (value instanceof Date) return 'date';
+            const keys = Object.keys(value);
+            const maxDisplayProperties = 3;
+            const additionalKeyCount = Math.max(0, keys.length - maxDisplayProperties);
 
-export const valid = <T>(v: T): Valid<T> => {
-    return {
-        status: 'VALID',
-        value: v,
-    };
+            const pairs = keys
+                .slice(0, maxDisplayProperties)
+                .map((key) => `${key}: ${inputToDisplayString(value[key as keyof typeof value])}`)
+                .join(', ');
+
+            return keys.length > 0
+                ? `{ ${pairs}${additionalKeyCount > 0 ? `, + ${additionalKeyCount} more` : ''} }`
+                : '{}';
+        }
+        default:
+            return 'unknown';
+    }
 };
 
-export const invalid = <T>(v: T): Invalid<T> => {
-    return {
-        status: 'INVALID',
-        value: v,
-    };
+// EITHER
+
+export type Ok<T> = { status: 'OK'; value: T };
+export type Err<T> = { status: 'ERR'; value: T };
+export type Either<S, F> = Ok<S> | Err<F>;
+
+export const err = <T>(value: T): Err<T> => ({ status: 'ERR', value });
+export const ok = <T>(value: T): Ok<T> => ({ status: 'OK', value });
+
+export const isErr = <O, E>(either: Either<O, E>): either is Err<E> => either.status === 'ERR';
+
+export const isOk = <O, E>(either: Either<O, E>): either is Ok<O> => either.status === 'OK';
+
+export const unwrapEither = <O, E>(either: Either<O, E>) => {
+    if (isErr(either)) throw new Error('Cannot not unwrap either');
+    return either.value;
 };
 
-export const valueOf = <S, F>(either: Either<S, F>) => either.value;
+// MATCH
 
-export const fold = <
-    V,
-    I,
-    OnValid extends (value: V) => any,
-    OnInvalid extends (value: I) => any,
+export const matchEither = <O, E, OnOk extends (value: O) => any, OnErr extends (err: E) => any>(
+    either: Either<O, E>,
+    { onOk, onErr }: { onOk: OnOk; onErr: OnErr },
+): ReturnType<OnOk> | ReturnType<OnErr> => (isOk(either) ? onOk(either.value) : onErr(either.value));
+
+export const matchObjectProperties = <
+    T extends Record<string, Either<any, any>>,
+    OnOk extends (value: any) => any,
+    OnErr extends (err: any) => any,
 >(
-    either: Either<V, I>,
-    { onValid, onInvalid }: { onValid: OnValid; onInvalid: OnInvalid },
-): ReturnType<OnValid> | ReturnType<OnInvalid> =>
-    isValid(either) ? onValid(either.value) : onInvalid(either.value);
+    eitherObject: T,
+    { onOk, onErr }: { onOk: OnOk; onErr: OnErr },
+) => ({ eitherObject, onOk, onErr });
 
-export const isValid = <S, F>(either: Either<S, F>): either is Valid<S> =>
-    either.status === 'VALID';
-
-export const isInvalid = <S, F>(either: Either<S, F>): either is Invalid<F> =>
-    either.status === 'INVALID';
+// OPAGUE
 
 declare const tag: unique symbol;
 
@@ -57,78 +80,147 @@ declare type Tagged<Token> = {
 
 export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
 
-export type SchemaError<Uri extends string, Code extends string, Input> = {
-    uri: Uri;
+// SCHEMA ERROR
+
+type CreateErrorArgs<Code extends string, Details = unknown> = {
+    code: Code;
+    message?: string;
+    details?: Details;
+};
+
+type ErrorCtx = {
+    uri: string;
+    displayString: string;
+};
+
+export type SchemaError<Code extends string, Details = unknown> = {
     code: Code;
     message: string;
-    input: Input;
+    details: ErrorCtx & Details;
 };
 
-export const createError = <Uri extends string, Code extends string, Input>(
-    uri: Uri,
-    code: Code,
-    message: string,
-    input: Input,
-): SchemaError<Uri, Code, Input> => ({ uri, code, message, input });
+export const createError =
+    <Code extends string, Details = unknown>({ code, message, details }: CreateErrorArgs<Code, Details>) =>
+    (input: unknown, ctx: ErrorCtx): SchemaError<Code, Details> => ({
+        code,
+        message: message || `input: ${inputToDisplayString(input)}, does not match type of: '${ctx.displayString}'`,
+        details: (details ? { ...ctx, ...details } : ctx) as ErrorCtx & Details,
+    });
 
-type ErrContext<Uri extends string> = {
-    uri: Uri;
-    displayString: string;
+// VALIDATION
+
+export type Validation<Input, Output extends Input, ErrCode extends string, Err extends SchemaError<ErrCode>> = {
+    is: (input: Input) => input is Output;
+    err: (input: Input, ctx: ErrorCtx) => Err;
 };
 
-type ValidateContext<Uri extends string, I, O extends I, E> = {
-    uri: Uri;
-    displayString: string;
-    is: (input: I) => input is O;
-    err: (input: I) => E;
-};
+export const validation = <Input, Output extends Input, ErrCode extends string, Err extends SchemaError<ErrCode>>(
+    validation: Validation<Input, Output, ErrCode, Err>,
+) => validation;
 
-type SchemaArgs<Uri extends string, I, O extends I, E> = {
+export const extendValidation =
+    <
+        WrappedInput,
+        WrappedOutput extends WrappedInput,
+        WrappedErrCode extends string,
+        WrappedErr extends SchemaError<WrappedErrCode>,
+    >(
+        wrappedValidation: Validation<WrappedInput, WrappedOutput, WrappedErrCode, WrappedErr>,
+    ) =>
+    <
+        NewInput extends WrappedOutput,
+        NewOutput extends NewInput,
+        NewErrCode extends string,
+        NewErr extends SchemaError<NewErrCode>,
+    >(
+        newValidation: Validation<WrappedOutput, NewOutput, NewErrCode, NewErr>,
+    ) =>
+        ({
+            is: (input) => wrappedValidation.is(input) && newValidation.is(input),
+            err: (input, ctx) => {
+                if (!wrappedValidation.is(input)) return wrappedValidation.err(input, ctx);
+                return newValidation.err(input, ctx);
+            },
+        } as Validation<WrappedInput, NewOutput, NewErrCode | WrappedErrCode, NewErr | WrappedErr>);
+
+export const withValidations = <
+    S extends Schema<string, any, any, any>,
+    Validations extends Validation<any, InferType<S>, string, any>[],
+>(
+    s: S,
+    validations: Validations,
+): Schema<S['uri'], InferInputType<S>, InferType<S>, ReturnType<S['err']> | ReturnType<Validations[number]['err']>> =>
+    schema({
+        uri: s.uri,
+        create: s.create,
+        validation: validation({
+            is: (input): input is InferType<S> => s.is(input) && validations.every((v) => v.is(input)),
+            err: (input, ctx) => {
+                if (!s.is(input)) return s.err(input, ctx);
+                const v = validations.find((v) => !v.is(input));
+                return v?.err(input, ctx);
+            },
+        }),
+    });
+
+// SCHEMA
+
+type SchemaArgs<
+    Uri extends string,
+    Input,
+    Output extends Input,
+    ErrCode extends string,
+    Err extends SchemaError<ErrCode>,
+> = {
     uri: Uri;
     displayString?: string;
-    is: (input: I) => boolean;
-    err: (input: I, ctx: ErrContext<Uri>) => E;
-    validate?: (input: I, ctx: ValidateContext<Uri, I, O, E>) => Either<O, E>;
+    create: (input: Input) => Output;
+    validation: Validation<Input, Output, ErrCode, Err>;
 };
 
-export type Schema<Uri extends string, I, O extends I, E> = {
+export type Schema<Uri extends string, Input, Output extends Input, Err extends SchemaError<string>> = {
     uri: Uri;
     displayString: string;
-    I: I;
-    O: O;
-    E: E;
-    is: (input: I) => input is O;
-    err: (input: I) => E;
-    validate: (input: I) => Either<O, E>;
+    is: (input: Input) => input is Output;
+    create: (input: Input) => Output;
+    err: (input: Input, ctx: ErrorCtx) => Err;
+    validate: (input: Input) => Either<Output, Err>;
 };
 
-export const schema = <Uri extends string, I, O extends I, E>({
+export const schema = <
+    Uri extends string,
+    Input,
+    Output extends Input,
+    ErrCode extends string,
+    Err extends SchemaError<ErrCode>,
+>({
     uri,
     displayString = uri,
-    is,
-    err,
-    validate,
-}: SchemaArgs<Uri, I, O, E>): Schema<Uri, I, O, E> => {
-    const _is = (input: I): input is O => is(input);
-
-    const _err = (input: I) => err(input, { uri, displayString });
-
-    const defaultValidate = (input: I) =>
-        _is(input) ? valid(input) : invalid(_err(input));
-
-    const _validate = (input: I) =>
-        validate
-            ? validate(input, { uri, displayString, is: _is, err: _err })
-            : defaultValidate(input);
-
+    create,
+    validation,
+}: SchemaArgs<Uri, Input, Output, ErrCode, Err>): Schema<Uri, Input, Output, Err> => {
+    const validate = (input: Input) =>
+        validation.is(input) ? ok(create(input)) : err(validation.err(input, { uri, displayString }));
     return {
         uri,
         displayString,
-        I: null as unknown as I,
-        O: null as unknown as O,
-        E: null as unknown as E,
-        is: _is,
-        err: _err,
-        validate: _validate,
+        is: validation.is,
+        create,
+        err: validation.err,
+        validate,
     };
 };
+
+export type InferInputType<S extends Schema<string, any, any, SchemaError<string>>> = Parameters<S['validate']>[0];
+
+export type InferType<S extends Schema<string, any, any, SchemaError<string>>> = ReturnType<
+    S['validate']
+> extends Either<infer O, unknown>
+    ? O
+    : never;
+
+export type InferErrorType<S extends Schema<string, any, any, SchemaError<string>>> = ReturnType<
+    S['validate']
+> extends Either<any, infer E>
+    ? E
+    : never;
