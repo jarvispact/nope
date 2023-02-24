@@ -12,26 +12,22 @@
         "access": "public"
     },
     "scripts": {
-        "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'lib/**/*.spec.ts'",
         "clean": "rm -rf ./dist",
         "dev": "vite",
         "build": "tsc && rm -rf ./dist && vite build && tsc -p ./tsconfig-build.json --outDir ./dist",
-        "serve": "vite preview"
+        "serve": "vite preview",
+        "test": "vitest",
+        "coverage": "vitest run --coverage"
     },
     "devDependencies": {
-        "typescript": "^4.9.3",
-        "vite": "^3.2.5",
         "@typescript-eslint/eslint-plugin": "^5.45.0",
         "@typescript-eslint/parser": "^5.45.0",
         "eslint": "^8.29.0",
         "eslint-config-prettier": "8.5.0",
         "eslint-plugin-prettier": "4.2.1",
         "prettier": "^2.8.0",
-        "ts-node": "^10.9.1",
-        "mocha": "^10.1.0",
-        "chai": "^4.3.7",
-        "@types/chai": "^4.3.4",
-        "@types/mocha": "^10.0.1",
-        "@types/node": "^18.11.10"
+        "typescript": "^4.9.3",
+        "vite": "^3.2.5",
+        "vitest": "^0.28.5"
     }
 }

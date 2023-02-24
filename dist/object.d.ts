@@ -6,10 +6,13 @@ type InputShape<Shape extends GenericShape> = {
 type OutputShape<Shape extends GenericShape> = {
     [Key in keyof Shape]: InferType<Shape[Key]>;
 };
-export declare const ObjectValidation: <Shape extends GenericShape>(shape: Shape) => import("./utils").Validation<unknown, OutputShape<Shape>, string, SchemaError<"E_OBJECT_SHAPE", unknown> | SchemaError<"E_OBJECT_MISSING_KEYS", unknown> | SchemaError<"E_OBJECT_PROPERTIES", {
+export type ObjectValidationOptions = {
+    failOnAdditionalProperties?: boolean;
+};
+export declare const ObjectValidation: <Shape extends GenericShape>(shape: Shape, options?: ObjectValidationOptions) => import("./utils").Validation<unknown, OutputShape<Shape>, string, SchemaError<"E_OBJECT", unknown> | SchemaError<"E_OBJECT_MISSING_KEYS", unknown> | SchemaError<"E_OBJECT_ADDITIONAL_KEYS", unknown> | SchemaError<"E_OBJECT_PROPERTY", {
     properties: { [Key in keyof Shape]: ReturnType<Shape[Key]["validate"]>; };
 }>>;
-export declare const ObjectSchema: <Shape extends GenericShape>(shape: Shape) => Schema<"ObjectSchema", InputShape<Shape>, OutputShape<Shape>, SchemaError<"E_OBJECT_SHAPE", unknown> | SchemaError<"E_OBJECT_MISSING_KEYS", unknown> | SchemaError<"E_OBJECT_PROPERTIES", {
+export declare const ObjectSchema: <Shape extends GenericShape>(shape: Shape, options?: ObjectValidationOptions) => Schema<"ObjectSchema", InputShape<Shape>, OutputShape<Shape>, SchemaError<"E_OBJECT", unknown> | SchemaError<"E_OBJECT_MISSING_KEYS", unknown> | SchemaError<"E_OBJECT_ADDITIONAL_KEYS", unknown> | SchemaError<"E_OBJECT_PROPERTY", {
     properties: { [Key in keyof Shape]: ReturnType<Shape[Key]["validate"]>; };
 }>>;
 export {};

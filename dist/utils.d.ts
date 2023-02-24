@@ -1,6 +1,10 @@
 export declare const objectKeys: <T extends Record<string, unknown>>(obj: T) => (keyof T)[];
 export declare const isObject: (v: unknown) => v is Record<string, unknown>;
-export declare const inputToDisplayString: (value: unknown) => string;
+export type InputToDisplayStringOptions = {
+    maxArrayDisplayProperties?: number;
+    maxObjectDisplayProperties?: number;
+};
+export declare const inputToDisplayString: (value: unknown, options?: InputToDisplayStringOptions) => string;
 export type Ok<T> = {
     status: 'OK';
     value: T;

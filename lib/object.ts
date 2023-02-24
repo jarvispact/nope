@@ -37,31 +37,52 @@ const shapeToDisplayString = (shape: GenericShape) => {
         : 'ObjectSchema({})';
 };
 
-const hasAllKeys = (shape: GenericShape, input: InputShape<GenericShape>) => {
+const hasAllKeysFromShape = (shape: GenericShape, input: InputShape<GenericShape>) => {
     const inputKeys = Object.keys(input);
     return Object.keys(shape).every((key) => inputKeys.includes(key));
 };
 
-export const ObjectValidation = <Shape extends GenericShape>(shape: Shape) =>
-    validation({
+const hasAdditionalProperties = (shape: GenericShape, input: InputShape<GenericShape>) => {
+    return Object.keys(shape) < Object.keys(input);
+};
+
+export type ObjectValidationOptions = {
+    failOnAdditionalProperties?: boolean;
+};
+
+const defaultOptions: ObjectValidationOptions = {
+    failOnAdditionalProperties: true,
+};
+
+export const ObjectValidation = <Shape extends GenericShape>(shape: Shape, options?: ObjectValidationOptions) => {
+    const opts = { ...defaultOptions, ...options };
+
+    return validation({
         is: (input): input is OutputShape<Shape> => {
             if (!isObject(input)) return false;
-            if (!hasAllKeys(shape, input)) return false;
+            if (!hasAllKeysFromShape(shape, input)) return false;
+            if (opts.failOnAdditionalProperties && hasAdditionalProperties(shape, input)) {
+                return false;
+            }
             return Object.keys(shape).every((key) => shape[key].is(input[key]));
         },
         err: (input, ctx) => {
             if (!isObject(input)) {
                 return createError({
-                    code: 'E_OBJECT_SHAPE',
+                    code: 'E_OBJECT',
                 })(input, ctx);
             }
 
-            if (!hasAllKeys(shape, input)) {
+            if (!hasAllKeysFromShape(shape, input)) {
                 return createError({ code: 'E_OBJECT_MISSING_KEYS' })(input, ctx);
             }
 
+            if (opts.failOnAdditionalProperties && hasAdditionalProperties(shape, input)) {
+                return createError({ code: 'E_OBJECT_ADDITIONAL_KEYS' })(input, ctx);
+            }
+
             return createError({
-                code: 'E_OBJECT_PROPERTIES',
+                code: 'E_OBJECT_PROPERTY',
                 details: {
                     properties: objectKeys(shape).reduce((accum, key) => {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -73,11 +94,12 @@ export const ObjectValidation = <Shape extends GenericShape>(shape: Shape) =>
             })(input, ctx);
         },
     });
+};
 
-export const ObjectSchema = <Shape extends GenericShape>(shape: Shape) =>
+export const ObjectSchema = <Shape extends GenericShape>(shape: Shape, options?: ObjectValidationOptions) =>
     schema({
         uri: 'ObjectSchema',
         displayString: shapeToDisplayString(shape),
         create: (input: InputShape<Shape>) => input as OutputShape<Shape>,
-        validation: ObjectValidation(shape),
+        validation: ObjectValidation(shape, options),
     });

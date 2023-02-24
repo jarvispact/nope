@@ -14,6 +14,6 @@ export const EmailValidation = extendValidation(StringValidation)({
 
 export const EmailSchema = schema({
     uri: 'EmailSchema',
-    create: (input: string) => input as Email,
+    create: (input) => input as Email,
     validation: EmailValidation,
 });

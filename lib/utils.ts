@@ -7,7 +7,18 @@ export const objectKeys = <T extends Record<string, unknown>>(obj: T) => Object.
 export const isObject = (v: unknown): v is Record<string, unknown> =>
     typeof v === 'object' && !Array.isArray(v) && v !== null && !(v instanceof Date);
 
-export const inputToDisplayString = (value: unknown): string => {
+export type InputToDisplayStringOptions = {
+    maxArrayDisplayProperties?: number;
+    maxObjectDisplayProperties?: number;
+};
+
+const defaultOptions = {
+    maxArrayDisplayProperties: 3,
+    maxObjectDisplayProperties: 3,
+};
+
+export const inputToDisplayString = (value: unknown, options?: InputToDisplayStringOptions): string => {
+    const opts = { ...defaultOptions, ...options };
     switch (typeof value) {
         case 'string':
             return `'${value}'`;
@@ -15,22 +26,34 @@ export const inputToDisplayString = (value: unknown): string => {
         case 'boolean':
             return value.toString();
         case 'object': {
-            if (Array.isArray(value)) return 'array';
             if (value === null) return 'null';
-            if (value instanceof Date) return 'date';
+            if (value instanceof Date) return 'Date';
+
+            if (Array.isArray(value)) {
+                const additionalItemsCount = Math.max(0, value.length - opts.maxArrayDisplayProperties);
+                const items = value
+                    .slice(0, opts.maxArrayDisplayProperties)
+                    .map((item) => inputToDisplayString(item, opts))
+                    .join(', ');
+                return value.length > 0
+                    ? `[ ${items}${additionalItemsCount > 0 ? `, + ${additionalItemsCount} more` : ''} ]`
+                    : '[]';
+            }
+
             const keys = Object.keys(value);
-            const maxDisplayProperties = 3;
-            const additionalKeyCount = Math.max(0, keys.length - maxDisplayProperties);
+            const additionalKeyCount = Math.max(0, keys.length - opts.maxObjectDisplayProperties);
 
             const pairs = keys
-                .slice(0, maxDisplayProperties)
-                .map((key) => `${key}: ${inputToDisplayString(value[key as keyof typeof value])}`)
+                .slice(0, opts.maxObjectDisplayProperties)
+                .map((key) => `${key}: ${inputToDisplayString(value[key as keyof typeof value], opts)}`)
                 .join(', ');
 
             return keys.length > 0
                 ? `{ ${pairs}${additionalKeyCount > 0 ? `, + ${additionalKeyCount} more` : ''} }`
                 : '{}';
         }
+        case 'undefined':
+            return 'undefined';
         default:
             return 'unknown';
     }
@@ -103,7 +126,7 @@ export const createError =
     <Code extends string, Details = unknown>({ code, message, details }: CreateErrorArgs<Code, Details>) =>
     (input: unknown, ctx: ErrorCtx): SchemaError<Code, Details> => ({
         code,
-        message: message || `input: ${inputToDisplayString(input)}, does not match type of: '${ctx.displayString}'`,
+        message: message || `input: ${inputToDisplayString(input)}, does not match the type of: '${ctx.displayString}'`,
         details: (details ? { ...ctx, ...details } : ctx) as ErrorCtx & Details,
     });
 
