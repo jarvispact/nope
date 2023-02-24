@@ -1,11 +1,14 @@
-import { StringSchema } from './string';
-import { createError, schema } from './utils';
-const uri = 'EmailSchema';
-const errorCode = 'E_EMAIL_SCHEMA';
+import { StringValidation } from './string';
+import { createError, extendValidation, schema } from './utils';
+const tag = 'Email';
+const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+export const EmailValidation = extendValidation(StringValidation)({
+    is: (input) => emailRegex.test(input),
+    err: createError({ code: 'E_EMAIL' }),
+});
 export const EmailSchema = schema({
-    uri,
-    is: (input) => StringSchema.is(input) &&
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input),
-    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
+    uri: 'EmailSchema',
+    create: (input) => input,
+    validation: EmailValidation,
 });
 //# sourceMappingURL=email.js.map

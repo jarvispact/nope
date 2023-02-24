@@ -1,9 +1,11 @@
-import { createError, schema } from './utils';
-const uri = 'NumberSchema';
-const errorCode = 'E_NUMBER_SCHEMA';
+import { createError, schema, validation } from './utils';
+export const NumberValidation = validation({
+    is: (input) => typeof input === 'number' && !Number.isNaN(input),
+    err: createError({ code: 'E_NUMBER' }),
+});
 export const NumberSchema = schema({
-    uri,
-    is: (input) => typeof input === 'number',
-    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
+    uri: 'NumberSchema',
+    create: (input) => Number(input),
+    validation: NumberValidation,
 });
 //# sourceMappingURL=number.js.map

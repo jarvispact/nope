@@ -1,11 +1,14 @@
-import { StringSchema } from './string';
-import { createError, schema } from './utils';
-const uri = 'UuidSchema';
-const errorCode = 'E_UUID_SCHEMA';
+import { StringValidation } from './string';
+import { schema, extendValidation, createError } from './utils';
+const tag = 'Uuid';
+const uuidRegex = /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+export const UuidValidation = extendValidation(StringValidation)({
+    is: (input) => uuidRegex.test(input),
+    err: createError({ code: 'E_UUID' }),
+});
 export const UuidSchema = schema({
-    uri,
-    is: (input) => StringSchema.is(input) &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input),
-    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
+    uri: 'UuidSchema',
+    create: (input) => input,
+    validation: UuidValidation,
 });
 //# sourceMappingURL=uuid.js.map

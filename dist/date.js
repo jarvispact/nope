@@ -1,9 +1,11 @@
-import { createError, schema } from './utils';
-const uri = 'DateSchema';
-const errorCode = 'E_DATE_SCHEMA';
-export const DateSchema = schema({
-    uri,
+import { createError, schema, validation } from './utils';
+export const DateValidation = validation({
     is: (input) => input instanceof Date && input.toString() !== 'Invalid Date',
-    err: (input) => createError(uri, errorCode, `input: "${input}" is not of type: ${uri}`, input),
+    err: createError({ code: 'E_DATE' }),
+});
+export const DateSchema = schema({
+    uri: 'DateSchema',
+    create: (input) => input,
+    validation: DateValidation,
 });
 //# sourceMappingURL=date.js.map

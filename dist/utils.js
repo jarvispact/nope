@@ -1,42 +1,84 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const objectKeys = (rec) => Object.keys(rec);
-export const isRecord = (v) => typeof v === 'object' &&
-    !Array.isArray(v) &&
-    v !== null &&
-    !(v instanceof Date);
-export const valid = (v) => {
-    return {
-        status: 'VALID',
-        value: v,
-    };
+// UTILS
+export const objectKeys = (obj) => Object.keys(obj);
+export const isObject = (v) => typeof v === 'object' && !Array.isArray(v) && v !== null && !(v instanceof Date);
+export const inputToDisplayString = (value) => {
+    switch (typeof value) {
+        case 'string':
+            return `'${value}'`;
+        case 'number':
+        case 'boolean':
+            return value.toString();
+        case 'object': {
+            if (Array.isArray(value))
+                return 'array';
+            if (value === null)
+                return 'null';
+            if (value instanceof Date)
+                return 'date';
+            const keys = Object.keys(value);
+            const maxDisplayProperties = 3;
+            const additionalKeyCount = Math.max(0, keys.length - maxDisplayProperties);
+            const pairs = keys
+                .slice(0, maxDisplayProperties)
+                .map((key) => `${key}: ${inputToDisplayString(value[key])}`)
+                .join(', ');
+            return keys.length > 0
+                ? `{ ${pairs}${additionalKeyCount > 0 ? `, + ${additionalKeyCount} more` : ''} }`
+                : '{}';
+        }
+        default:
+            return 'unknown';
+    }
 };
-export const invalid = (v) => {
-    return {
-        status: 'INVALID',
-        value: v,
-    };
+export const err = (value) => ({ status: 'ERR', value });
+export const ok = (value) => ({ status: 'OK', value });
+export const isErr = (either) => either.status === 'ERR';
+export const isOk = (either) => either.status === 'OK';
+export const unwrapEither = (either) => {
+    if (isErr(either))
+        throw new Error('Cannot not unwrap either');
+    return either.value;
 };
-export const valueOf = (either) => either.value;
-export const fold = (either, { onValid, onInvalid }) => isValid(either) ? onValid(either.value) : onInvalid(either.value);
-export const isValid = (either) => either.status === 'VALID';
-export const isInvalid = (either) => either.status === 'INVALID';
-export const createError = (uri, code, message, input) => ({ uri, code, message, input });
-export const schema = ({ uri, displayString = uri, is, err, validate, }) => {
-    const _is = (input) => is(input);
-    const _err = (input) => err(input, { uri, displayString });
-    const defaultValidate = (input) => _is(input) ? valid(input) : invalid(_err(input));
-    const _validate = (input) => validate
-        ? validate(input, { uri, displayString, is: _is, err: _err })
-        : defaultValidate(input);
+// MATCH
+export const matchEither = (either, { onOk, onErr }) => (isOk(either) ? onOk(either.value) : onErr(either.value));
+export const matchObjectProperties = (eitherObject, { onOk, onErr }) => ({ eitherObject, onOk, onErr });
+export const createError = ({ code, message, details }) => (input, ctx) => ({
+    code,
+    message: message || `input: ${inputToDisplayString(input)}, does not match type of: '${ctx.displayString}'`,
+    details: (details ? { ...ctx, ...details } : ctx),
+});
+export const validation = (validation) => validation;
+export const extendValidation = (wrappedValidation) => (newValidation) => ({
+    is: (input) => wrappedValidation.is(input) && newValidation.is(input),
+    err: (input, ctx) => {
+        if (!wrappedValidation.is(input))
+            return wrappedValidation.err(input, ctx);
+        return newValidation.err(input, ctx);
+    },
+});
+export const withValidations = (s, validations) => schema({
+    uri: s.uri,
+    create: s.create,
+    validation: validation({
+        is: (input) => s.is(input) && validations.every((v) => v.is(input)),
+        err: (input, ctx) => {
+            if (!s.is(input))
+                return s.err(input, ctx);
+            const v = validations.find((v) => !v.is(input));
+            return v?.err(input, ctx);
+        },
+    }),
+});
+export const schema = ({ uri, displayString = uri, create, validation, }) => {
+    const validate = (input) => validation.is(input) ? ok(create(input)) : err(validation.err(input, { uri, displayString }));
     return {
         uri,
         displayString,
-        I: null,
-        O: null,
-        E: null,
-        is: _is,
-        err: _err,
-        validate: _validate,
+        is: validation.is,
+        create,
+        err: validation.err,
+        validate,
     };
 };
 //# sourceMappingURL=utils.js.map
