@@ -32,16 +32,16 @@ export declare const matchObjectProperties: <T extends Record<string, Either<any
     onErr: OnErr;
 };
 declare const tag: unique symbol;
-declare type Tagged<Token> = {
+type Tagged<Token> = {
     readonly [tag]: Token;
 };
 export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
-type CreateErrorArgs<Code extends string, Details = unknown> = {
+export type CreateErrorArgs<Code extends string, Details = unknown> = {
     code: Code;
     message?: string;
     details?: Details;
 };
-type ErrorCtx = {
+export type ErrorCtx = {
     uri: string;
     displayString: string;
 };
@@ -58,7 +58,7 @@ export type Validation<Input, Output extends Input, ErrCode extends string, Err 
 export declare const validation: <Input, Output extends Input, ErrCode extends string, Err_1 extends SchemaError<ErrCode, unknown>>(validation: Validation<Input, Output, ErrCode, Err_1>) => Validation<Input, Output, ErrCode, Err_1>;
 export declare const extendValidation: <WrappedInput, WrappedOutput extends WrappedInput, WrappedErrCode extends string, WrappedErr extends SchemaError<WrappedErrCode, unknown>>(wrappedValidation: Validation<WrappedInput, WrappedOutput, WrappedErrCode, WrappedErr>) => <NewInput extends WrappedOutput, NewOutput extends NewInput, NewErrCode extends string, NewErr extends SchemaError<NewErrCode, unknown>>(newValidation: Validation<WrappedOutput, NewOutput, NewErrCode, NewErr>) => Validation<WrappedInput, NewOutput, WrappedErrCode | NewErrCode, WrappedErr | NewErr>;
 export declare const withValidations: <S extends Schema<string, any, any, any>, Validations extends Validation<any, InferType<S>, string, any>[]>(s: S, validations: Validations) => Schema<S["uri"], InferInputType<S>, InferType<S>, ReturnType<S["err"]> | ReturnType<Validations[number]["err"]>>;
-type SchemaArgs<Uri extends string, Input, Output extends Input, ErrCode extends string, Err extends SchemaError<ErrCode>> = {
+export type SchemaArgs<Uri extends string, Input, Output extends Input, ErrCode extends string, Err extends SchemaError<ErrCode>> = {
     uri: Uri;
     displayString?: string;
     create: (input: Input) => Output;

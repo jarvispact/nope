@@ -97,7 +97,7 @@ export const matchObjectProperties = <
 
 declare const tag: unique symbol;
 
-declare type Tagged<Token> = {
+type Tagged<Token> = {
     readonly [tag]: Token;
 };
 
@@ -105,13 +105,13 @@ export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
 
 // SCHEMA ERROR
 
-type CreateErrorArgs<Code extends string, Details = unknown> = {
+export type CreateErrorArgs<Code extends string, Details = unknown> = {
     code: Code;
     message?: string;
     details?: Details;
 };
 
-type ErrorCtx = {
+export type ErrorCtx = {
     uri: string;
     displayString: string;
 };
@@ -188,7 +188,7 @@ export const withValidations = <
 
 // SCHEMA
 
-type SchemaArgs<
+export type SchemaArgs<
     Uri extends string,
     Input,
     Output extends Input,
