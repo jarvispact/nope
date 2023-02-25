@@ -1,6 +1,6 @@
 {
     "name": "@beerstack/nope",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "main": "dist/nope.umd.js",
     "module": "dist/nope.js",
     "types": "dist/nope.d.ts",
