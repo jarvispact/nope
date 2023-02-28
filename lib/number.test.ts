@@ -14,7 +14,8 @@ it.each(okTestcases)(
     },
 );
 
-type ErrTestcase = { input: unknown };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ErrTestcase = { input: any };
 
 const errTestcases: ErrTestcase[] = [
     { input: undefined },

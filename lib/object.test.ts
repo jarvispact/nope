@@ -73,7 +73,7 @@ it('[ObjectSchema] should cascade errors from nested object schema', () => {
         a: '',
         b: {
             c: {
-                d: '42',
+                d: '42' as any,
             },
         },
     });

@@ -17,7 +17,8 @@ it.each(okTestcases)(
     },
 );
 
-type ErrTestcase = { input: unknown; code: InferErrorType<typeof UuidSchema>['code'] };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ErrTestcase = { input: any; code: InferErrorType<typeof UuidSchema>['code'] };
 
 const errTestcases: ErrTestcase[] = [
     { input: undefined, code: 'E_STRING' },

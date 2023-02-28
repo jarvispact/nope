@@ -14,6 +14,6 @@ export const UuidValidation = extendValidation(StringValidation)({
 
 export const UuidSchema = schema({
     uri: 'UuidSchema',
-    create: (input) => input as Uuid,
+    create: (input: string) => input as Uuid,
     validation: UuidValidation,
 });

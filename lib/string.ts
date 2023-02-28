@@ -7,6 +7,6 @@ export const StringValidation = validation({
 
 export const StringSchema = schema({
     uri: 'StringSchema',
-    create: (input) => String(input),
+    create: (input: string) => String(input),
     validation: StringValidation,
 });

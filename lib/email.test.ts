@@ -21,7 +21,8 @@ it.each(okTestcases)(
     },
 );
 
-type ErrTestcase = { input: unknown; code: InferErrorType<typeof EmailSchema>['code'] };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ErrTestcase = { input: any; code: InferErrorType<typeof EmailSchema>['code'] };
 
 const errTestcases: ErrTestcase[] = [
     { input: undefined, code: 'E_STRING' },

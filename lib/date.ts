@@ -7,6 +7,6 @@ export const DateValidation = validation({
 
 export const DateSchema = schema({
     uri: 'DateSchema',
-    create: (input) => input,
+    create: (input: Date) => input,
     validation: DateValidation,
 });

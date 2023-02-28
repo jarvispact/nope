@@ -7,6 +7,6 @@ export const NumberValidation = validation({
 
 export const NumberSchema = schema({
     uri: 'NumberSchema',
-    create: (input) => Number(input),
+    create: (input: number) => Number(input),
     validation: NumberValidation,
 });
