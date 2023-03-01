@@ -1,16 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StringSchema } from './string';
-import {
-    createError,
-    InferErrorType,
-    InferInputType,
-    InferType,
-    isObject,
-    objectKeys,
-    Schema,
-    schema,
-    validation,
-} from './utils';
+import { createError, InferInputType, InferType, isObject, objectKeys, Schema, schema, validation } from './utils';
 
 export const RecordValidation = <Item extends Schema<string, any, any, any>>(item: Item) =>
     validation({
@@ -38,6 +27,3 @@ export const RecordSchema = <Item extends Schema<string, any, any, any>>(item: I
         create: (input: Record<string, InferInputType<Item>>) => input as Record<string, InferType<Item>>,
         validation: RecordValidation(item),
     });
-
-const TestSchema = RecordSchema(StringSchema);
-type E = InferErrorType<typeof TestSchema>;
