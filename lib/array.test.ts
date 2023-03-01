@@ -4,7 +4,7 @@ import { LiteralSchema } from './literal';
 import { NumberSchema } from './number';
 import { StringSchema } from './string';
 import { ArraySchema } from './array';
-import { ok, Schema } from './utils';
+import { InferErrorType, ok, Schema } from './utils';
 import { UnionSchema } from './union';
 
 type OkTestcase = { item: Schema<string, any, any, any>; input: unknown[] };
@@ -29,22 +29,28 @@ it.each(okTestcases)(
     },
 );
 
+const TestArraySchema = ArraySchema(StringSchema);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ErrTestcase = { item: Schema<string, any, any, any>; input: any };
+type ErrTestcase = {
+    item: Schema<string, any, any, any>;
+    code: InferErrorType<typeof TestArraySchema>['code'];
+    input: any;
+};
 
 const errTestcases: ErrTestcase[] = [
-    { item: StringSchema, input: undefined },
-    { item: StringSchema, input: null },
-    { item: StringSchema, input: true },
-    { item: StringSchema, input: 42 },
-    { item: StringSchema, input: 'abc' },
-    { item: StringSchema, input: {} },
+    { item: StringSchema, code: 'E_ARRAY', input: undefined },
+    { item: StringSchema, code: 'E_ARRAY', input: null },
+    { item: StringSchema, code: 'E_ARRAY', input: true },
+    { item: StringSchema, code: 'E_ARRAY', input: 42 },
+    { item: StringSchema, code: 'E_ARRAY', input: 'abc' },
+    { item: StringSchema, code: 'E_ARRAY', input: {} },
 
-    { item: LiteralSchema('A'), input: ['C'] },
-    { item: LiteralSchema('A'), input: ['D'] },
-    { item: LiteralSchema('A'), input: [42] },
-    { item: LiteralSchema('A'), input: [true] },
-    { item: LiteralSchema('A'), input: ['A', 'B'] },
+    { item: LiteralSchema('A'), code: 'E_ARRAY_ITEM', input: ['C'] },
+    { item: LiteralSchema('A'), code: 'E_ARRAY_ITEM', input: ['D'] },
+    { item: LiteralSchema('A'), code: 'E_ARRAY_ITEM', input: [42] },
+    { item: LiteralSchema('A'), code: 'E_ARRAY_ITEM', input: [true] },
+    { item: LiteralSchema('A'), code: 'E_ARRAY_ITEM', input: ['A', 'B'] },
 ];
 
 it.each(errTestcases)(
@@ -54,7 +60,7 @@ it.each(errTestcases)(
         expect(either).toEqual({
             status: 'ERR',
             value: expect.objectContaining({
-                code: 'E_ARRAY',
+                code: testcase.code,
             }),
         });
     },

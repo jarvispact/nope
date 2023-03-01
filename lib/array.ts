@@ -4,7 +4,13 @@ import { createError, InferInputType, InferType, Schema, schema, validation } fr
 export const ArrayValidation = <Item extends Schema<string, any, any, any>>(item: Item) =>
     validation({
         is: (input): input is InferType<Item>[] => Array.isArray(input) && input.every(item.is),
-        err: createError({ code: 'E_ARRAY' }),
+        err: (input, ctx) => {
+            if (!Array.isArray(input)) return createError({ code: 'E_ARRAY' })(input, ctx);
+            return createError({
+                code: 'E_ARRAY_ITEM',
+                details: { items: input.map(item.validate) as ReturnType<Item['validate']>[] },
+            })(input, ctx);
+        },
     });
 
 export const ArraySchema = <Item extends Schema<string, any, any, any>>(item: Item) =>
