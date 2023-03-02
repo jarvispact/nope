@@ -3,6 +3,8 @@ export * from './boolean';
 export * from './date';
 export * from './email';
 export * from './int';
+export * from './iso-8601-date-time';
+export * from './iso-8601-date';
 export * from './literal';
 export * from './null';
 export * from './number';

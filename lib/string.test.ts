@@ -27,7 +27,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[StringSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[StringSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = StringSchema.validate(testcase.input);
         expect(either).toEqual({

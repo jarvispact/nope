@@ -27,7 +27,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[NullSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[NullSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = NullSchema.validate(testcase.input);
         expect(either).toEqual({

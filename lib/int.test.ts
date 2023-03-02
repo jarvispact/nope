@@ -30,15 +30,12 @@ const errTestcases: ErrTestcase[] = [
     { input: 0.1, code: 'E_INT' },
 ];
 
-it.each(errTestcases)(
-    '[IntSchema] should return status: "ERR" and value.code: $either.code for input: $input',
-    (testcase) => {
-        const either = IntSchema.validate(testcase.input);
-        expect(either).toEqual({
-            status: 'ERR',
-            value: expect.objectContaining({
-                code: testcase.code,
-            }),
-        });
-    },
-);
+it.each(errTestcases)('[IntSchema] should return status: "ERR" and value.code: $code for input: $input', (testcase) => {
+    const either = IntSchema.validate(testcase.input);
+    expect(either).toEqual({
+        status: 'ERR',
+        value: expect.objectContaining({
+            code: testcase.code,
+        }),
+    });
+});

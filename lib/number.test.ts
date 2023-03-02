@@ -29,7 +29,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[NumberSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[NumberSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = NumberSchema.validate(testcase.input);
         expect(either).toEqual({

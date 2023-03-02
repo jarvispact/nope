@@ -54,7 +54,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[RecordSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[RecordSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = RecordSchema(testcase.item).validate(testcase.input);
         expect(either).toEqual({

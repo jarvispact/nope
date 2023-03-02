@@ -27,7 +27,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[UndefinedSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[UndefinedSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = UndefinedSchema.validate(testcase.input);
         expect(either).toEqual({

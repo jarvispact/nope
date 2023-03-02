@@ -63,7 +63,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[TupleSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[TupleSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = TupleSchema(...testcase.items).validate(testcase.input);
         expect(either).toEqual({

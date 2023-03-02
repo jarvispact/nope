@@ -47,7 +47,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[ObjectSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[ObjectSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = TestObjectSchema.validate(testcase.input);
         expect(either).toEqual({

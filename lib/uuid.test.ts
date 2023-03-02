@@ -34,7 +34,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[UuidSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[UuidSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = UuidSchema.validate(testcase.input);
         expect(either).toEqual({

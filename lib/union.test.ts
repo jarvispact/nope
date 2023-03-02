@@ -41,7 +41,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[UnionSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[UnionSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = UnionSchema(testcase.unionList).validate(testcase.input);
         expect(either).toEqual({

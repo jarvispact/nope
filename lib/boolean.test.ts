@@ -27,7 +27,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[BooleanSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[BooleanSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = BooleanSchema.validate(testcase.input);
         expect(either).toEqual({

@@ -32,7 +32,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[UIntSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[UIntSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = UIntSchema.validate(testcase.input);
         expect(either).toEqual({

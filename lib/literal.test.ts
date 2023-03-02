@@ -29,7 +29,7 @@ const errTestcases: ErrTestcase[] = [
 ];
 
 it.each(errTestcases)(
-    '[LiteralSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[LiteralSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = LiteralSchema(testcase.literal).validate(testcase.input);
         expect(either).toEqual({

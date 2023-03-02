@@ -6,7 +6,7 @@ type OkTestcase = { input: Date };
 
 const okTestcases: OkTestcase[] = [
     { input: new Date() },
-    { input: new Date('2013-05-12') },
+    { input: new Date('2000-01-01') },
     { input: new Date(Date.now()) },
 ];
 
@@ -29,11 +29,11 @@ const errTestcases: ErrTestcase[] = [
     { input: true },
     { input: [] },
     { input: {} },
-    { input: new Date('20130512') },
+    { input: new Date('20000101') },
 ];
 
 it.each(errTestcases)(
-    '[DateSchema] should return status: "ERR" and value.code: $either.code for input: $input',
+    '[DateSchema] should return status: "ERR" and value.code: $code for input: $input',
     (testcase) => {
         const either = DateSchema.validate(testcase.input);
         expect(either).toEqual({
