@@ -29,6 +29,7 @@ const errTestcases: ErrTestcase[] = [
     { input: true },
     { input: [] },
     { input: {} },
+    { input: new Date('20130512') },
 ];
 
 it.each(errTestcases)(

@@ -1,33 +1,20 @@
 import {
-    createError,
-    extendValidation,
     LiteralSchema,
     ObjectSchema,
     RecordSchema,
+    StringMaxLength,
+    StringMinLength,
     StringSchema,
-    StringValidation,
     TupleSchema,
     UuidSchema,
     withValidations,
 } from '../lib/nope';
 
-const StringMinLengthValidation = (minLength: number) =>
-    extendValidation(StringValidation)({
-        is: (input): input is string => input.length >= minLength,
-        err: createError({ code: 'E_STRING_MIN_LENGTH' }),
-    });
-
-const StringMaxLengthValidation = (maxLength: number) =>
-    extendValidation(StringValidation)({
-        is: (input): input is string => input.length <= maxLength,
-        err: createError({ code: 'E_STRING_MAX_LENGTH' }),
-    });
-
 export const PersonSchema = ObjectSchema({
     id: UuidSchema,
     firstname: StringSchema,
     lastname: StringSchema,
-    other: withValidations(StringSchema, [StringMinLengthValidation(1), StringMaxLengthValidation(3)]),
+    other: withValidations(StringSchema, [StringMinLength(1), StringMaxLength(3)]),
     profile: RecordSchema(StringSchema),
     tuple: TupleSchema(LiteralSchema('A'), LiteralSchema('B')),
 });

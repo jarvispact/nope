@@ -1,4 +1,5 @@
 export * from './array';
+export * from './boolean';
 export * from './date';
 export * from './email';
 export * from './int';
@@ -7,6 +8,7 @@ export * from './null';
 export * from './number';
 export * from './object';
 export * from './record';
+export * from './string-validations';
 export * from './string';
 export * from './tuple';
 export * from './uint';

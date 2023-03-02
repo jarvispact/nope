@@ -16,8 +16,7 @@
         "dev": "vite",
         "build": "tsc && rm -rf ./dist && vite build && tsc -p ./tsconfig-build.json --outDir ./dist",
         "serve": "vite preview",
-        "test": "vitest",
-        "coverage": "vitest run --coverage"
+        "test": "vitest"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.45.0",
