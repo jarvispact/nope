@@ -1,9 +1,12 @@
 import {
     createError,
     extendValidation,
+    LiteralSchema,
     ObjectSchema,
+    RecordSchema,
     StringSchema,
     StringValidation,
+    TupleSchema,
     UuidSchema,
     withValidations,
 } from '../lib/nope';
@@ -25,4 +28,6 @@ export const PersonSchema = ObjectSchema({
     firstname: StringSchema,
     lastname: StringSchema,
     other: withValidations(StringSchema, [StringMinLengthValidation(1), StringMaxLengthValidation(3)]),
+    profile: RecordSchema(StringSchema),
+    tuple: TupleSchema(LiteralSchema('A'), LiteralSchema('B')),
 });

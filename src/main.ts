@@ -5,6 +5,10 @@ const either = PersonSchema.validate({
     firstname: '42',
     lastname: '42',
     other: '1',
+    profile: {
+        a: '',
+    },
+    tuple: ['A', 'B'],
 });
 
 console.log({ either });
