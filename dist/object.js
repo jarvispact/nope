@@ -5,7 +5,7 @@ const shapeToDisplayString = (shape) => {
     const shapeKeys = Object.keys(shape);
     const additionalFieldsCount = Math.max(0, shapeKeys.length - maxDisplayProperties);
     const fields = shapeKeys
-        .map((key) => `${key}: ${shape[key].uri}`)
+        .map((key) => `${key}: ${shape[key].displayString}`)
         .slice(0, maxDisplayProperties)
         .join(', ');
     return shapeKeys.length > 0
