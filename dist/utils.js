@@ -56,7 +56,6 @@ export const unwrapEither = (either) => {
 };
 // MATCH
 export const matchEither = (either, { onOk, onErr }) => (isOk(either) ? onOk(either.value) : onErr(either.value));
-export const matchObjectProperties = (eitherObject, { onOk, onErr }) => ({ eitherObject, onOk, onErr });
 export const createError = ({ code, message, details }) => (input, ctx) => ({
     code,
     message: message || `input: ${inputToDisplayString(input)}, does not match the type of: '${ctx.displayString}'`,

@@ -23,14 +23,6 @@ export declare const matchEither: <O, E, OnOk extends (value: O) => any, OnErr e
     onOk: OnOk;
     onErr: OnErr;
 }) => ReturnType<OnOk> | ReturnType<OnErr>;
-export declare const matchObjectProperties: <T extends Record<string, Either<any, any>>, OnOk extends (value: any) => any, OnErr extends (err: any) => any>(eitherObject: T, { onOk, onErr }: {
-    onOk: OnOk;
-    onErr: OnErr;
-}) => {
-    eitherObject: T;
-    onOk: OnOk;
-    onErr: OnErr;
-};
 declare const tag: unique symbol;
 type Tagged<Token> = {
     readonly [tag]: Token;

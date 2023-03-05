@@ -84,15 +84,6 @@ export const matchEither = <O, E, OnOk extends (value: O) => any, OnErr extends 
     { onOk, onErr }: { onOk: OnOk; onErr: OnErr },
 ): ReturnType<OnOk> | ReturnType<OnErr> => (isOk(either) ? onOk(either.value) : onErr(either.value));
 
-export const matchObjectProperties = <
-    T extends Record<string, Either<any, any>>,
-    OnOk extends (value: any) => any,
-    OnErr extends (err: any) => any,
->(
-    eitherObject: T,
-    { onOk, onErr }: { onOk: OnOk; onErr: OnErr },
-) => ({ eitherObject, onOk, onErr });
-
 // OPAGUE
 
 declare const tag: unique symbol;
