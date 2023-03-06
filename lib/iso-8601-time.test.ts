@@ -4,7 +4,23 @@ import { InferErrorType, ok } from './utils';
 
 type OkTestcase = { input: string };
 
-const okTestcases: OkTestcase[] = [{ input: '00:00' }, { input: '00:00:00' }, { input: '00:00:00.000' }];
+const okTestcases: OkTestcase[] = [
+    { input: '00:00' },
+    { input: '00:00:00' },
+    { input: '00:00:00.000' },
+
+    { input: '00:00Z' },
+    { input: '00:00:00Z' },
+    { input: '00:00:00.000Z' },
+
+    { input: '00:00+01:00' },
+    { input: '00:00:00+01:00' },
+    { input: '00:00:00.000+01:00' },
+
+    { input: '00:00-01:00' },
+    { input: '00:00:00-01:00' },
+    { input: '00:00:00.000-01:00' },
+];
 
 it.each(okTestcases)(
     '[Iso8601TimeSchema] should return status: "OK" and value: $value for input: $input',
@@ -37,8 +53,8 @@ const errTestcases: ErrTestcase[] = [
     { input: '00:00:00.00', code: 'E_ISO_8601_TIME' },
     { input: '00:00:00.0000', code: 'E_ISO_8601_TIME' },
 
-    { input: '25:0', code: 'E_ISO_8601_TIME' },
-    { input: '24:0', code: 'E_ISO_8601_TIME' },
+    { input: '25:00', code: 'E_ISO_8601_TIME' },
+    { input: '24:01', code: 'E_ISO_8601_TIME' },
 ];
 
 it.each(errTestcases)(

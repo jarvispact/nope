@@ -10,12 +10,6 @@ export const Iso8601DateTimeValidation = extendValidation(StringValidation)({
     is: (input): input is Iso8601DateTime => {
         const [date, time] = input.split('T');
         if (!date || !time) return false;
-
-        if (time.endsWith('Z')) {
-            const [timeWithoutZ] = time.split('Z');
-            return Iso8601DateValidation.is(date) && Iso8601TimeValidation.is(timeWithoutZ);
-        }
-
         return Iso8601DateValidation.is(date) && Iso8601TimeValidation.is(time);
     },
     err: createError({ code: 'E_ISO_8601_DATE_TIME' }),
