@@ -20,10 +20,10 @@ By carefully validating all inputs at the edges of our application we can ensure
 - 😎 Dont write a single type yourself, infer them from your schema!
 - 💪 Strongly typed data and error objects
 - 🤷‍♂️ Automatic human friendly error messages
-- 0️⃣ No dependencies
+- 0️⃣ Zero dependencies
 - 🪶 Lightweight ( 2.8 kB )
 - 🌴 Tree-shakeable
-- ⚡ Fast ( 6x faster than [zod](https://zod.dev/) )
+- ⚡ 6x faster than [zod](https://zod.dev/) ( [Performance test](https://stackblitz.com/edit/typescript-rekaev?file=index.ts) )
 - 🧷 First class support for opaque (branded) types
 - 🏗️ Create your own schemas and types, with just a few lines of code
 
