@@ -1,35 +1,19 @@
-import {
-    EmailSchema,
-    InferType,
-    Iso8601DateSchema,
-    isOk,
-    ObjectSchema,
-    StringSchema,
-    UuidSchema,
-} from '../../lib/nope';
+import { EmailSchema, InferType, isOk, ObjectSchema, StringSchema } from '../../lib/nope';
+
+// 1
 
 const PersonSchema = ObjectSchema({
-    id: UuidSchema,
     name: StringSchema,
     email: EmailSchema,
-    birthday: Iso8601DateSchema,
 });
 
-type Person = InferType<typeof PersonSchema>;
+type Person = InferType<typeof PersonSchema>; // { name: string, email: Email }
 
-// the type looks like this when you hover over `Person`:
-// type Person = {
-//     id: Uuid;
-//     name: string;
-//     email: Email;
-//     birthday: Iso8601Date;
-// }
+// 2
 
 const input = {
-    id: 'ed549470-5d70-4a26-a5af-af38e17fbd66',
     name: 'Tony Stark',
     email: 'tony@starkindustries.com',
-    birthday: '1970-05-29',
 };
 
 const either = PersonSchema.validate(input);

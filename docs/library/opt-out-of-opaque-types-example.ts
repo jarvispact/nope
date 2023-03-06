@@ -24,12 +24,21 @@ const input = {
     birthday: '1970-05-29',
 };
 
-const either = PersonSchema.validate(input);
+// const either = PersonSchema.validate(input);
 
+// if (isOk(either)) {
+//     // typeof person is of type `Person` in here
+//     const person = either.value;
+// } else {
+//     // typeof errCode: "E_OBJECT" | "E_OBJECT_MISSING_KEYS" | "E_OBJECT_ADDITIONAL_KEYS" | "E_OBJECT_PROPERTY"
+//     const errCode = either.value.code;
+// }
+
+const MyStringEmailSchema = withValidations(StringSchema, [EmailValidation]);
+
+const either = MyStringEmailSchema.validate('tony@starkindustries.com');
 if (isOk(either)) {
-    // typeof person is of type `Person` in here
-    const person = either.value;
+    either.value; // typeof `either.value`: string
 } else {
-    // typeof errCode: "E_OBJECT" | "E_OBJECT_MISSING_KEYS" | "E_OBJECT_ADDITIONAL_KEYS" | "E_OBJECT_PROPERTY"
-    const errCode = either.value.code;
+    const errCode = either.value.code; // typeof `errCode`: "E_STRING" | "E_EMAIL"
 }

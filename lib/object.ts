@@ -80,11 +80,17 @@ export const ObjectValidation = <Shape extends GenericShape>(shape: Shape, optio
             }
 
             if (!hasAllKeysFromShape(shape, input)) {
-                return createError({ code: 'E_OBJECT_MISSING_KEYS' })(input, ctx);
+                return createError({
+                    code: 'E_OBJECT_MISSING_KEYS',
+                    details: { shapeKeys: Object.keys(shape), inputKeys: Object.keys(input) },
+                })(input, ctx);
             }
 
             if (opts.failOnAdditionalProperties && hasAdditionalProperties(shape, input)) {
-                return createError({ code: 'E_OBJECT_ADDITIONAL_KEYS' })(input, ctx);
+                return createError({
+                    code: 'E_OBJECT_ADDITIONAL_KEYS',
+                    details: { shapeKeys: Object.keys(shape), inputKeys: Object.keys(input) },
+                })(input, ctx);
             }
 
             return createError({

@@ -115,10 +115,10 @@ export type SchemaError<Code extends string, Details = unknown> = {
 
 export const createError =
     <Code extends string, Details = unknown>({ code, message, details }: CreateErrorArgs<Code, Details>) =>
-    (input: unknown, ctx: ErrorCtx): SchemaError<Code, Details> => ({
+    (input: unknown, { uri, displayString }: ErrorCtx): SchemaError<Code, Details> => ({
         code,
-        message: message || `input: ${inputToDisplayString(input)}, does not match the type of: '${ctx.displayString}'`,
-        details: (details ? { ...ctx, ...details } : ctx) as ErrorCtx & Details,
+        message: message || `input: ${inputToDisplayString(input)}, does not match the type of: '${displayString}'`,
+        details: (details ? { uri, ...details } : { uri }) as ErrorCtx & Details,
     });
 
 // VALIDATION
