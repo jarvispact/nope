@@ -1,6 +1,6 @@
 {
     "name": "@jarvistack/nope",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "main": "dist/nope.umd.js",
     "module": "dist/nope.js",
     "types": "dist/nope.d.ts",
