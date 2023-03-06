@@ -160,7 +160,11 @@ if (isOk(either)) {
 - `UnionValidation`
 - `UuidValidation`
 
-## Real world example
+## Examples:
+
+- [react form validation example](https://stackblitz.com/edit/vitejs-vite-znoci4?file=src/App.tsx)
+
+Here is a example on how you would define a more complex schema:
 
 ```ts
 const countries = ['AT', 'DE', 'CH'] as const;
