@@ -1,93 +1,35 @@
-# How to write your own validation library like zod
+## Intro
 
-[zod](https://zod.dev/) is a schema based validation library with static type inference. It is production ready, has a rich community and ecosystem. You should check it out if you have the need for such a library. I explored this concept of a schema based validation library for a while, just to learn and to understand typescript better. My approach to learn these advanced ts concepts was to create such a library from scratch. If you are curious, you can check it out here: [@jarvistack/nope](https://github.com/jarvispact/nope).
+[zod](https://zod.dev/) is a schema based validation library with static type inference. It is production ready, has a rich community and ecosystem. You should check it out if you have the need for such a library.
 
-But today's blog post is not about my library. Instead i want to explain to you how it works under the hood and how you can create something similar yourself and become a better typescript developer while doing so. Lets go!
+My approach to learn some advanced typescript concepts was to create a similar library from scratch. If you are curious, you can check it out here: [@jarvistack/nope](https://github.com/jarvispact/nope). But today's blog post is not about my library. Instead i want to explain to you how it works under the hood and how you can create something similar yourself and become a better typescript developer while doing so.
 
 ## Table of contents
 
+- [Intro](#intro)
 - [Prerequisites](#prerequisites)
-    - [Unions](#1-unions)
-    - [Generics](#2-generics)
-    - [Custom type guards](#3-custom-type-guards)
-- [Lets go](#lets-go)
-- [The `validation()` abstraction](#the-validation-abstraction)
-- [The `schema()` abstraction](#the-schema-abstraction)
+- [Some utilities](#some-utilities)
+- [The validation function](#the-validation-function)
+- [The extendValidation function](#the-extendvalidation-function)
+- [The schema function](#the-schema-function)
 - [Opaque ( branded ) types](#opaque--branded--types)
+- [The InferType helper](#the-infertype-helper)
 - [Complex example](#complex-example)
 - [Closing](#closing)
 
 ## Prerequisites
 
-We will make heavy use of unions, generics and custom type guards, so let me explain those real quick before we get started. **If you know these concepts already, you can just skip this section and jump right to the [Lets go](#lets-go) section.**
+Since this is a advanced typescript topic, i will assume that you are already familiar with:
 
-**Unions**
+- **Union types**
+- **Generics**
+- **Type predicates**
 
-A union type is like a logical `OR` in many programming languages. It uses the pipe symbol ( `|` ). Here are some examples:
+If you are not, i suggest to you [another blog post](https://dev.to/jarvispact/typescript-beyond-the-basics-2ap0) where i talk a bit about type inference, union types and generics. For type predicates i can recommend [this blog post](https://fettblog.eu/typescript-type-predicates/).
 
-```ts
-type A = 'A';
-type B = 'B';
-type AorB = A | B; // "A" | "B"
-```
+---
 
-```ts
-type A = { a: string };
-type B = { b: number };
-type AorB = A | B; // { a: string } | { b: number }
-```
-
-With this, we can create a `Either<Ok, Err>` type, that says, something is `Ok` or is a `Err`. You will see the implementation for this type in a moment, after i have covered generics.
-
-**Generics**
-
-A generic type is like a function argument in javascript, but on the type level. Generic types or functions take a argument of a type that is not known **yet**. It will be known to the caller of this type or function, but it is not known yet at the time of writing it. Show me examples!
-
-```ts
-// a generic type
-type List<T> = { items: T[] };
-type ListOfStrings = List<string>; // { items: string[]; }
-type ListOfNumbers = List<number>; // { items: number[]; }
-
-// a generic function
-const identity = <T>(arg: T) => arg;
-const aString = identity('some string'); // typeof `aString`: "some string"
-const aNumber = identity(42); // typeof `aNumber`: 42
-```
-
-By using a generic in a function, you can see that typescript infers the types not as their primitive type ( `string` or `number` ), but as their literal type. This is extremely useful and we will make use of it later. To fix the problem that we dont know anything about the type of the passed argument in the generic type of function, we can specify a generic constraint. This allows us to actually do something with the passed argument:
-
-```ts
-const sanitize = <T extends string>(arg: T) => {
-    if (arg.startsWith('<script')) throw new Error('dont be evil!');
-    return arg;
-};
-
-const aString = sanitize('some string'); // typeof `aString`: "some string"
-const aNumber = sanitize(42); // ts-error: Argument of type 'number' is not assignable to parameter of type 'string'
-```
-
-**Custom type guards**
-
-A custom type guard is a function with a special type annotation that returns a boolean. If it returns true at runtime (for example inside of an `if` statement), typescript knows that the passed value is of the annotated type. Show me examples!
-
-```ts
-const isString = (arg: unknown): arg is string => typeof arg === 'string';
-
-const value: unknown = 42;
-
-if (isString(value)) {
-    // inside of the if branch, typescript can now know that value is of type: string
-    console.log(value.toUpperCase());
-} else {
-    // inside the else branch, it is still of type: unknown
-    console.log(value.toUpperCase()); // ts-error: 'value' is of type 'unknown'
-}
-```
-
-Since the topic for today are not unions, generics and custom type guards i will stop here. TODO add links to posts for union, generics and custom type guards.
-
-## Lets go
+## Some utilities
 
 The goals for our validation library are:
 
@@ -95,7 +37,7 @@ The goals for our validation library are:
 - **Typesafety:** The static type is inferred correctly for success and error case.
 - **Runtime safety:** The value at runtime matches our validation logic.
 
-Lets start by defining some utilities:
+Lets start by defining the utilities:
 
 ```ts
 type Ok<T> = { status: 'OK'; value: T };
@@ -109,12 +51,14 @@ type SchemaError<Code extends string = string> = { code: Code };
 const createError = <Code extends string>(code: Code): SchemaError<Code> => ({ code });
 ```
 
-Now let me outline the basic principle in a example of e email validation, without any further abstractions:
+---
+
+Now let me outline the basic principle in a example of a email validation, without any further abstractions:
 
 ```ts
-// our custom string type guard
+// our string type predicate
 const isString = (input: unknown): input is string => typeof input === 'string';
-// our custom string type guard that also ensures a valid email address at runtime
+// our string type predicate that also ensures a valid email address at runtime
 const isEmail = (input: string): input is string => input.includes('@');
 
 // declare the possible errors
@@ -147,7 +91,9 @@ if (isOk(either)) {
 
 Thats all, there is nothing more to it. But thats a lot of boilerplate to write for our email validation. Lets create a simple abstraction for validations (our library code)
 
-## The `validation()` abstraction
+---
+
+## The validation function
 
 ```ts
 type Validation<Input, Output extends Input, Err extends SchemaError> = {
@@ -162,15 +108,13 @@ const validation = <Input, Output extends Input, Err extends SchemaError>(valida
     validation;
 ```
 
-With this one simple abstraction we are now able to define a `StringValidation` with just 4 lines of code:
+With this one simple function we are now able to define a `StringValidation` with just 4 lines of code:
 
 ```ts
 const StringValidation = validation({
     is: (input): input is string => typeof input === 'string',
     err: () => createError('E_STRING'),
 });
-
-type StringErrCode = ReturnType<(typeof StringValidation)['err']>['code']; // "E_STRING"
 ```
 
 To create our `EmailValidation` we can already reuse our `StringValidation` and with just 7 lines of code we are done:
@@ -183,18 +127,20 @@ const EmailValidation = validation({
         return createError('E_EMAIL');
     },
 });
-
-type EmailErrCode = ReturnType<(typeof EmailValidation)['err']>['code']; // "E_STRING" | "E_EMAIL"
 ```
 
-Even this code could be further reduced by writing a little helper function, called `extendValidation()`. Here is the implementation:
+Even this code could be further reduced by writing a little helper function, called `extendValidation()`.
+
+---
+
+## The extendValidation function
 
 ```ts
 const extendValidation =
-    <WrappedInput, WrappedOutput extends WrappedInput, WrappedErr extends SchemaError<string>>(
+    <WrappedInput, WrappedOutput extends WrappedInput, WrappedErr extends SchemaError>(
         wrappedValidation: Validation<WrappedInput, WrappedOutput, WrappedErr>,
     ) =>
-    <NewInput extends WrappedOutput, NewOutput extends NewInput, NewErr extends SchemaError<string>>(
+    <NewInput extends WrappedOutput, NewOutput extends NewInput, NewErr extends SchemaError>(
         newValidation: Validation<WrappedOutput, NewOutput, NewErr>,
     ) =>
         ({
@@ -206,20 +152,20 @@ const extendValidation =
         } as Validation<WrappedInput, NewOutput, NewErr | WrappedErr>);
 ```
 
-The types for this function look a bit crazy, but we will only write it once. We can then use it to make our lives easier for various validations like a `Integer`, `UnsignedInteger`, `Uuid` validation and many many more. Look how simple it is now to define the `EmailValidation`:
+The types for this function look a bit crazy, but other than the types there is not a lot going on inside of this function. But its really useful to reduce the code for validations like a `Integer`, `UnsignedInteger`, `Uuid` and many many more validations that build upon a `string` or `number`. Look how simple it is now to define the `EmailValidation`:
 
 ```ts
 const EmailValidation = extendValidation(StringValidation)({
     is: (input): input is string => input.includes('@'),
     err: () => createError('E_EMAIL'),
 });
-
-type EmailErrCode = ReturnType<(typeof EmailValidation)['err']>['code']; // "E_STRING" | "E_EMAIL"
 ```
 
 Awesome 🤩! Half of the work is done with 2 simple functions. Now we will tackle the other half.
 
-## The `schema()` abstraction
+---
+
+## The schema function
 
 ```ts
 type SchemaArgs<Input, Output extends Input, Err extends SchemaError> = {
@@ -269,7 +215,7 @@ if (isOk(either)) {
 }
 ```
 
-The same concept applies for a `EmailSchema`:
+The exact same concept applies for a `EmailSchema`:
 
 ```ts
 // definition
@@ -294,9 +240,11 @@ if (isOk(either)) {
 }
 ```
 
+---
+
 ## Opaque ( branded ) types
 
-Opaque types are not possible in typescript out of the box, but we can make it work with a simple trick:
+Opaque types are not available in typescript out of the box, but we can make it work with a simple trick:
 
 ```ts
 declare const tag: unique symbol;
@@ -311,7 +259,7 @@ type Email = Opaque<string, 'Email'>;
 type UnsignedInteger = Opaque<number, 'UnsignedInteger'>;
 ```
 
-The `Email` type is still assignable to a string, but not vice versa. Also the `Integer` type is still assignable to a number, but not vice versa. Typescript autocompletion is still available for string and number functions. For example all of the following is valid:
+The `Email` type is still assignable to a string, but not vice versa. Also the `UnsignedInteger` type is still assignable to a number, but not vice versa. Typescript autocompletion is still available for string and number functions. All of the following code compiles:
 
 ```ts
 const email = 'tony@starkindustries.com' as Email;
@@ -319,14 +267,16 @@ const lowercaseEmail = email.toLowerCase(); // ok
 
 const sendEmail = (address: string) => {};
 sendEmail(email); // ok
+sendEmail(''); // ok
+```
 
-// ===
-
+```ts
 const lengthOfSomeList = 1 as UnsignedInteger;
 const timesTen = lengthOfSomeList * 10; // ok
 
 const getElementFromList = (list: number[], index: number) => {};
 getElementFromList([], lengthOfSomeList); // ok
+getElementFromList([], -1); // ok
 ```
 
 But if we define a opaque type for a function argument, we cannot pass simple strings or numbers anymore:
@@ -337,9 +287,9 @@ const email = 'tony@starkindustries.com' as Email;
 const sendEmail = (address: Email) => {};
 sendEmail(email); // ok
 sendEmail(''); // Argument of type 'string' is not assignable to parameter of type 'Email'
+```
 
-// ===
-
+```ts
 const lengthOfSomeList = 1 as UnsignedInteger;
 
 const getElementFromList = (list: number[], index: UnsignedInteger) => {};
@@ -347,18 +297,12 @@ getElementFromList([], lengthOfSomeList); // ok
 getElementFromList([], -1); // Argument of type 'number' is not assignable to parameter of type 'UnsignedInteger'
 ```
 
-This lets us define a more concrete type, which leads to a safer codebase. The above examples are **not** safe at runtime, because we are simpy annotating variables with `as Email` or `as UnsignedInteger`. But we can use schemas to:
-
-- have even stronger types
-- and are also safe at runtime
-
-This is how we would define a `EmailSchema` if we want to use a opaque (branded) type for it:
+This lets us define a more concrete type, which leads to a safer codebase. **The above examples are not safe at runtime**. This is how we would define a `EmailSchema` with a branded type and how we can use it:
 
 ```ts
 // definition
 
-const tag = 'Email';
-type Email = Opaque<string, typeof tag>;
+type Email = Opaque<string, 'Email'>;
 
 const EmailValidation = extendValidation(StringValidation)({
     is: (input): input is Email => input.includes('@'),
@@ -380,16 +324,40 @@ if (isOk(either)) {
 }
 ```
 
-Before, i told you that the `create` function will be handy later on. We are using it here to create the type `Email` from a `string`. The `create` function itself does **not** guarantee that the variable holds a correct value at runtime, but when we use the `EmailSchema.validate()` function, we can be sure that
+Before, i told you that the `create` function will be handy later on. We are using it here to create the type `Email` from a `string`. The `create` function itself does **not** guarantee that the variable holds a correct value at runtime, but when we use the `EmailSchema.validate()` function, and we check if the validation was ok with the `isOk()` function, we can be sure that:
 
 - the value is of type `Email`
 - and that a variable holds the correct value at runtime
 
-If the validation failed you will have strongly typed error objects as well. Every possible error that can happen gets its own type. The `validation()` and `schema()` functions in this blog post are kept extremely simple to outline the basic principle. In my library [@jarvistack/nope](https://github.com/jarvispact/nope) there is plenty of information about every error in detail and a automatic human friendly error message. All of this without more boilerplate for the user of the library. There you will also find inpiration on how to write more complex schemas like the `ArraySchema(ItemSchema)` or the `ObjectSchema(Shape)` but the basic principle stays the same.
+If the validation failed (the else branch of the example above) you will have strongly typed error objects. Every possible error that can happen gets its own type as defined by our validations. The `validation()` and `schema()` functions in this blog post are kept extremely simple to outline the basic principle to you.
+
+Also the examples of a `StringSchema` and a `EmailSchema` are quite simple. It starts to get more complex when you want to have a `ArraySchema` that wraps some schema for its items, or a `ObjectSchema` that wraps a object where every value in that object is another schema. But in my library [@jarvistack/nope](https://github.com/jarvispact/nope) i have proven that this abstraction of a `validation()` and a `schema()` function holds. Even for quite complex wrappers. You can get some inspiration on how to build those wrapper schemas from this repository.
+
+---
+
+## The InferType helper
+
+We can now write a little helper type, that will extract the static type from any schema, no matter how complex or deep. Just like you know it from zod:
+
+```ts
+export type InferType<S extends Schema<string, any, any, SchemaError<string>>> = ReturnType<
+    S['validate']
+> extends Either<infer O, unknown>
+    ? O
+    : never;
+```
+
+And use it to extract the type from the schema:
+
+```ts
+type Email = InferType<typeof EmailSchema>; // Noice!
+```
+
+---
 
 ## Complex example
 
-With this 3 simple functions, we are now able to build all sorts of wrappers and schemas to represent complex objects. Whenever you decide to use opaque types or not, it will make your code safer, both at compile and runtime 😍.
+With this 3 simple functions, we are now able to build all sorts of wrappers and schemas to represent complex objects. Whenever you decide to use opaque types or not, it will make your code safer, both at compile and runtime 😍. This is a example of a complex schema that you could create with my library today. Just to show you how composable and declarative those little pieces are:
 
 ```ts
 const countries = ['AT', 'DE', 'CH'] as const;
@@ -405,6 +373,10 @@ const AddressSchema = ObjectSchema({
 const themes = ['light', 'dark'] as const;
 const ThemeSchema = UnionSchema(themes.map(LiteralSchema));
 
+const ProfileSchema = ObjectSchema({
+    theme: ThemeSchema,
+})
+
 const PersonSchema = ObjectSchema({
     id: UuidSchema,
     name: StringSchema,
@@ -415,28 +387,56 @@ const PersonSchema = ObjectSchema({
         main: AddressSchema,
         others: ArraySchema(AddressSchema),
     }),
-    profile: ObjectSchema({
-        theme: ThemeSchema,
-    }),
+    profile: ProfileSchema,
 });
 ```
 
-We can now write a little helper type, that will extract the static type from any schema, no matter how complex or deep. Just like you know it from zod:
+Now, just extract the types for all of them:
 
 ```ts
-export type InferType<S extends Schema<string, any, any, SchemaError<string>>> = ReturnType<
-    S['validate']
-> extends Either<infer O, unknown>
-    ? O
-    : never;
+type Country = InferType<typeof CountrySchema>;
+type Address = InferType<typeof AddressSchema>;
+type Theme = InferType<typeof ThemeSchema>;
+type Profile = InferType<typeof ProfileSchema>;
+type Person = InferType<typeof PersonType>;
+
+// these types will be 🪄 automagically 🪄 inferred for you:
+
+type Country = "AT" | "DE" | "CH";
+
+type Address = {
+    street: string;
+    zip: string;
+    city: string;
+    country: Country;
+}
+
+type Theme = "light" | "dark";
+
+type Profile = {
+    theme: Theme;
+}
+
+type Person = {
+    id: Uuid;
+    name: string;
+    email: Email;
+    birthday: Iso8601Date;
+    importedAt: Iso8601DateTime;
+    address: {
+        main: Address;
+        others: Address[];
+    };
+    profile: Profile;
+}
 ```
 
-And use it to get the Person type from the schema:
+![Why cant i hold all the hype](./cant_hold_the_hype.gif)
 
-```ts
-type Person = InferType<typeof PersonSchema>; // Noice!
-```
+---
 
 ## Closing
 
-I hope that you learned something new, or that i inspired you to dig a bit deeper into this topic yourself. Also i would be very happy about feedback and suggestions for improvements. Ok 👋.
+When you use such a library to carefully validate all the edges of your application (all the places where you process user input and external data), you dont need to write a lot of types yourself and the code that holds your domain logic will be typesafe and resilient at runtime.
+
+I hope that you learned something new, or that i inspired you to dig a bit deeper into this topic yourself. Also i would be very happy about feedback and suggestions to improve this blog post. Ok 👋.

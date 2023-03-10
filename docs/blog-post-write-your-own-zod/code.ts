@@ -2,68 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // ====================================
-// UNIONS
-
-{
-    type A = 'A';
-    type B = 'B';
-    type AorB = A | B; // "A" | "B"
-}
-{
-    type A = { a: string };
-    type B = { b: number };
-    type AorB = A | B; // { a: string } | { b: number }
-}
-
-// ====================================
-// GENERICS
-
-{
-    // a generic type
-    type List<T> = { items: T[] };
-    type ListOfStrings = List<string>; // { items: string[]; }
-    type ListOfNumbers = List<number>; // { items: number[]; }
-}
-{
-    // a generic function
-    const identity = <T>(arg: T) => arg;
-    const aString = identity('some string'); // typeof `aString`: "some string"
-    const aNumber = identity(42); // typeof `aNumber`: 42
-}
-
-// ====================================
-// GENERICS WITH CONSTRAINTS
-
-{
-    const sanitize = <T extends string>(arg: T) => {
-        if (arg.startsWith('<script')) throw new Error('dont be evil!');
-        return arg;
-    };
-
-    const aString = sanitize('some string'); // typeof `aString`: "some string"
-    // @ts-expect-error
-    const aNumber = sanitize(42); // ts-error: Argument of type 'number' is not assignable to parameter of type 'string'
-}
-
-// ====================================
-// CUSTOM TYPE GUARDS
-
-{
-    const isString = (arg: unknown): arg is string => typeof arg === 'string';
-
-    const value: unknown = 42;
-
-    if (isString(value)) {
-        // inside of the if branch, typescript can now know that value is of type: string
-        console.log(value.toUpperCase());
-    } else {
-        // inside the else branch, it is still of type: unknown
-        // @ts-expect-error
-        console.log(value.toUpperCase()); // ts-error: 'value' is of type 'unknown'
-    }
-}
-
-// ====================================
 // UTILITIES
 
 type Ok<T> = { status: 'OK'; value: T };
@@ -141,11 +79,8 @@ const StringValidation = validation({
         is: (input): input is string => typeof input === 'string',
         err: () => createError('E_STRING'),
     });
-
-    type StringErrCode = ReturnType<(typeof StringValidation)['err']>['code']; // "E_STRING"
-
-    // ===
-
+}
+{
     const EmailValidation = validation({
         is: (input): input is string => StringValidation.is(input) && input.includes('@'),
         err: (input) => {
@@ -153,8 +88,6 @@ const StringValidation = validation({
             return createError('E_EMAIL');
         },
     });
-
-    type EmailErrCode = ReturnType<(typeof EmailValidation)['err']>['code']; // "E_STRING" | "E_EMAIL"
 }
 
 // ====================================
@@ -162,10 +95,10 @@ const StringValidation = validation({
 
 // FOR THE SIMPLIFIED VALIDATION AND SCHEMA TYPES
 const extendValidation =
-    <WrappedInput, WrappedOutput extends WrappedInput, WrappedErr extends SchemaError<string>>(
+    <WrappedInput, WrappedOutput extends WrappedInput, WrappedErr extends SchemaError>(
         wrappedValidation: Validation<WrappedInput, WrappedOutput, WrappedErr>,
     ) =>
-    <NewInput extends WrappedOutput, NewOutput extends NewInput, NewErr extends SchemaError<string>>(
+    <NewInput extends WrappedOutput, NewOutput extends NewInput, NewErr extends SchemaError>(
         newValidation: Validation<WrappedOutput, NewOutput, NewErr>,
     ) =>
         ({
@@ -181,8 +114,6 @@ const extendValidation =
         is: (input): input is string => input.includes('@'),
         err: () => createError('E_EMAIL'),
     });
-
-    type EmailErrCode = ReturnType<(typeof EmailValidation)['err']>['code']; // "E_STRING" | "E_EMAIL"
 }
 
 // ====================================
@@ -281,14 +212,16 @@ type UnsignedInteger = Opaque<number, 'UnsignedInteger'>;
 
     const sendEmail = (address: string) => {};
     sendEmail(email); // ok
+    sendEmail(''); // ok
+}
 
-    // ===
-
+{
     const lengthOfSomeList = 1 as UnsignedInteger;
     const timesTen = lengthOfSomeList * 10; // ok
 
     const getElementFromList = (list: number[], index: number) => {};
     getElementFromList([], lengthOfSomeList); // ok
+    getElementFromList([], -1); // ok
 }
 {
     const email = 'tony@starkindustries.com' as Email;
@@ -297,9 +230,8 @@ type UnsignedInteger = Opaque<number, 'UnsignedInteger'>;
     sendEmail(email); // ok
     // @ts-expect-error
     sendEmail(''); // Argument of type 'string' is not assignable to parameter of type 'Email'
-
-    // ===
-
+}
+{
     const lengthOfSomeList = 1 as UnsignedInteger;
 
     const getElementFromList = (list: number[], index: UnsignedInteger) => {};
@@ -310,8 +242,7 @@ type UnsignedInteger = Opaque<number, 'UnsignedInteger'>;
 {
     // definition
 
-    const tag = 'Email';
-    type Email = Opaque<string, typeof tag>;
+    type Email = Opaque<string, 'Email'>;
 
     const EmailValidation = extendValidation(StringValidation)({
         is: (input): input is Email => input.includes('@'),
