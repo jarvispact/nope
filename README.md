@@ -9,6 +9,7 @@ Thanks to Typescript you can catch a lot of bugs at the time of writing your cod
 - request payloads
 - upstream service responses
 - environment variables
+- cli arguments
 
 On the client your inputs come from:
 
@@ -24,6 +25,7 @@ By carefully validating all inputs at the edges of our application we can ensure
 - 🪶 Lightweight ( 2.8 kB )
 - 🌴 Tree-shakeable
 - ⚡ 6x faster than [zod](https://zod.dev/) ( [Performance test](https://stackblitz.com/edit/typescript-rekaev?file=index.ts) )
+- 🚀 Works in Node.js, Deno, the Edge and all modern browsers
 - 🧷 First class support for opaque (branded) types
 - 🏗️ Create your own schemas and types, with just a few lines of code
 
