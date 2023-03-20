@@ -94,7 +94,7 @@ const StringValidation = validation({
 // EXTEND VALIDATION
 
 // FOR THE SIMPLIFIED VALIDATION AND SCHEMA TYPES
-const extendValidation =
+export const extendValidation =
     <WrappedInput, WrappedOutput extends WrappedInput, WrappedErr extends SchemaError>(
         wrappedValidation: Validation<WrappedInput, WrappedOutput, WrappedErr>,
     ) =>
