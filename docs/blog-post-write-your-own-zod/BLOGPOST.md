@@ -18,7 +18,7 @@ My approach to learn advanced typescript concepts was to create a similar librar
 - [The extendValidation function](#the-extendvalidation-function)
 - [The schema function](#the-schema-function)
 - [Opaque ( branded ) types](#opaque--branded--types)
-- [The InferType helper](#the-infertype-helper)
+- [The InferType and InferErrorType helper](#the-infertype-and-infererrortype-helper)
 - [Closing](#closing)
 
 ---
@@ -37,7 +37,7 @@ If you are not, i suggest to you [another blog post](https://dev.to/jarvispact/t
 
 ## The basic Idea
 
-1. With a **union type** we can represent that a variable is `Either` this or that. In other terms we might say a validation was `Ok` or it had failed with an `Err`. This is how we can express this with a typescript type:
+1. With a **union type** we can represent that a variable is `Either` this or that. In other terms we might say a validation was `Ok` or it failed with an `Err`. This is how we can express this with a typescript type:
 
 ```ts
 type Ok<T> = { status: 'OK'; value: T };
@@ -47,7 +47,7 @@ type Either<S, F> = Ok<S> | Err<F>;
 
 2. With **generics** we can define a clear contract on how our schema needs to be defined and at the same time, leverage typescripts type inference and save the user of the library from having to define types themselves.
 
-3. **Type predicates** are just functions that return a boolean. We can define even the most complex validation logic in such a boolean function, and by adding a type predicate to this function we can tell typescript that we made sure that some variable of type `Input` is of a certain `Output` type. This is a simple string type predicate function:
+3. **Type predicates** are just functions that return a boolean. We can define even the most complex validation logic in such a function, and by adding a type predicate to this function we can tell typescript that we made sure that some variable of type `Input` is of a certain `Output` type. This is a simple string type predicate function:
 
 ```ts
 // `unknown` is our `Input` type
@@ -89,7 +89,7 @@ const ok = <T>(value: T): Ok<T> => ({ status: 'OK', value });
 const isErr = <O, E>(either: Either<O, E>): either is Err<E> => either.status === 'ERR';
 const isOk = <O, E>(either: Either<O, E>): either is Ok<O> => either.status === 'OK';
 
-// helpers to create a validation error
+// helper to create a validation error
 type SchemaError<Code extends string = string> = { code: Code };
 const createError = <Code extends string>(code: Code): SchemaError<Code> => ({ code });
 ```
@@ -312,7 +312,7 @@ getElementFromList([], lengthOfSomeList); // ok
 getElementFromList([], -1); // Argument of type 'number' is not assignable to parameter of type 'UnsignedInteger'
 ```
 
-This lets us define a more concreate / strict type, which leads to a safer codebase. This is how we would define a `EmailSchema` with a branded type and how we can use it:
+This lets us define a more concrete / strict type, which leads to a safer codebase. This is how we would define a `EmailSchema` with a branded type and how we can use it:
 
 ```ts
 // definition
@@ -352,9 +352,9 @@ Also the examples of a `StringSchema` and a `EmailSchema` are quite simple. It s
 
 ---
 
-## The InferType helper
+## The InferType and InferErrorType helper
 
-We can now write a little helper type, that will extract the static type from any schema, no matter how complex or deep. Just like you know it from zod:
+We can now write little helper types, that will extract the static types from any schema, no matter how complex or deep. Just like you know it from zod:
 
 ```ts
 export type InferType<S extends Schema<string, any, SchemaError>> = ReturnType<
@@ -362,21 +362,37 @@ export type InferType<S extends Schema<string, any, SchemaError>> = ReturnType<
 > extends Either<infer O, unknown>
   ? O
   : never;
+
+export type InferErrorType<S extends Schema<string, any, any, SchemaError<string>>> = ReturnType<
+    S['validate']
+> extends Either<any, infer E>
+    ? E
+    : never;
 ```
 
-And use it to extract the type from the schema:
+And use it to extract the output and error types from the schema:
 
 ```ts
-type Email = InferType<typeof EmailSchema>; // Noice!
+type Email = InferType<typeof EmailSchema>;
+type EmailError = InferErrorType<typeof EmailSchema>; // "E_STRING" | "E_EMAIL"
 ```
 
 ---
 
 ## Closing
 
-When you use such a library to carefully validate all the edges of your application (all the places where you process user input and external data), you dont need to write a lot of types yourself and the code that holds your domain logic will be typesafe and resilient at runtime.
+We learned today:
 
-- Here is a [interactive example](https://stackblitz.com/edit/typescript-gwd5hu?file=index.ts) for this blog post.
-- Here you can see how a [more complex schema](https://stackblitz.com/edit/typescript-rekaev?file=nope-person.ts) might look like.
+- How to create a `validation` and `schema` function to build all sorts of different schemas like a
+    - `StringSchema`
+    - `NumberSchema`
+    - `EmailSchema`
+    - `UnsignedIntegerSchema`.
+- How to infer the static types for the `Ok` and every possible `Err` case of all sorts of schemas.
+- How to define opaque (branded) types and schemas to make our domain types more strict and avoid even more bugs at compile time.
 
-I hope that you learned something new, or that i inspired you to dig a bit deeper into this topic yourself. Also i would be very happy about feedback and suggestions to improve this blog post. Happy type-safety!👋.
+---
+
+Here is a [interactive example](https://stackblitz.com/edit/typescript-gwd5hu?file=index.ts) for this blog post where you can see the actual output in the browser and play around with the input data. I hope that you learned something new, or that i inspired you to dig a bit deeper into this topic yourself. Also i would be very happy about feedback and suggestions to improve my writing skills.
+
+Happy type-safety!👋.

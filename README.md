@@ -71,7 +71,7 @@ Thats all. Inside of the `if` branch it is guaranteed that your data matches the
 
 There are more detailled informations and a automatic human readable error message available for each possible error object. [Here is a interactive example](https://stackblitz.com/edit/typescript-xfxd8x?file=index.ts).
 
-## Opague (branded) types
+## Opaque (branded) types
 
 This library makes heavy use of opaque ( sometimes also called branded ) types. One example would be the `Email` type that comes from the `EmailSchema`. It is not a alias for the string type, but its very own type. Let me show you why this might be useful. Here you can see that we can pass a empty string to the `sendEmail` function and typescript will not complain 😟.
 
